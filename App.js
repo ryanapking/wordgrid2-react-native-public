@@ -3,17 +3,18 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import Wordbutton from './components/Wordbutton';
 
-import reducer from './store/reducer';
+import reducer from './ducks/reducer';
 
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 
 import { Container, Button } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 import firebase from 'react-native-firebase';
 
-var store = createStore(reducer);
+var store = createStore(reducer, applyMiddleware(thunk));
 
 // firebase.auth().signInAnonymously()
 //   .then((user) => {

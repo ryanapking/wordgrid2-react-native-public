@@ -3,28 +3,30 @@ import { Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Container, Button } from 'native-base';
 
-import { userLogin } from '../ducks/login';
+import { successTest } from '../ducks/reducer';
 
 class Wordbutton extends Component {
   render() {
-    const { username } = this.props;
+    const { testData } = this.props;
     return (
       <Container>
-        <Button block danger onPress={this.props.userLogin}><Text>Wordbutton.js Text</Text></Button>
-        <Text>Username: {username}</Text>
+        <Button block danger onPress={this.props.successTest}><Text>Wordbutton.js Text</Text></Button>
+        <Text>Something: {testData}</Text>
       </Container>
     );
   }
 }
 
+// the ducks data mapped onto props.... the name seems to explain it, not sure what my note is for
 const mapStateToProps = (state) => {
   return {
-    username: state.login.username,
+    testData: state.testData
   }
 };
 
+// the ducks action creators available as props
 const mapDispatchToProps = {
-  userLogin
+  successTest
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Wordbutton);

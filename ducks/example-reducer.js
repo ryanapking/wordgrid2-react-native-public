@@ -1,7 +1,14 @@
+// available actions
 export const GET_TEST_SUCCESS = 'wordgrid2/test/LOAD_SUCCESS';
 export const GET_TEST_FAIL = 'wordgrid2/test/LOAD_FAIL';
 
-export default function reducer(state = { testData: "" }, action) {
+// initial state
+const initialState = {
+  testData: ""
+}
+
+// reducer
+export default function reducer(state = initialState, action) {
   switch (action.type) {
     case GET_TEST_SUCCESS:
       return { ...state, testData: "Success" };
@@ -12,6 +19,7 @@ export default function reducer(state = { testData: "" }, action) {
   }
 }
 
+// action creators
 export function successTest() {
   return {
     type: GET_TEST_SUCCESS,
