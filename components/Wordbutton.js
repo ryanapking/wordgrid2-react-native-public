@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Container, Button } from 'native-base';
+import { withRouter } from 'react-router-native';
 
 import { userLogin } from '../ducks/login';
 
@@ -27,4 +28,4 @@ const mapDispatchToProps = {
   userLogin
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Wordbutton);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Wordbutton));
