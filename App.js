@@ -41,8 +41,8 @@ export default class App extends Component {
                 </Link>
               </Row>
               <Row size={95}>
-                <Route exact path="/" component={Home}/>
-                <Route path="/game" component={Game}/>
+                <Route path="/home" component={Home}/>
+                <Route exact path="/" component={Game}/>
                 <Route path="/login" component={Login}/>
               </Row>
             </Col>
