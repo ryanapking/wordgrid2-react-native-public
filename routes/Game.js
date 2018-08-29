@@ -2,18 +2,21 @@ import React, { Component } from 'react';
 import { Text, Dimensions, StyleSheet, View } from 'react-native';
 import { Container } from 'native-base';
 import { Grid, Col, Row } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-native';
 
 import GridSquare from '../components/GridSquare';
-import GamePiece from '../components/GamePiece';
 import GamePieceSection from '../components/GamePieceSection';
 
 
-export default class Game extends Component {
+class Game extends Component {
   render() {
+    const { board } = this.props;
+    console.log("board: ", board);
 
     const window = Dimensions.get('window');
     const width = window.width;
-    const height = window.width;
+    const height = width;
 
     let rows = 10;
     let cols = 10;
@@ -22,10 +25,10 @@ export default class Game extends Component {
       <Container>
         <Container style={{height: height, width: width, flex: 0}}>
           <Grid>
-            {Array(rows).fill(1).map((a, i) =>
+            {board.rows.map((row, i) =>
               <Row key={i}>
-                {Array(cols).fill(1).map( (a, i) =>
-                  <Col key={i}><GridSquare letter={"v"}></GridSquare></Col>
+                {row.map( (letter, i) =>
+                  <Col key={i}><GridSquare letter={letter} /></Col>
                 )}
               </Row>
             )}
@@ -47,3 +50,15 @@ const styles = StyleSheet.create({
     // borderColor: 'white',
   }
 });
+
+const mapStateToProps = (state) => {
+  return {
+    board: state.board
+  }
+}
+
+const mapDispatchToProps = {
+
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));

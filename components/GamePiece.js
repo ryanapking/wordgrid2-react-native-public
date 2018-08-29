@@ -25,6 +25,7 @@ export default class GamePiece extends Component {
         null, { dx: this.state.pan.x, dy: this.state.pan.y }
       ]),
       onPanResponderRelease: (e, gesture) => {
+        console.log("release x: ", gesture.moveX, "y: ", gesture.moveY);
         Animated.spring(this.state.pan, {
           toValue: { x: 0, y: 0 },
           friction: 5
@@ -37,7 +38,7 @@ export default class GamePiece extends Component {
 
   render() {
     const { letter } = this.props;
-    console.log("letter: ", letter);
+    // console.log("letter: ", letter);
     const panStyle = {
       transform: this.state.pan.getTranslateTransform()
     };
