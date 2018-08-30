@@ -1,30 +1,26 @@
 import React, { Component } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Container } from 'native-base';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-native';
 
 import GamePieceSection from '../components/GamePieceSection';
 import GameBoard from '../components/GameBoard';
 
+import { setGameboardLocation } from "../ducks/display";
 
-export default class Game extends Component {
+
+class Game extends Component {
   onLayout() {
     this.gameBoard.measureInWindow((x, y, width, height) => {
-      console.log("x, y: ", x, y);
-      console.log(width, height);
+      this.props.setGameboardLocation(x, y, width, height);
     });
   }
 
   render() {
-    const window = Dimensions.get('window');
-
-    // console.log("window: ", window);
-
-    const boardWidth = window.width;
-    const boardHeight = boardWidth;
-
     return (
       <Container>
-        <View style={{height: boardHeight, width: boardWidth, flex: 0}} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this.onLayout()}>
+        <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this.onLayout()}>
           <GameBoard />
         </View>
         <View style={{backgroundColor: 'lightgray'}}>
@@ -36,10 +32,19 @@ export default class Game extends Component {
 }
 
 const styles = StyleSheet.create({
-  column: {
-    // backgroundColor: '#ffd27b',
-    // borderWidth: 1,
-    // borderRadius: 5,
-    // borderColor: 'white',
-  }
+  gameBoardView: {
+    aspectRatio: 1
+  },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    display: state.display
+  };
+};
+
+const mapDispatchToProps = {
+  setGameboardLocation
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));

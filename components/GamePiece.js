@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, PanResponder, Animated } from 'react-native';
 import { Grid, Row, Col } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-native';
 
 import GridSquare from './GridSquare';
 
-export default class GamePiece extends Component {
+class GamePiece extends Component {
 
   constructor() {
     super();
@@ -54,7 +56,6 @@ export default class GamePiece extends Component {
   }
 
   render() {
-    const { letter } = this.props;
     const { pan, scale } = this.state;
 
     // console.log("pan: ", pan.x, pan.y);
@@ -106,3 +107,10 @@ const styles = StyleSheet.create({
   },
 })
 
+const mapStateToProps = (state) => {
+  return {
+    display: state.display
+  }
+};
+
+export default withRouter(connect(mapStateToProps)(GamePiece));
