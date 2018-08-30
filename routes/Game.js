@@ -1,42 +1,35 @@
 import React, { Component } from 'react';
-import { Text, Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { Container } from 'native-base';
-import { Grid, Col, Row } from 'react-native-easy-grid';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-native';
 
-import GridSquare from '../components/GridSquare';
 import GamePieceSection from '../components/GamePieceSection';
+import GameBoard from '../components/GameBoard';
 
 
-class Game extends Component {
+export default class Game extends Component {
+  onLayout() {
+    this.gameBoard.measureInWindow((x, y, width, height) => {
+      console.log("x, y: ", x, y);
+      console.log(width, height);
+    });
+  }
+
   render() {
-    const { board } = this.props;
-    console.log("board: ", board);
-
     const window = Dimensions.get('window');
-    const width = window.width;
-    const height = width;
 
-    let rows = 10;
-    let cols = 10;
+    // console.log("window: ", window);
+
+    const boardWidth = window.width;
+    const boardHeight = boardWidth;
 
     return (
       <Container>
-        <Container style={{height: height, width: width, flex: 0}}>
-          <Grid>
-            {board.rows.map((row, i) =>
-              <Row key={i}>
-                {row.map( (letter, i) =>
-                  <Col key={i}><GridSquare letter={letter} /></Col>
-                )}
-              </Row>
-            )}
-          </Grid>
-        </Container>
-        <Container style={{backgroundColor: 'lightgray'}}>
+        <View style={{height: boardHeight, width: boardWidth, flex: 0}} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this.onLayout()}>
+          <GameBoard />
+        </View>
+        <View style={{backgroundColor: 'lightgray'}}>
           <GamePieceSection />
-        </Container>
+        </View>
       </Container>
     );
   }
@@ -50,15 +43,3 @@ const styles = StyleSheet.create({
     // borderColor: 'white',
   }
 });
-
-const mapStateToProps = (state) => {
-  return {
-    board: state.board
-  }
-}
-
-const mapDispatchToProps = {
-
-};
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));
