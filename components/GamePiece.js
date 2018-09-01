@@ -32,65 +32,63 @@ class GamePiece extends Component {
 
       onPanResponderGrant: (e, gesture) => {
         this.state.pan.setValue({x: 0, y: 0});
-        Animated.spring(
+        Animated.timing(
           this.state.scale,
-          { toValue: 1.33, friction: 3 }
+          { toValue: 1.33, duration: 200 }
         ).start();
       },
 
       onPanResponderMove: (e, gestureState) => {
-        // looks below the mouse pointer
-        // console.log(e.nativeEvent.pageX, e.nativeEvent.pageY);
-        // const row = this.props.display.gameBoard.rowBounds.reduce( ( foundRow, val, index ) => {
-        //   if ( e.nativeEvent.pageY > val.minY && e.nativeEvent.pageY < val.maxY) {
-        //     return index;
-        //   } else {
-        //     return foundRow;
-        //   }
-        // }, -1 );
-        //
-        // const column = this.props.display.gameBoard.columnBounds.reduce( ( foundColumn, val, index) => {
-        //   if ( e.nativeEvent.pageX > val.minX && e.nativeEvent.pageX < val.maxX) {
-        //     return index;
-        //   } else {
-        //     return foundColumn;
-        //   }
-        // }, -1);
-        //
-        // if ( row >= 0 && column >= 0) {
-        //   console.log(this.props.board.rows[row][column]);
-        // }
-
-        // console.log("e", e.nativeEvent.locationX, e.nativeEvent.locationY, e.nativeEvent.target);
-        // console.log(this.state.scale._value);
-
-        // const currentWidth = this.state.baseWidth * this.state.scale._value;
-        // const currentHeight = this.state.baseHeight * this.state.scale._value;
-
-        console.log(this.state.currentWidth, this.state.currentHeight);
-
-
-
-        const minY = this.props.display.gameBoard.y;
-        const maxY = this.props.display.gameBoard.y + this.props.display.gameBoard.height;
-        if (gestureState.moveY >= minY && gestureState.moveY <= maxY) {
-          // console.log("hovering");
-        }
         Animated.event([null, {
           dx: this.state.pan.x,
           dy: this.state.pan.y,
         }])(e, gestureState);
+
+        const elementX = e.nativeEvent.pageX - (e.nativeEvent.locationX * this.state.scale._value);
+        const elementY = e.nativeEvent.pageY - (e.nativeEvent.locationY * this.state.scale._value);
+
+        const squaresBelow = this.state.relativeMiddlePoints.map( (point) => {
+
+          const currentMiddlePointX = elementX + point.x;
+          const currentMiddlePointY = elementY + point.y;
+
+          const row = this.props.display.gameBoard.rowBounds.reduce( ( foundRow, rowBound, index ) => {
+            if ( currentMiddlePointY > rowBound.minY && currentMiddlePointY < rowBound.maxY) {
+              return index;
+            } else {
+              return foundRow;
+            }
+          }, -1 );
+
+          const column = this.props.display.gameBoard.columnBounds.reduce( ( foundColumn, columnBound, index) => {
+            if ( currentMiddlePointX > columnBound.minX && currentMiddlePointX < columnBound.maxX) {
+              return index;
+            } else {
+              return foundColumn;
+            }
+          }, -1);
+
+          let letterBelow = null;
+
+          if (row >= 0 && column >= 0) {
+            letterBelow = this.props.board.rows[row][column]
+          }
+
+          return {...point, letterBelow};
+        });
+
+        console.log(squaresBelow);
       },
 
       onPanResponderRelease: (e, gesture) => {
         // console.log("release x: ", gesture.moveX, "y: ", gesture.moveY);
-        Animated.spring(this.state.pan, {
+        Animated.timing(this.state.pan, {
           toValue: { x: 0, y: 0 },
-          friction: 5
+          duration: 200
         }).start();
-        Animated.spring(
+        Animated.timing(
           this.state.scale,
-          { toValue: 1, friction: 3 }
+          { toValue: 1, duration: 200 }
         ).start();
       },
 
@@ -100,20 +98,9 @@ class GamePiece extends Component {
   render() {
     const { pan, scale } = this.state;
 
-    // console.log("board location: ", this.props.display.gameBoard);
-
-    // console.log("pan: ", pan.x, pan.y);
-    // console.log("scale: ", scale);
-    // console.log("letter: ", letter);
-
-    // console.log("here here");
-    // console.log(this.panResponder.panHandlers);
-
     const translateX = pan.x;
     const translateY = pan.y;
     let dragStyles = {transform: [{translateX}, {translateY}, {scale}]};
-
-    // console.log("dragstyles: ", dragStyles);
 
     return (
       <View
@@ -127,19 +114,11 @@ class GamePiece extends Component {
           <Grid pointerEvents={'none'}>
             {this.props.piece.map( (pieceRow, index) =>
               <Row key={index}>
-                {pieceRow.map( (letter, index) => {
-                  if (letter) {
-                    return (
-                      <Col key={index}>
-                        <GridSquare letter={letter} />
-                      </Col>
-                    );
-                  } else {
-                    return (
-                      <Col key={index}></Col>
-                    )
-                  }
-                })}
+                {pieceRow.map( (letter, index) =>
+                  <Col key={index}>
+                    { letter ? <GridSquare letter={letter} /> : null }
+                  </Col>
+                )}
               </Row>
             )}
           </Grid>
@@ -152,26 +131,30 @@ class GamePiece extends Component {
     this.baseView.measureInWindow((x, y, width, height) => {
       this.state.baseWidth = width;
       this.state.baseHeight = height;
-      this.state.currentWidth = width * this.state.scale._value;
-      this.state.currentHeight = height * this.state.scale._value;
     });
-
-    this._setRelativeMiddlePoints();
   }
 
   _setCurrentSize(currentScale) {
     this.state.currentHeight = this.state.baseHeight * currentScale.value;
     this.state.currentWidth = this.state.baseWidth * currentScale.value;
+
+    this._setRelativeMiddlePoints();
   }
 
   _setRelativeMiddlePoints() {
-    const eighth = this.state.currentWidth / 8;
-    // this.state.relativeMiddlePoints =
-    //   Array(16).fill(1).map( ( val1, rowIndex ) => {
-    //     const row =
-    //     return {x: 1, y: 1};
-    //   });
-    console.log(this.state.relativeMiddlePoints);
+    // console.log(this.state.currentWidth);
+    let middlePointsArray = [];
+    this.props.piece.forEach( (row, rowIndex ) => {
+      row.forEach( (letter, columnIndex) => {
+        if (letter) {
+          const x = ((columnIndex) * (this.state.currentWidth / 4)) + (this.state.currentWidth / 8);
+          const y = ((rowIndex) * (this.state.currentHeight / 4)) + (this.state.currentHeight / 8);
+          middlePointsArray.push({x, y, rowIndex, columnIndex, letter});
+        }
+      })
+    });
+    this.state.relativeMiddlePoints = middlePointsArray;
+    // console.log(this.state.relativeMiddlePoints);
   }
 }
 
