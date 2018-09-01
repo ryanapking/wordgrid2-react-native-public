@@ -7,7 +7,9 @@ const initialState = {
     x: 0,
     y: 0,
     width: 0,
-    height: 0
+    height: 0,
+    rowBounds: [],
+    columnBounds: []
   }
 }
 
@@ -23,8 +25,23 @@ export default function reducer(state = initialState, action) {
 
 // action creators
 export function setGameboardLocation(x, y, width, height) {
+  const rowHeight = height / 10;
+  const columnWidth = width / 10;
+
+  const rowBounds = Array(10).fill(1).map( (val, index) => {
+    const minY = y + (index * rowHeight);
+    const maxY = minY + rowHeight;
+    return {minY, maxY};
+  });
+
+  const columnBounds = Array(10).fill(1).map( (val, index) => {
+    const minX = x + (index * columnWidth);
+    const maxX = minX + columnWidth;
+    return {minX, maxX};
+  });
+
   return {
     type: DISPLAY_GAMEBOARD_SET,
-    gameBoard: {x: x, y: y, width: width, height: height}
+    gameBoard: { x, y, width, height, rowBounds, columnBounds }
   };
 }

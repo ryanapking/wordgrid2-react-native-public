@@ -11,16 +11,10 @@ import { setGameboardLocation } from "../ducks/display";
 
 
 class Game extends Component {
-  onLayout() {
-    this.gameBoard.measureInWindow((x, y, width, height) => {
-      this.props.setGameboardLocation(x, y, width, height);
-    });
-  }
-
   render() {
     return (
       <Container>
-        <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this.onLayout()}>
+        <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <GameBoard />
         </View>
         <View style={{backgroundColor: 'lightgray'}}>
@@ -28,6 +22,12 @@ class Game extends Component {
         </View>
       </Container>
     );
+  }
+
+  _onLayout() {
+    this.gameBoard.measureInWindow((x, y, width, height) => {
+      this.props.setGameboardLocation(x, y, width, height);
+    });
   }
 }
 

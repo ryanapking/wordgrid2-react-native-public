@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, PanResponder, Animated } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 export default class GridSquare extends Component {
   render() {
