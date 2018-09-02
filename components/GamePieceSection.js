@@ -13,15 +13,15 @@ class GamePieceSection extends Component {
         <Row>
           <Col size={2.5} style={styles.spacer} />
           <Col size={30} style={styles.pieceSpace}>
-            <GamePiece piece={this.props.pieces.one}/>
+            <GamePiece piece={this.props.pieces[0]} pieceIndex={0}/>
           </Col>
           <Col size={2.5} style={styles.spacer} />
           <Col size={30} style={styles.pieceSpace}>
-            <GamePiece piece={this.props.pieces.two}/>
+            <GamePiece piece={this.props.pieces[1]} pieceIndex={1}/>
           </Col>
           <Col size={2.5} style={styles.spacer} />
           <Col size={30} style={styles.pieceSpace}>
-            <GamePiece piece={this.props.pieces.three}/>
+            <GamePiece piece={this.props.pieces[2]} pieceIndex={2}/>
           </Col>
           <Col size={2.5} style={styles.spacer} />
         </Row>

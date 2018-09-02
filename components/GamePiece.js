@@ -6,6 +6,8 @@ import { withRouter } from 'react-router-native';
 
 import GridSquare from './GridSquare';
 
+import { placePiece } from '../ducks/board';
+
 class GamePiece extends Component {
 
   constructor() {
@@ -99,7 +101,7 @@ class GamePiece extends Component {
         if (letter) {
           const x = ((columnIndex) * (this.state.currentWidth / 4)) + (this.state.currentWidth / 8);
           const y = ((rowIndex) * (this.state.currentHeight / 4)) + (this.state.currentHeight / 8);
-          middlePoints.push({x, y, rowIndex, columnIndex, letter});
+          middlePoints.push({x, y, pieceRowIndex: rowIndex, pieceColumnIndex: columnIndex, letter});
         }
       })
     });
@@ -140,7 +142,7 @@ class GamePiece extends Component {
       const onBoard = (row >= 0 && column >= 0);
       const letterBelow = onBoard ? this.props.board.rows[row][column] : null;
 
-      return {...point, letterBelow};
+      return {...point, boardRowIndex: row, boardColumnIndex: column, letterBelow};
     });
 
     // console.log("squaresBelow: ", squaresBelow);
@@ -186,7 +188,18 @@ class GamePiece extends Component {
     const squaresBelow = this._getLettersBelowPiece(event);
     const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
 
-    console.log('candrop: ', canDrop);
+    // console.log('squaresBelow: ', squaresBelow);
+    // console.log('candrop: ', canDrop);
+
+    if (canDrop) {
+      let updatedRows = [...this.props.board.rows];
+
+      squaresBelow.forEach( (square) => {
+        updatedRows[square.boardRowIndex][square.boardColumnIndex] = square.letter;
+      });
+
+      this.props.placePiece(updatedRows, this.props.pieceIndex);
+    }
   }
 
   _onPanResponderMove(event, gestureState) {
@@ -214,4 +227,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(GamePiece));
+const mapDispatchToProps = {
+  placePiece
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GamePiece));

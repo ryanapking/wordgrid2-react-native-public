@@ -15,40 +15,43 @@ const initialState = {
     ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
     ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
   ],
-  pieces: {
-    one: [
-      ["p", "o", "p", "s"],
-      ["", "", "", ""],
-      ["", "", "", ""],
-      ["", "", "", ""],
+  pieces: [
+    [
+      ["p", "", "", ""],
+      ["l", "", "", ""],
+      ["u", "", "", ""],
+      ["g", "", "", ""],
     ],
-    two: [
-      ["", "o", "p", "s"],
+    [
+      ["", "o", "", ""],
       ["", "q", "", ""],
       ["", "z", "", ""],
-      ["", "", "", ""],
+      ["", "c", "", ""],
     ],
-    three: [
+    [
       ["p", "o", "", ""],
       ["p", "", "", ""],
       ["t", "", "", ""],
       ["k", "", "", ""],
     ]
-
-  }
+  ]
 };
 
 // reducer
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case PLACE_PIECE:
-      return state;
+      return {...state, rows: action.rows, pieces: [...state.pieces.slice(0, action.pieceIndex), ...state.pieces.slice(action.pieceIndex + 1), []]};
     default:
       return state;
   }
 }
 
 // action creators
-export function placeLetters(letters = []) {
-
+export function placePiece(rows = [], pieceIndex) {
+  return {
+    type: PLACE_PIECE,
+    rows: rows,
+    pieceIndex
+  }
 }
