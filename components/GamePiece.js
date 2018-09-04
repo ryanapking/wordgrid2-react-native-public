@@ -120,9 +120,13 @@ class GamePiece extends Component {
       const currentMiddlePointX = elementX + point.x;
       const currentMiddlePointY = elementY + point.y;
 
+      const maxRowDiff = this.props.display.gameBoard.rowHeight / 2;
+      const maxColumnDiff = this.props.display.gameBoard.columnWidth / 2;
+
       // compare point to row bounds and return row index
-      const row = this.props.display.gameBoard.rowBounds.reduce( ( foundRow, rowBound, index ) => {
-        if ( currentMiddlePointY > rowBound.minY && currentMiddlePointY < rowBound.maxY) {
+      const row = this.props.display.gameBoard.rowMidPoints.reduce( ( foundRow, midPointY, index ) => {
+        const rowDiff = Math.abs(midPointY - currentMiddlePointY);
+        if ( rowDiff < maxRowDiff ) {
           return index;
         } else {
           return foundRow;
@@ -130,8 +134,9 @@ class GamePiece extends Component {
       }, -1 );
 
       // compare point to column bounds and return column index
-      const column = this.props.display.gameBoard.columnBounds.reduce( ( foundColumn, columnBound, index) => {
-        if ( currentMiddlePointX > columnBound.minX && currentMiddlePointX < columnBound.maxX) {
+      const column = this.props.display.gameBoard.columnMidPoints.reduce( ( foundColumn, midPointX, index) => {
+        const columnDiff = Math.abs(midPointX - currentMiddlePointX);
+        if ( columnDiff < maxColumnDiff ) {
           return index;
         } else {
           return foundColumn;

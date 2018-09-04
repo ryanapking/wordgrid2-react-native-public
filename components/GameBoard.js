@@ -101,8 +101,13 @@ class GameBoard extends Component {
 
   _findSquareByCoordinates(x, y) {
     // compare point to row bounds and return row index
-    const rowIndex = this.props.display.gameBoard.rowBounds.reduce( ( foundRow, rowBound, index ) => {
-      if ( y > rowBound.minY && y < rowBound.maxY) {
+    const maxRowDiff = this.props.display.gameBoard.rowHeight / 2;
+    const maxColumnDiff = this.props.display.gameBoard.columnWidth / 2;
+
+    // compare point to row bounds and return row index
+    const rowIndex = this.props.display.gameBoard.rowMidPoints.reduce( ( foundRow, midPointY, index ) => {
+      const rowDiff = Math.abs(midPointY - y);
+      if ( rowDiff < maxRowDiff ) {
         return index;
       } else {
         return foundRow;
@@ -110,8 +115,9 @@ class GameBoard extends Component {
     }, -1 );
 
     // compare point to column bounds and return column index
-    const columnIndex = this.props.display.gameBoard.columnBounds.reduce( ( foundColumn, columnBound, index) => {
-      if ( x > columnBound.minX && x < columnBound.maxX) {
+    const columnIndex = this.props.display.gameBoard.columnMidPoints.reduce( ( foundColumn, midPointX, index) => {
+      const columnDiff = Math.abs(midPointX - x);
+      if ( columnDiff < maxColumnDiff ) {
         return index;
       } else {
         return foundColumn;

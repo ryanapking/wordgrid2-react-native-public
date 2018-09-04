@@ -4,12 +4,16 @@ export const DISPLAY_GAMEBOARD_SET = 'wordgrid2/display/DISPLAY_GAMEBOARD_SET';
 // initial state
 const initialState = {
   gameBoard: {
+    // game board variables
     x: 0,
     y: 0,
     width: 0,
     height: 0,
-    rowBounds: [],
-    columnBounds: []
+    // column variables
+    rowHeight: 0,
+    columnWidth: 0,
+    rowMidPoints: [],
+    columnMidPoints: [],
   }
 }
 
@@ -28,20 +32,16 @@ export function setGameboardLocation(x, y, width, height) {
   const rowHeight = height / 10;
   const columnWidth = width / 10;
 
-  const rowBounds = Array(10).fill(1).map( (val, index) => {
-    const minY = y + (index * rowHeight);
-    const maxY = minY + rowHeight;
-    return {minY, maxY};
+  const rowMidPoints = Array(10).fill(1).map( (val, index) => {
+    return (y + (rowHeight * index) + (rowHeight / 2));
   });
 
-  const columnBounds = Array(10).fill(1).map( (val, index) => {
-    const minX = x + (index * columnWidth);
-    const maxX = minX + columnWidth;
-    return {minX, maxX};
+  const columnMidPoints = Array(10).fill(1).map( (val, index) => {
+    return (x + (columnWidth * index) + (columnWidth / 2));
   });
 
   return {
     type: DISPLAY_GAMEBOARD_SET,
-    gameBoard: { x, y, width, height, rowBounds, columnBounds }
+    gameBoard: { x, y, width, height, rowMidPoints, columnMidPoints, rowHeight, columnWidth }
   };
 }
