@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, PanResponder, Animated, Dimensions } from 'react-native';
+import { StyleSheet, View, PanResponder, Animated } from 'react-native';
 import { Grid, Row, Col } from 'react-native-easy-grid';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
