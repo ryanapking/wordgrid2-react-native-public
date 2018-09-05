@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
@@ -14,6 +14,7 @@ class Game extends Component {
   render() {
     return (
       <Container>
+        <View><Text>{this.props.display.displayWord}</Text></View>
         <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <GameBoard />
         </View>

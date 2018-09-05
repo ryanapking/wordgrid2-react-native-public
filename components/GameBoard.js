@@ -6,6 +6,8 @@ import { withRouter } from 'react-router-native';
 
 import GridSquare from "./GridSquare";
 
+import { setDisplayWord } from "../ducks/display";
+
 class GameBoard extends Component {
   constructor() {
     super();
@@ -27,6 +29,8 @@ class GameBoard extends Component {
         this.state.currentSquare = {rowIndex: square.rowIndex, columnIndex: square.columnIndex};
         this.state.drawnWord = square.letter;
         this.state.wordLetters.push(square);
+
+        this.props.setDisplayWord(this.props.display.displayWord + square.letter);
         // The gesture has started. Show visual feedback so the user knows
         // what is happening!
 
@@ -50,8 +54,6 @@ class GameBoard extends Component {
 
         if (!squareValid) return;
 
-        console.log("here here here");
-
         const squareAvailable = this.state.wordLetters.reduce( ( available, compareSquare ) => {
           const rowClash = (square.rowIndex === compareSquare.rowIndex);
           const columnClash = (square.columnIndex === compareSquare.columnIndex);
@@ -63,7 +65,8 @@ class GameBoard extends Component {
           this.state.drawnWord += square.letter;
           this.state.wordLetters.push(square);
           this.state.currentSquare = square;
-          console.log(this.state.drawnWord);
+
+          this.props.setDisplayWord(this.props.display.displayWord + square.letter);
         }
 
         // The accumulated gesture distance since becoming responder is
@@ -100,34 +103,27 @@ class GameBoard extends Component {
   }
 
   _findSquareByCoordinates(x, y) {
-    // compare point to row bounds and return row index
-    const maxRowDiff = this.props.display.gameBoard.rowHeight / 2;
-    const maxColumnDiff = this.props.display.gameBoard.columnWidth / 2;
+    // to better enable diagonal movements, we define a circle 85% of its max possible size, to cut off the corners
+    // kinda like a connect four board
+    // we could use an octagon, but this math is simpler
+    const maxDistance = this.props.display.gameBoard.columnWidth / 2 * .85;
 
-    // compare point to row bounds and return row index
-    const rowIndex = this.props.display.gameBoard.rowMidPoints.reduce( ( foundRow, midPointY, index ) => {
-      const rowDiff = Math.abs(midPointY - y);
-      if ( rowDiff < maxRowDiff ) {
-        return index;
-      } else {
-        return foundRow;
-      }
-    }, -1 );
+    const nullIndex = -1;
+    const nullSquare = {rowIndex: nullIndex, columnIndex: nullIndex};
 
-    // compare point to column bounds and return column index
-    const columnIndex = this.props.display.gameBoard.columnMidPoints.reduce( ( foundColumn, midPointX, index) => {
-      const columnDiff = Math.abs(midPointX - x);
-      if ( columnDiff < maxColumnDiff ) {
-        return index;
-      } else {
-        return foundColumn;
-      }
-    }, -1);
+    // reduce the two midpoint arrays into a single set of coordinates at the given point
+    const square = this.props.display.gameBoard.rowMidPoints.reduce( (foundSquare, midPointY, rowIndex) => {
+      const columnIndex = this.props.display.gameBoard.columnMidPoints.reduce( (foundColumnIndex, midPointX, columnIndex) => {
+        const dist = Math.hypot(x - midPointX, y - midPointY);
+        return dist < maxDistance ? columnIndex : foundColumnIndex;
+      }, nullIndex);
+      return columnIndex >= 0 ? {rowIndex, columnIndex} : foundSquare;
+    }, nullSquare);
 
-    const onBoard = (rowIndex >= 0 && columnIndex >= 0);
-    const letter = onBoard ? this.props.board.rows[rowIndex][columnIndex] : null;
+    const onBoard = (square.rowIndex >= 0 && square.columnIndex >= 0);
+    const letter = onBoard ? this.props.board.rows[square.rowIndex][square.columnIndex] : null;
 
-    return {rowIndex, columnIndex, letter};
+    return {...square, letter};
   }
 }
 
@@ -139,7 +135,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-
+  setDisplayWord
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameBoard));
