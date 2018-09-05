@@ -12,19 +12,21 @@ class GameBoard extends Component {
   constructor() {
     super();
     this.state = {
+      // the most recent square added to the word
       currentSquare: {rowIndex: -1, columnIndex: -1},
+
+      // all squares used, including most recent
       usedSquares: []
-    }
+    };
 
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
   }
 
-
   componentWillMount() {
     this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponderCapture: this._panResponderCaptureTrue,
-      onMoveShouldSetPanResponderCapture: this._panResponderCaptureTrue,
+      onStartShouldSetPanResponderCapture: GameBoard._panResponderCaptureTrue,
+      onMoveShouldSetPanResponderCapture: GameBoard._panResponderCaptureTrue,
       onPanResponderGrant: this._onPanResponderGrant,
       onPanResponderMove: this._onPanResponderMove,
     });
@@ -72,14 +74,16 @@ class GameBoard extends Component {
     return {...square, letter};
   }
 
-  _onPanResponderGrant(event, gestureState) {
+  _onPanResponderGrant(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
+
     this.state.currentSquare = {rowIndex: square.rowIndex, columnIndex: square.columnIndex};
     this.state.usedSquares.push(square);
+
     this.props.setDisplayWord(square.letter);
   }
 
-  _onPanResponderMove(event, gestureState) {
+  _onPanResponderMove(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
 
     const columnDiff = Math.abs(this.state.currentSquare.columnIndex - square.columnIndex);
@@ -110,7 +114,7 @@ class GameBoard extends Component {
     }
   }
 
-  _panResponderCaptureTrue() {
+  static _panResponderCaptureTrue() {
     return true;
   }
 }

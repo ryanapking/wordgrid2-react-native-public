@@ -13,16 +13,26 @@ class GamePiece extends Component {
   constructor() {
     super();
     this.state = {
+      // used for local animations
       pan: new Animated.ValueXY(),
       scale: new Animated.Value(1),
+
+      // will be sent to the GridSquare for styling
       dragging: false,
       canDrop: false,
+
+      // height of the GamePiece, before scaling
       baseHeight: 0,
       baseWidth: 0,
+
+      // height of the GamePiece after scaling
       currentHeight: 0,
       currentWidth: 0,
+
+      // middle points of the current GamePiece squares that contain letters
       relativeMiddlePoints: []
     };
+
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
     this._onPanResponderRelease = this._onPanResponderRelease.bind(this);
@@ -153,11 +163,6 @@ class GamePiece extends Component {
     // console.log("squaresBelow: ", squaresBelow);
 
     return squaresBelow;
-
-    // if all the squares below are blank, return true
-    return squaresBelow.reduce( (canDropStatus, squareBelow) => {
-      return (canDropStatus && squareBelow.letterBelow === "");
-    }, true);
   }
 
   _checkDropReducer( canDropStatus, squareBelow) {
@@ -169,7 +174,7 @@ class GamePiece extends Component {
     return true;
   }
 
-  _onPanResponderGrant(event, gesture) {
+  _onPanResponderGrant() {
     this.state.dragging = true;
     this.state.pan.setValue({x: 0, y: 0});
     Animated.timing(
@@ -178,7 +183,7 @@ class GamePiece extends Component {
     ).start();
   }
 
-  _onPanResponderRelease(event, gesture) {
+  _onPanResponderRelease(event) {
     this.state.dragging = false;
     this.state.canDrop = false;
     Animated.timing(this.state.pan, {
