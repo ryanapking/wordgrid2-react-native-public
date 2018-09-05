@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, PanResponder, Animated } from 'react-native';
+import {StyleSheet, View, PanResponder, Animated, Text} from 'react-native';
 import { Grid, Row, Col } from 'react-native-easy-grid';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-
-import GridSquare from './GridSquare';
 
 import { placePiece } from '../ducks/board';
 
@@ -17,7 +15,7 @@ class GamePiece extends Component {
       pan: new Animated.ValueXY(),
       scale: new Animated.Value(1),
 
-      // will be sent to the GridSquare for styling
+      // used for styling the current piece
       dragging: false,
       canDrop: false,
 
@@ -56,11 +54,8 @@ class GamePiece extends Component {
   render() {
     const { pan, scale } = this.state;
 
-    const translateX = pan.x;
-    const translateY = pan.y;
-    const dragStyles = {transform: [{translateX}, {translateY}, {scale}]};
-
-    const applyStyles = [styles.square, dragStyles];
+    const dragTransforms = {transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}]};
+    const letterDragStyles = this.state.canDrop ? styles.canDrop : {};
 
     return (
       <View
@@ -69,14 +64,14 @@ class GamePiece extends Component {
       >
         <Animated.View
           {...this.panResponder.panHandlers}
-          style={applyStyles}
+          style={[styles.square, dragTransforms]}
         >
           <Grid pointerEvents={'none'}>
             {this.props.piece.map( (pieceRow, index) =>
               <Row key={index}>
                 {pieceRow.map( (letter, index) =>
                   <Col key={index}>
-                    { letter ? <GridSquare letter={letter} /> : null }
+                    { letter ? <Text style={[styles.letter, letterDragStyles]}>{letter}</Text> : null }
                   </Col>
                 )}
               </Row>
@@ -219,15 +214,32 @@ class GamePiece extends Component {
     }])(event, gestureState);
 
     const squaresBelow = this._getLettersBelowPiece(event);
-    this.state.canDrop = squaresBelow.reduce(this._checkDropReducer, true);
+
+    // we should only update state if required. it is an expensive operation that slows down motion.
+    const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
+
+    if (canDrop !== this.state.canDrop) {
+      this.state.canDrop = canDrop;
+      this.forceUpdate();
+    }
   }
 }
-
 const styles = StyleSheet.create({
   square: {
     width: "100%",
     height: "100%",
   },
+  letter: {
+    width: "100%",
+    height: "100%",
+    borderWidth: 1,
+    // borderRadius: 5,
+    borderColor: 'white',
+    backgroundColor: "#ffd27b",
+  },
+  canDrop: {
+    backgroundColor: '#ceff7f'
+  }
 });
 
 const mapStateToProps = (state) => {

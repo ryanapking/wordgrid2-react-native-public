@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { PanResponder } from 'react-native';
+import {PanResponder, StyleSheet, Text} from 'react-native';
 import {Col, Grid, Row} from "react-native-easy-grid";
 import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
-
-import GridSquare from "./GridSquare";
 
 import { setDisplayWord } from "../ducks/display";
 
@@ -39,11 +37,14 @@ class GameBoard extends Component {
       <Grid {...this.panResponder.panHandlers}>
         {board.rows.map((row, i) =>
           <Row key={i}>
-            {row.map( (letter, i) =>
-              <Col key={i}>
-                <GridSquare letter={letter} />
-              </Col>
-            )}
+            {row.map( (letter, i) => {
+              const fillStyle = letter ? styles.filledSquare : styles.emptySquare;
+              return (
+                <Col key={i}>
+                  <Text style={[styles.base, fillStyle]}>{letter}</Text>
+                </Col>
+              )
+            })}
           </Row>
         )}
       </Grid>
@@ -118,6 +119,23 @@ class GameBoard extends Component {
     return true;
   }
 }
+
+const styles = StyleSheet.create({
+  base: {
+    width: "100%",
+    height: "100%",
+    borderWidth: 1,
+    // borderRadius: 5,
+    borderColor: 'white',
+
+  },
+  filledSquare: {
+    backgroundColor: "#ffd27b",
+  },
+  emptySquare: {
+    backgroundColor: "#9c9c9c"
+  }
+});
 
 const mapStateToProps = (state) => {
   return {
