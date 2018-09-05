@@ -13,74 +13,20 @@ class GameBoard extends Component {
     super();
     this.state = {
       currentSquare: {rowIndex: -1, columnIndex: -1},
-      drawnWord: "",
-      wordLetters: []
+      usedSquares: []
     }
+
+    this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
+    this._onPanResponderMove = this._onPanResponderMove.bind(this);
   }
 
 
   componentWillMount() {
     this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-
-      onPanResponderGrant: (event, gestureState) => {
-        const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
-        this.state.currentSquare = {rowIndex: square.rowIndex, columnIndex: square.columnIndex};
-        this.state.drawnWord = square.letter;
-        this.state.wordLetters.push(square);
-
-        this.props.setDisplayWord(this.props.display.displayWord + square.letter);
-        // The gesture has started. Show visual feedback so the user knows
-        // what is happening!
-
-        // gestureState.d{x,y} will be set to zero now
-      },
-      onPanResponderMove: (event, gestureState) => {
-
-        const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
-
-        const columnDiff = Math.abs(this.state.currentSquare.columnIndex - square.columnIndex);
-        const rowDiff = Math.abs(this.state.currentSquare.rowIndex - square.rowIndex);
-
-        // let squareAvailable = true;
-
-        const squareValid = (
-          square.letter
-          && (rowDiff <= 1)
-          && (columnDiff <= 1)
-          && (columnDiff + rowDiff !== 0)
-        );
-
-        if (!squareValid) return;
-
-        const squareAvailable = this.state.wordLetters.reduce( ( available, compareSquare ) => {
-          const rowClash = (square.rowIndex === compareSquare.rowIndex);
-          const columnClash = (square.columnIndex === compareSquare.columnIndex);
-          const noClash = !(rowClash && columnClash);
-          return (available && noClash);
-        }, true);
-
-        if (squareAvailable) {
-          this.state.drawnWord += square.letter;
-          this.state.wordLetters.push(square);
-          this.state.currentSquare = square;
-
-          this.props.setDisplayWord(this.props.display.displayWord + square.letter);
-        }
-
-        // The accumulated gesture distance since becoming responder is
-        // gestureState.d{x,y}
-      },
-      onPanResponderTerminationRequest: (evt, gestureState) => true,
-      onPanResponderRelease: (evt, gestureState) => {
-        // The user has released all touches while this view is the
-        // responder. This typically means a gesture has succeeded
-      },
-      onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder, so this gesture
-        // should be cancelled
-      },
+      onStartShouldSetPanResponderCapture: this._panResponderCaptureTrue,
+      onMoveShouldSetPanResponderCapture: this._panResponderCaptureTrue,
+      onPanResponderGrant: this._onPanResponderGrant,
+      onPanResponderMove: this._onPanResponderMove,
     });
   }
 
@@ -124,6 +70,48 @@ class GameBoard extends Component {
     const letter = onBoard ? this.props.board.rows[square.rowIndex][square.columnIndex] : null;
 
     return {...square, letter};
+  }
+
+  _onPanResponderGrant(event, gestureState) {
+    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
+    this.state.currentSquare = {rowIndex: square.rowIndex, columnIndex: square.columnIndex};
+    this.state.usedSquares.push(square);
+    this.props.setDisplayWord(square.letter);
+  }
+
+  _onPanResponderMove(event, gestureState) {
+    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
+
+    const columnDiff = Math.abs(this.state.currentSquare.columnIndex - square.columnIndex);
+    const rowDiff = Math.abs(this.state.currentSquare.rowIndex - square.rowIndex);
+
+    const squareValid = (
+      square.letter
+      && (rowDiff <= 1)
+      && (columnDiff <= 1)
+      && (columnDiff + rowDiff !== 0)
+    );
+
+    if (!squareValid) return;
+
+    const squareAvailable = this.state.usedSquares.reduce( (available, compareSquare ) => {
+      const rowClash = (square.rowIndex === compareSquare.rowIndex);
+      const columnClash = (square.columnIndex === compareSquare.columnIndex);
+      const noClash = !(rowClash && columnClash);
+      return (available && noClash);
+    }, true);
+
+    if (squareAvailable) {
+      this.state.drawnWord += square.letter;
+      this.state.usedSquares.push(square);
+      this.state.currentSquare = square;
+
+      this.props.setDisplayWord(this.props.display.displayWord + square.letter);
+    }
+  }
+
+  _panResponderCaptureTrue() {
+    return true;
   }
 }
 
