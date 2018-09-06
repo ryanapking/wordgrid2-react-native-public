@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import {PanResponder, StyleSheet, Text} from 'react-native';
+import {PanResponder, StyleSheet, Text, View} from 'react-native';
 import {Col, Grid, Row} from "react-native-easy-grid";
 import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
+
+import GameBoardPath from './GameBoardPath';
 
 import { setDisplayWord } from "../ducks/display";
 
@@ -34,20 +36,40 @@ class GameBoard extends Component {
     const { board } = this.props;
 
     return(
-      <Grid {...this.panResponder.panHandlers}>
-        {board.rows.map((row, i) =>
-          <Row key={i}>
-            {row.map( (letter, i) => {
-              const fillStyle = letter ? styles.filledSquare : styles.emptySquare;
-              return (
-                <Col key={i}>
-                  <Text style={[styles.base, fillStyle]}>{letter}</Text>
-                </Col>
-              )
-            })}
-          </Row>
-        )}
-      </Grid>
+      <View style={{width: "100%", height: "100%"}}>
+        <Grid {...this.panResponder.panHandlers}>
+          {board.rows.map((row, rowIndex) =>
+            <Row key={rowIndex}>
+              {row.map( (letter, columnIndex) => {
+                const squareUsed = this.state.usedSquares.reduce( (foundStatus, square) => {
+                  return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
+                }, false);
+                let fillStyle = null;
+                if (squareUsed) {
+                  fillStyle = styles.usedSquare;
+                } else if (letter) {
+                  fillStyle = styles.filledSquare;
+                } else {
+                  fillStyle = styles.emptySquare;
+                }
+                return (
+                  <Col key={columnIndex}>
+                    <Text style={[styles.base, fillStyle]}>{letter}</Text>
+                  </Col>
+                )
+              })}
+            </Row>
+          )}
+        </Grid>
+        {this.state.usedSquares.map( (square, squareIndex, usedSquares) => {
+          const pair = usedSquares.slice(squareIndex - 1, squareIndex + 1);
+          if (pair.length > 1) {
+            return (
+              <GameBoardPath key={squareIndex} square1={pair[0]} square2={pair[1]}/>
+            );
+          } else return null;
+        })}
+      </View>
     );
   }
 
@@ -138,7 +160,14 @@ const styles = StyleSheet.create({
   },
   emptySquare: {
     backgroundColor: "#9c9c9c"
-  }
+  },
+  usedSquare: {
+    backgroundColor: "#ffa487",
+    // transform: [
+    //   { rotate: '-45deg'},
+    //   { scale: 1.05 },
+    // ],
+  },
 });
 
 const mapStateToProps = (state) => {

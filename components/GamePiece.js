@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffd27b",
   },
   canDrop: {
-    backgroundColor: '#ceff7f'
+    backgroundColor: '#55a22e'
   }
 });
 
