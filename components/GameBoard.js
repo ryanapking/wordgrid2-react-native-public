@@ -78,8 +78,10 @@ class GameBoard extends Component {
   _onPanResponderGrant(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
 
-    this.state.currentSquare = {rowIndex: square.rowIndex, columnIndex: square.columnIndex};
-    this.state.usedSquares.push(square);
+    this.setState({
+      currentSquare: {rowIndex: square.rowIndex, columnIndex: square.columnIndex},
+      usedSquares: this.state.usedSquares.concat(square)
+    });
 
     this.props.setDisplayWord(square.letter);
   }
@@ -107,9 +109,11 @@ class GameBoard extends Component {
     }, true);
 
     if (squareAvailable) {
-      this.state.drawnWord += square.letter;
-      this.state.usedSquares.push(square);
-      this.state.currentSquare = square;
+      this.setState({
+        drawnWord: this.state.drawnWord + square.letter,
+        usedSquares: this.state.usedSquares.concat(square),
+        currentSquare: square
+      });
 
       this.props.setDisplayWord(this.props.display.displayWord + square.letter);
     }

@@ -85,32 +85,32 @@ class GamePiece extends Component {
   _onLayout() {
     // when the piece scales, this is our reference point
     this.baseView.measureInWindow((x, y, width, height) => {
-      this.state.baseWidth = width;
-      this.state.baseHeight = height;
+      if (width !== this.state.baseWidth || height !== this.state.baseHeight) {
+        this.setState({baseWidth: width, baseHeight: height})
+      }
     });
   }
 
   _setCurrentSize(currentScale) {
     // use the base piece size and current scale to determine the piece's current size
-    this.state.currentHeight = this.state.baseHeight * currentScale.value;
-    this.state.currentWidth = this.state.baseWidth * currentScale.value;
-
-    this._setRelativeMiddlePoints();
+    const currentHeight = this.state.baseHeight * currentScale.value;
+    const currentWidth = this.state.baseWidth * currentScale.value;
+    this.setState({currentHeight, currentWidth}, this._setRelativeMiddlePoints);
   }
 
   _setRelativeMiddlePoints() {
     // for each letter in the piece, the current middle point is saved to an array
-    let middlePoints = [];
+    let relativeMiddlePoints = [];
     this.props.piece.forEach( (row, rowIndex ) => {
       row.forEach( (letter, columnIndex) => {
         if (letter) {
           const x = ((columnIndex) * (this.state.currentWidth / 4)) + (this.state.currentWidth / 8);
           const y = ((rowIndex) * (this.state.currentHeight / 4)) + (this.state.currentHeight / 8);
-          middlePoints.push({x, y, pieceRowIndex: rowIndex, pieceColumnIndex: columnIndex, letter});
+          relativeMiddlePoints.push({x, y, pieceRowIndex: rowIndex, pieceColumnIndex: columnIndex, letter});
         }
       })
     });
-    this.state.relativeMiddlePoints = middlePoints;
+    this.setState({relativeMiddlePoints});
   }
 
   _getLettersBelowPiece(event) {
@@ -170,7 +170,7 @@ class GamePiece extends Component {
   }
 
   _onPanResponderGrant() {
-    this.state.dragging = true;
+    this.setState({dragging: true, canDrop: false});
     this.state.pan.setValue({x: 0, y: 0});
     Animated.timing(
       this.state.scale,
@@ -179,8 +179,7 @@ class GamePiece extends Component {
   }
 
   _onPanResponderRelease(event) {
-    this.state.dragging = false;
-    this.state.canDrop = false;
+    this.setState({dragging: false, canDrop: false});
     Animated.timing(this.state.pan, {
       toValue: { x: 0, y: 0 },
       duration: 200
@@ -215,12 +214,11 @@ class GamePiece extends Component {
 
     const squaresBelow = this._getLettersBelowPiece(event);
 
-    // we should only update state if required. it is an expensive operation that slows down motion.
+    // we should only update state if required. it is too expensive to render one very move event.
     const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
 
     if (canDrop !== this.state.canDrop) {
-      this.state.canDrop = canDrop;
-      this.forceUpdate();
+      this.setState({canDrop});
     }
   }
 }
