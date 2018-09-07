@@ -4,9 +4,10 @@ import {Col, Grid, Row} from "react-native-easy-grid";
 import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
 
-import GameBoardPath from './GameBoardPath';
+import GameBoardPathCreator from './GameBoardPathCreator';
 
 import { setDisplayWord } from "../ducks/gameDisplay";
+import { consumeSquare, clearConsumedSquares } from "../ducks/gameChanges";
 
 class GameBoard extends Component {
   constructor() {
@@ -14,9 +15,6 @@ class GameBoard extends Component {
     this.state = {
       // the most recent square added to the word
       currentSquare: {rowIndex: -1, columnIndex: -1},
-
-      // all squares used, including most recent
-      usedSquares: []
     };
 
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
@@ -41,7 +39,7 @@ class GameBoard extends Component {
           {board.rows.map((row, rowIndex) =>
             <Row key={rowIndex}>
               {row.map( (letter, columnIndex) => {
-                const squareUsed = this.state.usedSquares.reduce( (foundStatus, square) => {
+                const squareUsed = this.props.consumedSquares.reduce( (foundStatus, square) => {
                   return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
                 }, false);
                 let fillStyle = null;
@@ -61,14 +59,7 @@ class GameBoard extends Component {
             </Row>
           )}
         </Grid>
-        {this.state.usedSquares.map( (square, squareIndex, usedSquares) => {
-          const pair = usedSquares.slice(squareIndex - 1, squareIndex + 1);
-          if (pair.length > 1) {
-            return (
-              <GameBoardPath key={squareIndex} square1={pair[0]} square2={pair[1]}/>
-            );
-          } else return null;
-        })}
+        <GameBoardPathCreator />
       </View>
     );
   }
@@ -102,8 +93,9 @@ class GameBoard extends Component {
 
     this.setState({
       currentSquare: {rowIndex: square.rowIndex, columnIndex: square.columnIndex},
-      usedSquares: this.state.usedSquares.concat(square)
     });
+
+    this.props.consumeSquare(square);
 
     this.props.setDisplayWord(square.letter);
   }
@@ -123,7 +115,7 @@ class GameBoard extends Component {
 
     if (!squareValid) return;
 
-    const squareAvailable = this.state.usedSquares.reduce( (available, compareSquare ) => {
+    const squareAvailable = this.props.consumedSquares.reduce( (available, compareSquare ) => {
       const rowClash = (square.rowIndex === compareSquare.rowIndex);
       const columnClash = (square.columnIndex === compareSquare.columnIndex);
       const noClash = !(rowClash && columnClash);
@@ -132,10 +124,10 @@ class GameBoard extends Component {
 
     if (squareAvailable) {
       this.setState({
-        drawnWord: this.state.drawnWord + square.letter,
-        usedSquares: this.state.usedSquares.concat(square),
         currentSquare: square
       });
+
+      this.props.consumeSquare(square);
 
       this.props.setDisplayWord(this.props.display.displayWord + square.letter);
     }
@@ -173,12 +165,15 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     board: state.board,
-    display: state.display
+    display: state.display,
+    consumedSquares: state.gameChanges.consumedSquares
   }
 };
 
 const mapDispatchToProps = {
-  setDisplayWord
+  setDisplayWord,
+  consumeSquare,
+  clearConsumedSquares
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameBoard));

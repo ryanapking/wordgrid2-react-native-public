@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
+import PropTypes from 'prop-types';
 
 class GameBoardPath extends Component {
   constructor() {
@@ -61,6 +62,13 @@ class GameBoardPath extends Component {
     //if (theta < 0) theta = 360 + theta; // range [0, 360)
     return theta;
   }
+
+  static propTypes = {
+    square1: PropTypes.shape({
+      rowIndex: PropTypes.number,
+      columnIndex: PropTypes.number
+    })
+  };
 }
 
 const mapStateToProps = (state) => {
