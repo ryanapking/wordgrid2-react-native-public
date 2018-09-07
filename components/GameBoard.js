@@ -12,10 +12,6 @@ import { consumeSquare, clearConsumedSquares } from "../ducks/gameChanges";
 class GameBoard extends Component {
   constructor() {
     super();
-    this.state = {
-      // the most recent square added to the word
-      currentSquare: {rowIndex: -1, columnIndex: -1},
-    };
 
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
@@ -88,23 +84,15 @@ class GameBoard extends Component {
     return {...square, letter};
   }
 
-  _onPanResponderGrant(event) {
-    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
+  _checkSquareAdjacent(square) {
+    // if this is the first piece consumed, that's all we need to check
+    if (this.props.consumedSquares.length === 0) return true;
 
-    this.setState({
-      currentSquare: {rowIndex: square.rowIndex, columnIndex: square.columnIndex},
-    });
+    // checks a square against the previous square to determine if they are adjacent
+    const previousSquare = this.props.consumedSquares[this.props.consumedSquares.length - 1];
 
-    this.props.consumeSquare(square);
-
-    this.props.setDisplayWord(square.letter);
-  }
-
-  _onPanResponderMove(event) {
-    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
-
-    const columnDiff = Math.abs(this.state.currentSquare.columnIndex - square.columnIndex);
-    const rowDiff = Math.abs(this.state.currentSquare.rowIndex - square.rowIndex);
+    const columnDiff = Math.abs(previousSquare.columnIndex - square.columnIndex);
+    const rowDiff = Math.abs(previousSquare.rowIndex - square.rowIndex);
 
     const squareValid = (
       square.letter
@@ -113,7 +101,32 @@ class GameBoard extends Component {
       && (columnDiff + rowDiff !== 0)
     );
 
-    if (!squareValid) return;
+    return squareValid;
+  }
+
+  _onPanResponderGrant(event) {
+    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
+    const squareAdjacent = this._checkSquareAdjacent(square);
+
+    if (squareAdjacent) {
+      this.props.consumeSquare(square);
+      this.props.setDisplayWord(square.letter);
+    } else {
+      this.props.clearConsumedSquares();
+      this.props.consumeSquare(square)
+    }
+  }
+
+  _onPanResponderMove(event) {
+    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
+
+    // if we don't have a valid square, stop there
+    // square can be invalid if the point clicked is outside of the circle used to define its space
+    if (square.columnIndex === -1 || square.rowIndex === -1) return;
+
+    const squareAdjacent = (this._checkSquareAdjacent(square));
+
+    if (!squareAdjacent) return;
 
     const squareAvailable = this.props.consumedSquares.reduce( (available, compareSquare ) => {
       const rowClash = (square.rowIndex === compareSquare.rowIndex);
@@ -123,12 +136,7 @@ class GameBoard extends Component {
     }, true);
 
     if (squareAvailable) {
-      this.setState({
-        currentSquare: square
-      });
-
       this.props.consumeSquare(square);
-
       this.props.setDisplayWord(this.props.display.displayWord + square.letter);
     }
   }

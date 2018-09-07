@@ -130,11 +130,11 @@ class GamePiece extends Component {
       const currentMiddlePointX = elementX + point.x;
       const currentMiddlePointY = elementY + point.y;
 
-      const maxRowDiff = this.props.display.boardLocation.rowHeight / 2;
-      const maxColumnDiff = this.props.display.boardLocation.columnWidth / 2;
+      const maxRowDiff = this.props.boardLocation.rowHeight / 2;
+      const maxColumnDiff = this.props.boardLocation.columnWidth / 2;
 
       // compare point to row bounds and return row index
-      const row = this.props.display.boardLocation.rowMidPoints.reduce( (foundRow, midPointY, index ) => {
+      const row = this.props.boardLocation.rowMidPoints.reduce( (foundRow, midPointY, index ) => {
         const rowDiff = Math.abs(midPointY - currentMiddlePointY);
         if ( rowDiff < maxRowDiff ) {
           return index;
@@ -144,7 +144,7 @@ class GamePiece extends Component {
       }, -1 );
 
       // compare point to column bounds and return column index
-      const column = this.props.display.boardLocation.columnMidPoints.reduce( (foundColumn, midPointX, index) => {
+      const column = this.props.boardLocation.columnMidPoints.reduce( (foundColumn, midPointX, index) => {
         const columnDiff = Math.abs(midPointX - currentMiddlePointX);
         if ( columnDiff < maxColumnDiff ) {
           return index;
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    display: state.display,
+    boardLocation: state.display.boardLocation,
     board: state.board
   };
 };
