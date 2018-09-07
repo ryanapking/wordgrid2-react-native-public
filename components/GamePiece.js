@@ -18,23 +18,27 @@ class GamePiece extends Component {
       // used for styling the current piece
       dragging: false,
       canDrop: false,
-
-      // height of the GamePiece, before scaling
-      baseHeight: 0,
-      baseWidth: 0,
-
-      // height of the GamePiece after scaling
-      currentHeight: 0,
-      currentWidth: 0,
-
-      // middle points of the current GamePiece squares that contain letters
-      relativeMiddlePoints: []
     };
+
+    // height of the GamePiece, before scaling
+    this.baseSize = {
+      width: 0,
+      height: 0,
+    };
+
+    // height of the GamePiece after scaling
+    this.currentSize = {
+      width: 0,
+      height: 0
+    };
+
+    // middle points of the current GamePiece squares that contain letters
+    this.relativeMiddlePoints = [];
 
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
     this._onPanResponderRelease = this._onPanResponderRelease.bind(this);
-    this._getLettersBelowPiece = this._getLettersBelowPiece.bind(this);
+    this._getSquaresBelowPiece = this._getSquaresBelowPiece.bind(this);
   }
 
   componentWillMount() {
@@ -87,17 +91,16 @@ class GamePiece extends Component {
     // measure the size of the base view, which does not scale with the visible game piece
     // when the piece scales, this is our reference point to calculate
     this.baseView.measureInWindow((x, y, width, height) => {
-      if (width !== this.state.baseWidth || height !== this.state.baseHeight) {
-        this.setState({baseWidth: width, baseHeight: height})
-      }
+      this.baseSize = {width, height};
     });
   }
 
   _setCurrentSize(currentScale) {
     // use the base piece size and current scale to determine the piece's current size
-    const currentHeight = this.state.baseHeight * currentScale.value;
-    const currentWidth = this.state.baseWidth * currentScale.value;
-    this.setState({currentHeight, currentWidth}, this._setRelativeMiddlePoints);
+    const height = this.baseSize.height * currentScale.value;
+    const width = this.baseSize.width * currentScale.value;
+    this.currentSize = {width, height};
+    this._setRelativeMiddlePoints();
   }
 
   _setRelativeMiddlePoints() {
@@ -106,23 +109,23 @@ class GamePiece extends Component {
     this.props.piece.forEach( (row, rowIndex ) => {
       row.forEach( (letter, columnIndex) => {
         if (letter) {
-          const x = ((columnIndex) * (this.state.currentWidth / 4)) + (this.state.currentWidth / 8);
-          const y = ((rowIndex) * (this.state.currentHeight / 4)) + (this.state.currentHeight / 8);
+          const x = ((columnIndex) * (this.currentSize.width / 4)) + (this.currentSize.width / 8);
+          const y = ((rowIndex) * (this.currentSize.height / 4)) + (this.currentSize.height / 8);
           relativeMiddlePoints.push({x, y, pieceRowIndex: rowIndex, pieceColumnIndex: columnIndex, letter});
         }
       })
     });
-    this.setState({relativeMiddlePoints});
+    this.relativeMiddlePoints = relativeMiddlePoints;
   }
 
-  _getLettersBelowPiece(event) {
+  _getSquaresBelowPiece(event) {
     // set the x and y coordinates of the piece being dragged
     // locationX and locationY are set based on initial size, so the distances must be scaled
     const elementX = event.nativeEvent.pageX - (event.nativeEvent.locationX * this.state.scale._value);
     const elementY = event.nativeEvent.pageY - (event.nativeEvent.locationY * this.state.scale._value);
 
     // check beneath all piece squares containing letters
-    const squaresBelow = this.state.relativeMiddlePoints.map( (point) => {
+    const squaresBelow = this.relativeMiddlePoints.map( (point) => {
       // set the middle point as an absolute board position
       const currentMiddlePointX = elementX + point.x;
       const currentMiddlePointY = elementY + point.y;
@@ -191,7 +194,7 @@ class GamePiece extends Component {
       { toValue: 1, duration: 200 }
     ).start();
 
-    const squaresBelow = this._getLettersBelowPiece(event);
+    const squaresBelow = this._getSquaresBelowPiece(event);
     const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
 
     // console.log('squaresBelow: ', squaresBelow);
@@ -214,7 +217,7 @@ class GamePiece extends Component {
       dy: this.state.pan.y,
     }])(event, gestureState);
 
-    const squaresBelow = this._getLettersBelowPiece(event);
+    const squaresBelow = this._getSquaresBelowPiece(event);
 
     // we should only update state if required. it is too expensive to render one very move event.
     const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
