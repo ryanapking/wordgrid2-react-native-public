@@ -1,5 +1,24 @@
 // available actions
-export const PLACE_PIECE = 'wordgrid2/board/PLACE_PIECE';
+export const PLACE_PIECE = 'wordgrid2/gameSource/PLACE_PIECE';
+
+// reducer
+export default function reducer(state = initialState, action) {
+  switch (action.type) {
+    case PLACE_PIECE:
+      return {...state, rows: action.rows, pieces: [...state.pieces.slice(0, action.pieceIndex), ...state.pieces.slice(action.pieceIndex + 1), []]};
+    default:
+      return state;
+  }
+}
+
+// action creators
+export function placePiece(rows = [], pieceIndex) {
+  return {
+    type: PLACE_PIECE,
+    rows: rows,
+    pieceIndex
+  }
+}
 
 // initial state
 const initialState = {
@@ -36,22 +55,3 @@ const initialState = {
     ]
   ]
 };
-
-// reducer
-export default function reducer(state = initialState, action) {
-  switch (action.type) {
-    case PLACE_PIECE:
-      return {...state, rows: action.rows, pieces: [...state.pieces.slice(0, action.pieceIndex), ...state.pieces.slice(action.pieceIndex + 1), []]};
-    default:
-      return state;
-  }
-}
-
-// action creators
-export function placePiece(rows = [], pieceIndex) {
-  return {
-    type: PLACE_PIECE,
-    rows: rows,
-    pieceIndex
-  }
-}

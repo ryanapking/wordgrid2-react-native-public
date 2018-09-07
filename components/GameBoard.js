@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-native';
 
 import GameBoardPath from './GameBoardPath';
 
-import { setDisplayWord } from "../ducks/display";
+import { setDisplayWord } from "../ducks/gameDisplay";
 
 class GameBoard extends Component {
   constructor() {
@@ -77,14 +77,14 @@ class GameBoard extends Component {
     // to better enable diagonal movements, we define a circle 85% of its max possible size, to cut off the corners
     // kinda like a connect four board
     // we could use an octagon, but this math is simpler
-    const maxDistance = this.props.display.gameBoard.columnWidth / 2 * .85;
+    const maxDistance = this.props.display.boardLocation.columnWidth / 2 * .85;
 
     const nullIndex = -1;
     const nullSquare = {rowIndex: nullIndex, columnIndex: nullIndex};
 
     // reduce the two midpoint arrays into a single set of coordinates at the given point
-    const square = this.props.display.gameBoard.rowMidPoints.reduce( (foundSquare, midPointY, rowIndex) => {
-      const columnIndex = this.props.display.gameBoard.columnMidPoints.reduce( (foundColumnIndex, midPointX, columnIndex) => {
+    const square = this.props.display.boardLocation.rowMidPoints.reduce( (foundSquare, midPointY, rowIndex) => {
+      const columnIndex = this.props.display.boardLocation.columnMidPoints.reduce( (foundColumnIndex, midPointX, columnIndex) => {
         const dist = Math.hypot(x - midPointX, y - midPointY);
         return dist < maxDistance ? columnIndex : foundColumnIndex;
       }, nullIndex);

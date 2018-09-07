@@ -1,10 +1,10 @@
 // available actions
-export const DISPLAY_GAMEBOARD_SET = 'wordgrid2/display/DISPLAY_GAMEBOARD_SET';
-export const DISPLAY_SET_SPELLED_WORD = 'wordgrid2/display/DISPLAY_SET_SPELLED_WORD';
+export const DISPLAY_GAMEBOARD_SET = 'wordgrid2/gameDisplay/DISPLAY_GAMEBOARD_SET';
+export const DISPLAY_SET_SPELLED_WORD = 'wordgrid2/gameDisplay/DISPLAY_SET_SPELLED_WORD';
 
 // initial state
 const initialState = {
-  gameBoard: {
+  boardLocation: {
     // game board variables
     x: 0,
     y: 0,
@@ -23,7 +23,7 @@ const initialState = {
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case DISPLAY_GAMEBOARD_SET:
-      return {...state, gameBoard: action.gameBoard}
+      return {...state, boardLocation: action.boardLocation}
     case DISPLAY_SET_SPELLED_WORD:
       return {...state, displayWord: action.displayWord}
     default:
@@ -46,7 +46,7 @@ export function setGameboardLocation(x, y, width, height) {
 
   return {
     type: DISPLAY_GAMEBOARD_SET,
-    gameBoard: { x, y, width, height, rowMidPoints, columnMidPoints, rowHeight, columnWidth }
+    boardLocation: { x, y, width, height, rowMidPoints, columnMidPoints, rowHeight, columnWidth }
   };
 }
 

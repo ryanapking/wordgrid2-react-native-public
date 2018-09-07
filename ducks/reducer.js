@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
 import login from './login';
-import board from './board';
-import display from './display';
+import board from './gameSource';
+import display from './gameDisplay';
 
 // reducer
 export default combineReducers({

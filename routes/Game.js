@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-native';
 import GamePieceSection from '../components/GamePieceSection';
 import GameBoard from '../components/GameBoard';
 
-import { setGameboardLocation } from "../ducks/display";
+import { setGameboardLocation } from "../ducks/gameDisplay";
 
 
 class Game extends Component {

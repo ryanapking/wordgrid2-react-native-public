@@ -4,7 +4,7 @@ import { Grid, Row, Col } from 'react-native-easy-grid';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
-import { placePiece } from '../ducks/board';
+import { placePiece } from '../ducks/gameSource';
 
 class GamePiece extends Component {
 
@@ -65,6 +65,7 @@ class GamePiece extends Component {
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.square, dragTransforms]}
+          rev={animatedView => this.animatedView = animatedView}
         >
           <Grid pointerEvents={'none'}>
             {this.props.piece.map( (pieceRow, index) =>
@@ -83,7 +84,8 @@ class GamePiece extends Component {
   }
 
   _onLayout() {
-    // when the piece scales, this is our reference point
+    // measure the size of the base view, which does not scale with the visible game piece
+    // when the piece scales, this is our reference point to calculate
     this.baseView.measureInWindow((x, y, width, height) => {
       if (width !== this.state.baseWidth || height !== this.state.baseHeight) {
         this.setState({baseWidth: width, baseHeight: height})
@@ -125,11 +127,11 @@ class GamePiece extends Component {
       const currentMiddlePointX = elementX + point.x;
       const currentMiddlePointY = elementY + point.y;
 
-      const maxRowDiff = this.props.display.gameBoard.rowHeight / 2;
-      const maxColumnDiff = this.props.display.gameBoard.columnWidth / 2;
+      const maxRowDiff = this.props.display.boardLocation.rowHeight / 2;
+      const maxColumnDiff = this.props.display.boardLocation.columnWidth / 2;
 
       // compare point to row bounds and return row index
-      const row = this.props.display.gameBoard.rowMidPoints.reduce( ( foundRow, midPointY, index ) => {
+      const row = this.props.display.boardLocation.rowMidPoints.reduce( (foundRow, midPointY, index ) => {
         const rowDiff = Math.abs(midPointY - currentMiddlePointY);
         if ( rowDiff < maxRowDiff ) {
           return index;
@@ -139,7 +141,7 @@ class GamePiece extends Component {
       }, -1 );
 
       // compare point to column bounds and return column index
-      const column = this.props.display.gameBoard.columnMidPoints.reduce( ( foundColumn, midPointX, index) => {
+      const column = this.props.display.boardLocation.columnMidPoints.reduce( (foundColumn, midPointX, index) => {
         const columnDiff = Math.abs(midPointX - currentMiddlePointX);
         if ( columnDiff < maxColumnDiff ) {
           return index;

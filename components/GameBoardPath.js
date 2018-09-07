@@ -22,7 +22,7 @@ class GameBoardPath extends Component {
     const styles = StyleSheet.create({
       pretty: {
         left: midpoint.x - (length / 2),
-        top: midpoint.y - ( height / 2),
+        top: midpoint.y - (height / 2),
         width: length,
         transform: [{rotate: angle + 'deg'}],
         height: height,
@@ -38,8 +38,8 @@ class GameBoardPath extends Component {
   }
 
   _getRelativeCoordinates(rowIndex, columnIndex) {
-    const y = (rowIndex + .5) * this.props.display.gameBoard.rowHeight;
-    const x = (columnIndex + .5) * this.props.display.gameBoard.columnWidth;
+    const y = (rowIndex + .5) * this.props.display.boardLocation.rowHeight;
+    const x = (columnIndex + .5) * this.props.display.boardLocation.columnWidth;
     return { x, y };
   }
 
