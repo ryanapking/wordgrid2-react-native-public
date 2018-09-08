@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-native';
 
 import GameBoardPathCreator from './GameBoardPathCreator';
 
-import { consumeSquare, clearConsumedSquares } from "../ducks/gameData";
+import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
 
 class GameBoard extends Component {
   constructor() {
@@ -103,13 +103,44 @@ class GameBoard extends Component {
     return squareValid;
   }
 
+  _checkSquareAvailable(square) {
+    return this.props.consumedSquares.reduce( (available, compareSquare ) => {
+      const rowClash = (square.rowIndex === compareSquare.rowIndex);
+      const columnClash = (square.columnIndex === compareSquare.columnIndex);
+      return (available && (!rowClash || !columnClash));
+    }, true);
+  }
+
+  _checkIfLastSquarePlayed(square) {
+    // simple function, but it's long and ugly
+    if (this.props.consumedSquares.length < 1) {
+      return false;
+    } else {
+      return (
+        square.rowIndex === this.props.consumedSquares[this.props.consumedSquares.length - 1].rowIndex
+        && square.columnIndex === this.props.consumedSquares[this.props.consumedSquares.length - 1].columnIndex
+      );
+    }
+  }
+
+  _checkIfNextToLastSquarePlayed(square) {
+    // same as above... simple but long and ugly
+    if (this.props.consumedSquares.length < 2) {
+      return false;
+    } else {
+      return (
+        square.rowIndex === this.props.consumedSquares[this.props.consumedSquares.length - 2].rowIndex
+        && square.columnIndex === this.props.consumedSquares[this.props.consumedSquares.length - 2].columnIndex
+      );
+    }
+  }
+
   _onPanResponderGrant(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
-    const squareAdjacent = this._checkSquareAdjacent(square);
 
-    if (squareAdjacent) {
+    if (this._checkSquareAdjacent(square)) {
       this.props.consumeSquare(square);
-    } else {
+    } else if (!this._checkIfLastSquarePlayed(square)) {
       this.props.clearConsumedSquares();
       this.props.consumeSquare(square)
     }
@@ -118,22 +149,14 @@ class GameBoard extends Component {
   _onPanResponderMove(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
 
-    // if we don't have a valid square, stop there
-    // square can be invalid if the point clicked is outside of the circle used to define its space
-    if (square.columnIndex === -1 || square.rowIndex === -1) return;
-
-    const squareAdjacent = (this._checkSquareAdjacent(square));
-
-    if (!squareAdjacent) return;
-
-    const squareAvailable = this.props.consumedSquares.reduce( (available, compareSquare ) => {
-      const rowClash = (square.rowIndex === compareSquare.rowIndex);
-      const columnClash = (square.columnIndex === compareSquare.columnIndex);
-      const noClash = !(rowClash && columnClash);
-      return (available && noClash);
-    }, true);
-
-    if (squareAvailable) {
+    if (square.columnIndex === -1 || square.rowIndex === -1) {
+      // do nothing if event is not on a valid square
+      // note: square can be invalid if the point clicked is outside of the circle used to define its space
+      // this is no big deal in the current setup
+    } else if (this._checkIfNextToLastSquarePlayed(square)) {
+      // allows for backtracking while spelling a word
+      this.props.removeSquare();
+    } else if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
       this.props.consumeSquare(square);
     }
   }
@@ -177,6 +200,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   consumeSquare,
+  removeSquare,
   clearConsumedSquares
 };
 

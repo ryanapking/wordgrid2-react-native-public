@@ -1,6 +1,7 @@
 // available actions
 export const PLACE_PIECE = 'wordgrid2/gameData/PLACE_PIECE';
 export const CONSUME_SQUARE = 'wordgrid2/gameData/CONSUME_SQUARE';
+export const REMOVE_SQUARE = 'wordgrid2/gameData/REMOVE_SQUARE';
 export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES';
 
 // reducer
@@ -10,6 +11,8 @@ export default function reducer(state = initialState, action) {
       return {...state, rows: action.rows, pieces: [...state.pieces.slice(0, action.pieceIndex), ...state.pieces.slice(action.pieceIndex + 1), []]};
     case CONSUME_SQUARE:
       return {...state, consumedSquares: state.consumedSquares.concat(action.square)};
+    case REMOVE_SQUARE:
+      return {...state, consumedSquares: state.consumedSquares.slice(0, state.consumedSquares.length - 1)};
     case CLEAR_CONSUMED_SQUARES:
       return {...state, consumedSquares: []};
     default:
@@ -30,6 +33,12 @@ export function consumeSquare(square) {
   return {
     type: CONSUME_SQUARE,
     square
+  }
+}
+
+export function removeSquare() {
+  return {
+    type: REMOVE_SQUARE
   }
 }
 
