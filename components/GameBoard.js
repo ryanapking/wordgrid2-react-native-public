@@ -14,6 +14,7 @@ class GameBoard extends Component {
 
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
+    this._onPanResponderRelease = this._onPanResponderRelease.bind(this);
   }
 
   componentWillMount() {
@@ -22,6 +23,7 @@ class GameBoard extends Component {
       onMoveShouldSetPanResponderCapture: GameBoard._panResponderCaptureTrue,
       onPanResponderGrant: this._onPanResponderGrant,
       onPanResponderMove: this._onPanResponderMove,
+      onPanResponderRelease: this._onPanResponderRelease
     });
   }
 
@@ -93,14 +95,12 @@ class GameBoard extends Component {
     const columnDiff = Math.abs(previousSquare.columnIndex - square.columnIndex);
     const rowDiff = Math.abs(previousSquare.rowIndex - square.rowIndex);
 
-    const squareValid = (
+    return (
       square.letter
       && (rowDiff <= 1)
       && (columnDiff <= 1)
       && (columnDiff + rowDiff !== 0)
     );
-
-    return squareValid;
   }
 
   _checkSquareAvailable(square) {
@@ -158,6 +158,13 @@ class GameBoard extends Component {
       this.props.removeSquare();
     } else if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
       this.props.consumeSquare(square);
+    }
+  }
+
+  _onPanResponderRelease() {
+    console.log("release: ", this);
+    if (this.props.consumedSquares.length === 1) {
+      this.props.clearConsumedSquares();
     }
   }
 

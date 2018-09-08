@@ -14,7 +14,6 @@ class Game extends Component {
   render() {
     const displayWord = this.props.consumedSquares.reduce( (word, square) => word + square.letter, "");
 
-    console.log(displayWord);
     return (
       <Container>
         <View><Text>{displayWord}</Text></View>
@@ -41,8 +40,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  const gameID = ownProps.match.params.gameID;
   return {
+    gameID: gameID,
+    game: state.gameData.games.byID[gameID],
     display: state.display,
     consumedSquares: state.gameData.consumedSquares
   };

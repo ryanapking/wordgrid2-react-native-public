@@ -82,5 +82,12 @@ const initialState = {
       ["t", "", "", ""],
       ["k", "", "", ""],
     ]
-  ]
+  ],
+  games: {
+    byID: {
+      1: "hello",
+      2: "howdy"
+    },
+    allIDs: ["1", "2"],
+  },
 };

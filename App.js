@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
-import { NativeRouter, Route, Link } from 'react-router-native'
+import { NativeRouter, Route, Link, Redirect } from 'react-router-native'
 import { Grid, Row, Col } from 'react-native-easy-grid';
 
 import Login from './routes/Login';
+import Games from './routes/Games';
 import Game from './routes/Game';
 import Home from './routes/Home';
 import configureStore from './store/configureStore';
@@ -28,6 +29,11 @@ export default class App extends Component {
                   <Text>Home</Text>
                 </Link>
                 <Link
+                  to="/games"
+                  style={styles.navItem}>
+                  <Text>Games</Text>
+                </Link>
+                <Link
                   to="/game"
                   underlayColor='#f0f4f7'
                   style={styles.navItem}>
@@ -41,10 +47,12 @@ export default class App extends Component {
                 </Link>
               </Row>
               <Row size={95}>
-                <Route path="/home" component={Home}/>
-                <Route exact path="/" component={Game}/>
+                <Route exact path="/" component={Home}/>
+                <Route path="/game/:gameID" component={Game}/>
                 <Route path="/login" component={Login}/>
+                <Route path="/games" component={Games}/>
               </Row>
+              {/*<Redirect to="/game" />*/}
             </Col>
           </Grid>
         </NativeRouter>
