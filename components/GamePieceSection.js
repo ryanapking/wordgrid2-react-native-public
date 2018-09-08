@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    pieces: state.board.pieces
+    pieces: state.gameData.pieces
   };
 };
 

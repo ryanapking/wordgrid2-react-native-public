@@ -4,7 +4,7 @@ import { Grid, Row, Col } from 'react-native-easy-grid';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
-import { placePiece } from '../ducks/gameSource';
+import { placePiece } from '../ducks/gameData';
 
 class GamePiece extends Component {
 
@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    boardLocation: state.display.boardLocation,
-    board: state.board
+    boardLocation: state.gameDisplay.boardLocation,
+    board: state.gameData
   };
 };
 

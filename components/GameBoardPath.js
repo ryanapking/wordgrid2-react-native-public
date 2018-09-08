@@ -73,7 +73,7 @@ class GameBoardPath extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    display: state.display
+    display: state.gameDisplay
   }
 };
 

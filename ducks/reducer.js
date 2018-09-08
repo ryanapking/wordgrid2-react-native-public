@@ -1,14 +1,12 @@
 import { combineReducers } from 'redux';
 
 import login from './login';
-import board from './gameSource';
-import display from './gameDisplay';
-import gameChanges from './gameChanges';
+import gameData from './gameData';
+import gameDisplay from './gameDisplay';
 
 // reducer
 export default combineReducers({
   login: login,
-  board: board,
-  display: display,
-  gameChanges: gameChanges
+  gameDisplay: gameDisplay,
+  gameData: gameData
 });

@@ -12,9 +12,12 @@ import { setGameboardLocation } from "../ducks/gameDisplay";
 
 class Game extends Component {
   render() {
+    const displayWord = this.props.consumedSquares.reduce( (word, square) => word + square.letter, "");
+
+    console.log(displayWord);
     return (
       <Container>
-        <View><Text>{this.props.display.displayWord}</Text></View>
+        <View><Text>{displayWord}</Text></View>
         <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <GameBoard />
         </View>
@@ -40,7 +43,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    display: state.display
+    display: state.display,
+    consumedSquares: state.gameData.consumedSquares
   };
 };
 

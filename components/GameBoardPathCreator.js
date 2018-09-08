@@ -31,7 +31,7 @@ class GameBoardPathCreator extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    consumedSquares: state.gameChanges.consumedSquares
+    consumedSquares: state.gameData.consumedSquares
   }
 };
 

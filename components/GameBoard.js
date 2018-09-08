@@ -6,8 +6,7 @@ import { withRouter } from 'react-router-native';
 
 import GameBoardPathCreator from './GameBoardPathCreator';
 
-import { setDisplayWord } from "../ducks/gameDisplay";
-import { consumeSquare, clearConsumedSquares } from "../ducks/gameChanges";
+import { consumeSquare, clearConsumedSquares } from "../ducks/gameData";
 
 class GameBoard extends Component {
   constructor() {
@@ -110,7 +109,6 @@ class GameBoard extends Component {
 
     if (squareAdjacent) {
       this.props.consumeSquare(square);
-      this.props.setDisplayWord(square.letter);
     } else {
       this.props.clearConsumedSquares();
       this.props.consumeSquare(square)
@@ -137,7 +135,6 @@ class GameBoard extends Component {
 
     if (squareAvailable) {
       this.props.consumeSquare(square);
-      this.props.setDisplayWord(this.props.display.displayWord + square.letter);
     }
   }
 
@@ -172,14 +169,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    board: state.board,
-    display: state.display,
-    consumedSquares: state.gameChanges.consumedSquares
+    board: state.gameData,
+    display: state.gameDisplay,
+    consumedSquares: state.gameData.consumedSquares
   }
 };
 
 const mapDispatchToProps = {
-  setDisplayWord,
   consumeSquare,
   clearConsumedSquares
 };
