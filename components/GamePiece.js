@@ -207,7 +207,7 @@ class GamePiece extends Component {
         updatedRows[square.boardRowIndex][square.boardColumnIndex] = square.letter;
       });
 
-      this.props.placePiece(updatedRows, this.props.pieceIndex);
+      this.props.placePiece(updatedRows, this.props.pieceIndex, this.props.gameID);
     }
   }
 
@@ -245,10 +245,12 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  const gameID = ownProps.match.params.gameID;
   return {
+    gameID: gameID,
     boardLocation: state.gameDisplay.boardLocation,
-    board: state.gameData
+    board: state.gameData.games.byID[gameID]
   };
 };
 

@@ -52,7 +52,6 @@ export default class App extends Component {
                 <Route path="/login" component={Login}/>
                 <Route path="/games" component={Games}/>
               </Row>
-              {/*<Redirect to="/game" />*/}
             </Col>
           </Grid>
         </NativeRouter>

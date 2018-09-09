@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { Redirect } from 'react-router-native';
 
 export default class App extends Component {
   render() {
@@ -11,7 +12,7 @@ export default class App extends Component {
         {/*<View style={styles.triangleCorner1}></View>*/}
 
         <View style={styles.ryan}></View>
-
+        <Redirect to="/games" />
       </View>
     );
   }

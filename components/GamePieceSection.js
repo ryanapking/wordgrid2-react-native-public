@@ -40,9 +40,9 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   return {
-    pieces: state.gameData.pieces
+    pieces: state.gameData.games.byID[ownProps.match.params.gameID].pieces
   };
 };
 

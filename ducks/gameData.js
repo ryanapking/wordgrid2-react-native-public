@@ -8,7 +8,8 @@ export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case PLACE_PIECE:
-      return {...state, rows: action.rows, pieces: [...state.pieces.slice(0, action.pieceIndex), ...state.pieces.slice(action.pieceIndex + 1), []]};
+
+      return gameReducer(state, action);
     case CONSUME_SQUARE:
       return {...state, consumedSquares: state.consumedSquares.concat(action.square)};
     case REMOVE_SQUARE:
@@ -20,12 +21,37 @@ export default function reducer(state = initialState, action) {
   }
 }
 
+function gameReducer(state, action) {
+  const rows = action.rows;
+  const games = state.games;
+  const byID = state.games.byID;
+  const game = state.games.byID[action.gameID];
+  console.log('1: ', rows);
+  console.log('2: ', games);
+  console.log('3: ', byID);
+  console.log('id: ', action.gameID);
+  console.log('4: ', game);
+  const pieces = [...game.pieces.slice(0, action.pieceIndex), ...game.pieces.slice(action.pieceIndex + 1), []];
+  console.log('pieces: ', pieces);
+  return {
+    ...state,
+    games: {
+      ...games,
+      byID: {
+        ...byID,
+        [action.gameID]: {...game, rows, pieces}
+      }
+    }
+  };
+}
+
 // action creators
-export function placePiece(rows = [], pieceIndex) {
+export function placePiece(rows = [], pieceIndex, gameID) {
   return {
     type: PLACE_PIECE,
     rows: rows,
-    pieceIndex
+    pieceIndex,
+    gameID
   }
 }
 
@@ -49,6 +75,76 @@ export function clearConsumedSquares() {
 }
 
 // initial state
+const game1 = {
+  rows: [
+    ["g", "a", "m", "e", "", "o", "n", "e", "", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+  ],
+  pieces: [
+    [
+      ["p", "", "", ""],
+      ["l", "", "", ""],
+      ["u", "", "", ""],
+      ["g", "", "", ""],
+    ],
+    [
+      ["", "o", "", ""],
+      ["", "q", "", ""],
+      ["", "z", "", ""],
+      ["", "c", "", ""],
+    ],
+    [
+      ["p", "o", "", ""],
+      ["p", "", "", ""],
+      ["t", "", "", ""],
+      ["k", "", "", ""],
+    ]
+  ]
+}
+
+const game2 = {
+  rows: [
+    ["g", "a", "m", "e", "", "t", "w", "o", "", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
+  ],
+  pieces: [
+    [
+      ["p", "", "", ""],
+      ["l", "", "", ""],
+      ["u", "", "", ""],
+      ["g", "", "", ""],
+    ],
+    [
+      ["", "o", "", ""],
+      ["", "q", "", ""],
+      ["", "z", "", ""],
+      ["", "c", "", ""],
+    ],
+    [
+      ["p", "o", "", ""],
+      ["p", "", "", ""],
+      ["t", "", "", ""],
+      ["k", "", "", ""],
+    ]
+  ]
+}
+
 const initialState = {
   consumedSquares: [],
   rows: [
@@ -85,9 +181,12 @@ const initialState = {
   ],
   games: {
     byID: {
-      1: "hello",
-      2: "howdy"
+      1: game1,
+      2: game2
     },
-    allIDs: ["1", "2"],
+    allIDs: [
+      {id: "1", name:"nicholas"},
+      {id: "2", name: "cage" }
+    ],
   },
 };

@@ -197,9 +197,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  const gameID = ownProps.match.params.gameID;
   return {
-    board: state.gameData,
+    board: state.gameData.games.byID[gameID],
     display: state.gameDisplay,
     consumedSquares: state.gameData.consumedSquares
   }
