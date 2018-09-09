@@ -44,14 +44,11 @@ export const game2Local = sourceToLocal(game2Source);
 
 function sourceToLocal(source) {
   const current = source.history[source.history.length - 1];
-  const rows = boardStringToArray(current.b);
-  const p1 = current.p1.map( (piece) => pieceStringToArray(piece));
-  const p2 = current.p2.map( (piece) => pieceStringToArray(piece));
   return {
     consumedSquares: [],
-    rows,
-    me: p1,
-    them: p2
+    rows: boardStringToArray(current.b),
+    me: current.p1.map( (piece) => pieceStringToArray(piece)),
+    them: current.p2.map( (piece) => pieceStringToArray(piece))
   }
 }
 
@@ -75,4 +72,18 @@ function boardStringToArray(boardSource) {
       .split("")
       .map( letter => letter === " " ? "" : letter);
   });
+}
+
+function localToSource(local) {
+  return {
+    b: arrayToString(local.rows),
+    p1: local.me.map( (piece) => arrayToString(piece) ),
+    p2: local.them.map( (piece) => arrayToString(piece) )
+  }
+}
+
+function arrayToString(array) {
+  return array.map( (row) => {
+    return row.map( letter => letter === "" ? " " : letter).join("");
+  }).join("");
 }
