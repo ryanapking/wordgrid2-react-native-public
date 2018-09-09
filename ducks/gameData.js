@@ -1,3 +1,5 @@
+import * as sampleData from './sampleData';
+
 // available actions
 export const PLACE_PIECE = 'wordgrid2/gameData/PLACE_PIECE';
 export const CONSUME_SQUARE = 'wordgrid2/gameData/CONSUME_SQUARE';
@@ -149,7 +151,7 @@ const game1 = {
       ["k", "", "", ""],
     ]
   ]
-}
+};
 
 const game2 = {
   consumedSquares: [],
@@ -185,15 +187,21 @@ const game2 = {
       ["k", "", "", ""],
     ]
   ]
-}
+};
 
 const initialState = {
+  sourceDataByID: {
+    1: sampleData.game1Source,
+    2: sampleData.game2Source
+  },
   byID: {
-    1: game1,
-    2: game2
+    1: sampleData.game1Local,
+    2: sampleData.game2Local
   },
   allIDs: [
     {id: "1", name:"nicholas"},
     {id: "2", name: "cage" }
   ],
 };
+
+console.log('initial state: ', initialState);
