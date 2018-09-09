@@ -26,12 +26,12 @@ function placePieceReducer(state, action) {
   const byID = state.byID;
   const game = state.byID[action.gameID];
   const rows = action.rows;
-  const pieces = [...game.pieces.slice(0, action.pieceIndex), ...game.pieces.slice(action.pieceIndex + 1), []];
+  const me = [...game.me.slice(0, action.pieceIndex), ...game.me.slice(action.pieceIndex + 1), []];
   return {
     ...state,
     byID: {
       ...byID,
-      [action.gameID]: {...game, rows, pieces}
+      [action.gameID]: {...game, rows, me}
     }
   };
 }
@@ -117,78 +117,6 @@ export function clearConsumedSquares(gameID) {
 }
 
 // initial state
-const game1 = {
-  consumedSquares: [],
-  rows: [
-    ["g", "a", "m", "e", "", "o", "n", "e", "", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-  ],
-  pieces: [
-    [
-      ["p", "", "", ""],
-      ["l", "", "", ""],
-      ["u", "", "", ""],
-      ["g", "", "", ""],
-    ],
-    [
-      ["", "o", "", ""],
-      ["", "q", "", ""],
-      ["", "z", "", ""],
-      ["", "c", "", ""],
-    ],
-    [
-      ["p", "o", "", ""],
-      ["p", "", "", ""],
-      ["t", "", "", ""],
-      ["k", "", "", ""],
-    ]
-  ]
-};
-
-const game2 = {
-  consumedSquares: [],
-  rows: [
-    ["g", "a", "m", "e", "", "t", "w", "o", "", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-    ["a", "b", "c", "", "", "d", "e", "f", "g", ""],
-  ],
-  pieces: [
-    [
-      ["p", "", "", ""],
-      ["l", "", "", ""],
-      ["u", "", "", ""],
-      ["g", "", "", ""],
-    ],
-    [
-      ["", "o", "", ""],
-      ["", "q", "", ""],
-      ["", "z", "", ""],
-      ["", "c", "", ""],
-    ],
-    [
-      ["p", "o", "", ""],
-      ["p", "", "", ""],
-      ["t", "", "", ""],
-      ["k", "", "", ""],
-    ]
-  ]
-};
-
 const initialState = {
   sourceDataByID: {
     1: sampleData.game1Source,

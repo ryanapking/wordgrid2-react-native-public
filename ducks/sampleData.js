@@ -59,7 +59,10 @@ function pieceStringToArray(pieceSource) {
   return Array(4).fill(1).map( (val, index ) => {
     const start = index * 4;
     const end = start + 4;
-    return pieceSource.slice(start, end).split("");
+    return pieceSource
+      .slice(start, end)
+      .split("")
+      .map( letter => letter === " " ? "" : letter);
   });
 }
 
@@ -67,6 +70,9 @@ function boardStringToArray(boardSource) {
   return Array(10).fill(1).map( (val, index) => {
     const start = index * 10;
     const end = start + 10;
-    return boardSource.slice(start, end).split("");
+    return boardSource
+      .slice(start, end)
+      .split("")
+      .map( letter => letter === " " ? "" : letter);
   });
 }
