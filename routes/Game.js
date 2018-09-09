@@ -12,7 +12,7 @@ import { setGameboardLocation } from "../ducks/gameDisplay";
 
 class Game extends Component {
   render() {
-    const displayWord = this.props.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
 
     return (
       <Container>
@@ -44,9 +44,8 @@ const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;
   return {
     gameID: gameID,
-    game: state.gameData.games.byID[gameID],
+    game: state.gameData.byID[gameID],
     display: state.display,
-    consumedSquares: state.gameData.consumedSquares
   };
 };
 

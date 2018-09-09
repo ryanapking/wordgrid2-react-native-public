@@ -29,9 +29,10 @@ class GameBoardPathCreator extends Component {
 
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  const gameID = ownProps.match.params.gameID;
   return {
-    consumedSquares: state.gameData.consumedSquares
+    consumedSquares: state.gameData.byID[ownProps.match.params.gameID].consumedSquares
   }
 };
 

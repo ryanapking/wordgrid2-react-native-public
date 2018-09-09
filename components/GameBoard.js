@@ -28,15 +28,17 @@ class GameBoard extends Component {
   }
 
   render() {
-    const { board } = this.props;
+    const { game } = this.props;
+
+    console.log('props: ', this.props);
 
     return(
       <View style={{width: "100%", height: "100%"}}>
         <Grid {...this.panResponder.panHandlers}>
-          {board.rows.map((row, rowIndex) =>
+          {game.rows.map((row, rowIndex) =>
             <Row key={rowIndex}>
               {row.map( (letter, columnIndex) => {
-                const squareUsed = this.props.consumedSquares.reduce( (foundStatus, square) => {
+                const squareUsed = this.props.game.consumedSquares.reduce( (foundStatus, square) => {
                   return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
                 }, false);
                 let fillStyle = null;
@@ -80,17 +82,17 @@ class GameBoard extends Component {
     }, nullSquare);
 
     const onBoard = (square.rowIndex >= 0 && square.columnIndex >= 0);
-    const letter = onBoard ? this.props.board.rows[square.rowIndex][square.columnIndex] : null;
+    const letter = onBoard ? this.props.game.rows[square.rowIndex][square.columnIndex] : null;
 
     return {...square, letter};
   }
 
   _checkSquareAdjacent(square) {
     // if this is the first piece consumed, that's all we need to check
-    if (this.props.consumedSquares.length === 0) return true;
+    if (this.props.game.consumedSquares.length === 0) return true;
 
     // checks a square against the previous square to determine if they are adjacent
-    const previousSquare = this.props.consumedSquares[this.props.consumedSquares.length - 1];
+    const previousSquare = this.props.game.consumedSquares[this.props.game.consumedSquares.length - 1];
 
     const columnDiff = Math.abs(previousSquare.columnIndex - square.columnIndex);
     const rowDiff = Math.abs(previousSquare.rowIndex - square.rowIndex);
@@ -104,7 +106,7 @@ class GameBoard extends Component {
   }
 
   _checkSquareAvailable(square) {
-    return this.props.consumedSquares.reduce( (available, compareSquare ) => {
+    return this.props.game.consumedSquares.reduce( (available, compareSquare ) => {
       const rowClash = (square.rowIndex === compareSquare.rowIndex);
       const columnClash = (square.columnIndex === compareSquare.columnIndex);
       return (available && (!rowClash || !columnClash));
@@ -113,24 +115,24 @@ class GameBoard extends Component {
 
   _checkIfLastSquarePlayed(square) {
     // simple function, but it's long and ugly
-    if (this.props.consumedSquares.length < 1) {
+    if (this.props.game.consumedSquares.length < 1) {
       return false;
     } else {
       return (
-        square.rowIndex === this.props.consumedSquares[this.props.consumedSquares.length - 1].rowIndex
-        && square.columnIndex === this.props.consumedSquares[this.props.consumedSquares.length - 1].columnIndex
+        square.rowIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 1].rowIndex
+        && square.columnIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 1].columnIndex
       );
     }
   }
 
   _checkIfNextToLastSquarePlayed(square) {
     // same as above... simple but long and ugly
-    if (this.props.consumedSquares.length < 2) {
+    if (this.props.game.consumedSquares.length < 2) {
       return false;
     } else {
       return (
-        square.rowIndex === this.props.consumedSquares[this.props.consumedSquares.length - 2].rowIndex
-        && square.columnIndex === this.props.consumedSquares[this.props.consumedSquares.length - 2].columnIndex
+        square.rowIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 2].rowIndex
+        && square.columnIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 2].columnIndex
       );
     }
   }
@@ -139,10 +141,10 @@ class GameBoard extends Component {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
 
     if (this._checkSquareAdjacent(square)) {
-      this.props.consumeSquare(square);
+      this.props.consumeSquare(square, this.props.gameID);
     } else if (!this._checkIfLastSquarePlayed(square)) {
-      this.props.clearConsumedSquares();
-      this.props.consumeSquare(square)
+      this.props.clearConsumedSquares(this.props.gameID);
+      this.props.consumeSquare(square, this.props.gameID)
     }
   }
 
@@ -155,16 +157,16 @@ class GameBoard extends Component {
       // this is no big deal in the current setup
     } else if (this._checkIfNextToLastSquarePlayed(square)) {
       // allows for backtracking while spelling a word
-      this.props.removeSquare();
+      this.props.removeSquare(this.props.gameID);
     } else if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
-      this.props.consumeSquare(square);
+      this.props.consumeSquare(square, this.props.gameID);
     }
   }
 
   _onPanResponderRelease() {
     console.log("release: ", this);
-    if (this.props.consumedSquares.length === 1) {
-      this.props.clearConsumedSquares();
+    if (this.props.game.consumedSquares.length === 1) {
+      this.props.clearConsumedSquares(this.props.gameID);
     }
   }
 
@@ -200,9 +202,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;
   return {
-    board: state.gameData.games.byID[gameID],
+    gameID: gameID,
+    game: state.gameData.byID[gameID],
     display: state.gameDisplay,
-    consumedSquares: state.gameData.consumedSquares
   }
 };
 

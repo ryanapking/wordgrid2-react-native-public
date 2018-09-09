@@ -10,7 +10,7 @@ class Games extends Component {
   render() {
     return (
       <List>
-        { this.props.games.allIDs.map( (idObject, index) =>
+        { this.props.gameIDs.map( (idObject, index) =>
           <ListItem onPress={() => this.props.history.push(`/game/${idObject.id}`)} key={index}>
             <Text>{ idObject.name }</Text>
           </ListItem>
@@ -22,7 +22,7 @@ class Games extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    games: state.gameData.games
+    gameIDs: state.gameData.allIDs
   };
 };
 

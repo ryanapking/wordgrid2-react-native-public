@@ -250,7 +250,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     gameID: gameID,
     boardLocation: state.gameDisplay.boardLocation,
-    board: state.gameData.games.byID[gameID]
+    board: state.gameData.byID[gameID]
   };
 };
 
