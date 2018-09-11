@@ -33,8 +33,6 @@ class GameBoard extends Component {
     // if a word has already been played, we don't need any of this to be possible
     const pointerEvents = this.props.game.word ? 'none' : 'auto'
 
-    console.log('props: ', this.props);
-
     return(
       <View style={{width: "100%", height: "100%"}}>
         <Grid {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
@@ -167,7 +165,6 @@ class GameBoard extends Component {
   }
 
   _onPanResponderRelease() {
-    console.log("release: ", this);
     if (this.props.game.consumedSquares.length === 1) {
       this.props.clearConsumedSquares(this.props.gameID);
     }

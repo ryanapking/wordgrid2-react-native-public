@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-native';
 
 import GamePieceSection from '../components/GamePieceSection';
 import GameWordDisplay from '../components/GameWordDisplay';
+import GamePhaseDisplay from '../components/GamePhaseDisplay';
 import GameBoard from '../components/GameBoard';
 
 import { setGameboardLocation } from "../ducks/gameDisplay";
@@ -15,18 +16,25 @@ class Game extends Component {
   render() {
     const wordPlayed = !!this.props.game.word;
 
-    console.log('wordPlayed: ', wordPlayed);
+    let interaction = null;
+
+    console.log('piece placed? ', this.props.game.piecePlaced);
+
+    if (!wordPlayed) {
+      interaction = <GameWordDisplay />;
+    } else if (!this.props.game.piecePlaced) {
+      interaction = <GamePieceSection />;
+    }
+
+    // console.log('interaction: ', interaction);
 
     return (
       <Container>
+        <GamePhaseDisplay/>
         <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <GameBoard />
         </View>
-        { !wordPlayed ?
-          <GameWordDisplay />
-          :
-          <GamePieceSection />
-        }
+        { interaction }
       </Container>
     );
   }

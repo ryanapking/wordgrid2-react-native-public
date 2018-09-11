@@ -24,7 +24,6 @@ class GameWordDisplay extends Component {
   }
 
   playWord() {
-    console.log('about to call the reducer: ', this.props.consumedSquares, this.props.rows);
     this.props.playWord(this.props.consumedSquares, this.props.rows, this.props.gameID);
   }
 }

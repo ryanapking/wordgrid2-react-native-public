@@ -34,7 +34,12 @@ function placePieceReducer(state, action) {
     ...state,
     byID: {
       ...byID,
-      [action.gameID]: {...game, rows, me}
+      [action.gameID]: {
+        ...game,
+        rows,
+        me,
+        piecePlaced: true
+      },
     }
   };
 }
@@ -88,7 +93,6 @@ function clearConsumedSquareReducer(state, action) {
 }
 
 function playWordReducer(state, action) {
-  console.log('playWordReducer');
   const byID = state.byID;
   const game = state.byID[action.gameID];
   return {
@@ -143,7 +147,7 @@ export function playWord(consumedSquares, rows, gameID) {
     return row.map( (letter, columnIndex) => {
       const letterPlayed = consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
       return letterPlayed ? "" : letter;
-    })
+    });
   });
   const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
   return {
