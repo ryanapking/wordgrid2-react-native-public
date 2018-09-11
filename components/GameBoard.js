@@ -30,11 +30,14 @@ class GameBoard extends Component {
   render() {
     const { game } = this.props;
 
+    // if a word has already been played, we don't need any of this to be possible
+    const pointerEvents = this.props.game.word ? 'none' : 'auto'
+
     console.log('props: ', this.props);
 
     return(
       <View style={{width: "100%", height: "100%"}}>
-        <Grid {...this.panResponder.panHandlers}>
+        <Grid {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
           {game.rows.map((row, rowIndex) =>
             <Row key={rowIndex}>
               {row.map( (letter, columnIndex) => {

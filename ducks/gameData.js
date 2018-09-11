@@ -97,7 +97,9 @@ function playWordReducer(state, action) {
       ...byID,
       [action.gameID]: {
         ...game,
-        word: action.word
+        word: action.word,
+        rows: action.rows,
+        consumedSquares: []
       }
     }
   };
@@ -135,10 +137,18 @@ export function clearConsumedSquares(gameID) {
   }
 }
 
-export function playWord(consumedSquares, gameID) {
+export function playWord(consumedSquares, rows, gameID) {
+  // map the played squares onto the board
+  const newRows = rows.map( (row, rowIndex ) => {
+    return row.map( (letter, columnIndex) => {
+      const letterPlayed = consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
+      return letterPlayed ? "" : letter;
+    })
+  });
   const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
   return {
     type: PLAY_WORD,
+    rows: newRows,
     word,
     gameID
   }

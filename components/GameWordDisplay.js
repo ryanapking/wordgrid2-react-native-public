@@ -24,7 +24,8 @@ class GameWordDisplay extends Component {
   }
 
   playWord() {
-    this.props.playWord(this.props.consumedSquares, this.props.gameID);
+    console.log('about to call the reducer: ', this.props.consumedSquares, this.props.rows);
+    this.props.playWord(this.props.consumedSquares, this.props.rows, this.props.gameID);
   }
 }
 
@@ -33,6 +34,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     gameID: gameID,
     consumedSquares: state.gameData.byID[gameID].consumedSquares,
+    rows: state.gameData.byID[gameID].rows,
   }
 };
 

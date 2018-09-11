@@ -54,6 +54,7 @@ function sourceToLocal(source) {
     me: current.p1.map( (piece) => pieceStringToArray(piece)),
     them: current.p2.map( (piece) => pieceStringToArray(piece)),
     word: "",
+    piecePlaced: false
   }
 }
 

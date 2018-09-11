@@ -13,7 +13,6 @@ import { setGameboardLocation } from "../ducks/gameDisplay";
 
 class Game extends Component {
   render() {
-    const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
     const wordPlayed = !!this.props.game.word;
 
     console.log('wordPlayed: ', wordPlayed);
