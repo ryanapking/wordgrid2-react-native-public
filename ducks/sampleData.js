@@ -3,6 +3,8 @@ export const game1Source = {
   p2: 'joseph',
   history: [
     {
+      w: null,
+      p: null,
       b: "game one  abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg ",
       p1: [
         "p   l   u   g   ",
@@ -25,6 +27,8 @@ export const game2Source = {
   p2: 'joseph',
   history: [
     {
+      w: null,
+      p: null,
       b: "game two  abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg ",
       p1: [
         "p   l   u   g   ",
@@ -48,7 +52,8 @@ function sourceToLocal(source) {
     consumedSquares: [],
     rows: boardStringToArray(current.b),
     me: current.p1.map( (piece) => pieceStringToArray(piece)),
-    them: current.p2.map( (piece) => pieceStringToArray(piece))
+    them: current.p2.map( (piece) => pieceStringToArray(piece)),
+    word: "",
   }
 }
 

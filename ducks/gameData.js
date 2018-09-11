@@ -5,6 +5,7 @@ export const PLACE_PIECE = 'wordgrid2/gameData/PLACE_PIECE';
 export const CONSUME_SQUARE = 'wordgrid2/gameData/CONSUME_SQUARE';
 export const REMOVE_SQUARE = 'wordgrid2/gameData/REMOVE_SQUARE';
 export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES';
+export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 
 // reducer
 export default function reducer(state = initialState, action) {
@@ -17,6 +18,8 @@ export default function reducer(state = initialState, action) {
       return removeSquareReducer(state, action);
     case CLEAR_CONSUMED_SQUARES:
       return clearConsumedSquareReducer(state, action);
+    case PLAY_WORD:
+      return playWordReducer(state, action);
     default:
       return state;
   }
@@ -84,6 +87,22 @@ function clearConsumedSquareReducer(state, action) {
   };
 }
 
+function playWordReducer(state, action) {
+  console.log('playWordReducer');
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        word: action.word
+      }
+    }
+  };
+}
+
 // action creators
 export function placePiece(rows = [], pieceIndex, gameID) {
   return {
@@ -112,6 +131,15 @@ export function removeSquare(gameID) {
 export function clearConsumedSquares(gameID) {
   return {
     type: CLEAR_CONSUMED_SQUARES,
+    gameID
+  }
+}
+
+export function playWord(consumedSquares, gameID) {
+  const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
+  return {
+    type: PLAY_WORD,
+    word,
     gameID
   }
 }
