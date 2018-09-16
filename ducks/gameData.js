@@ -183,14 +183,25 @@ export function clearConsumedSquares(gameID) {
   }
 }
 
-// function playValidatedWord(word)
+export function startPlayWord(gameID) {
+  return {
+    type: PLAY_WORD_STARTED,
+    gameID
+  }
+}
 
-export function playWord(consumedSquares, rows, gameID) {
+export function endPlayWord(gameID) {
+  return {
+    type: PLAY_WORD_ENDED,
+    gameID
+  }
+}
+
+export function playValidatedWord(consumedSquares, rows, gameID) {
   // build the word from the consumed squares
   const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
 
   // map the played squares onto the board
-  // this is only dispatched after the word is validated
   const newRows = rows.map( (row, rowIndex ) => {
     return row.map( (letter, columnIndex) => {
       const letterPlayed = consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
@@ -198,41 +209,30 @@ export function playWord(consumedSquares, rows, gameID) {
     });
   });
 
-  // actions to be dispatched by thunk in the appropriate order
-  const playWord = {
+  return {
     type: PLAY_WORD,
     rows: newRows,
     word,
     gameID
-  };
+  }
+}
 
-  const playWordStarted = {
-    type: PLAY_WORD_STARTED,
-    gameID
-  };
-
-  const playWordEnded = {
-    type: PLAY_WORD_ENDED,
-    gameID
-  };
+export function playWord(consumedSquares, rows, gameID) {
+  const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
 
   // check if the word is valid and dispatch the appropriate action
   return (dispatch) => {
 
-    console.log('dispatching playWordStarted');
-    dispatch(playWordStarted);
+    dispatch(startPlayWord(gameID));
 
     firebase.firestore().collection('dictionary').doc(word).get()
       .then((doc) => {
         console.log(`${word} exists? ${doc.exists}`);
 
         if (doc.exists) {
-          setTimeout( () => {
-            dispatch(playWord);
-          }, 3000)
-          console.log('...waiting 3 seconds');
+          dispatch(playValidatedWord(consumedSquares, rows, gameID));
         } else {
-          dispatch(playWordEnded);
+          dispatch(endPlayWord(gameID));
         }
 
       })
