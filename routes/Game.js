@@ -18,7 +18,7 @@ class Game extends Component {
 
     let interaction = null;
 
-    console.log('piece placed? ', this.props.game.piecePlaced);
+    // console.log('piece placed? ', this.props.game.piecePlaced);
 
     if (!wordPlayed) {
       interaction = <GameWordDisplay />;
