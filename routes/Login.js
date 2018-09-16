@@ -12,15 +12,15 @@ import { userLogin } from '../ducks/user';
 class Login extends Component {
   render() {
     return (
-        <Grid style={loginStyles.container}>
-          <Row style={loginStyles.center}>
-            <Col>
-              <Button block danger onPress={this.props.userLogin}>
-                <Text>Login</Text>
-              </Button>
-            </Col>
-          </Row>
-        </Grid>
+      <Grid style={loginStyles.container}>
+        <Row style={loginStyles.center}>
+          <Col>
+            <Button block danger onPress={this.props.userLogin}>
+              <Text>Login</Text>
+            </Button>
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }
