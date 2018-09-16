@@ -10,6 +10,7 @@ const initialState = {
   loginStarted: false,
   loggedIn: false,
   username: "",
+  uid: null
 };
 
 // reducer
@@ -18,7 +19,7 @@ export default function reducer(state = initialState, action) {
     case LOGIN_START:
       return { ...state, username: "started", loginStarted: true };
     case LOGIN_SUCCESS:
-      return { ...state, username: "one logged in broseph", loggedIn: true, loginStarted: false };
+      return { ...state, username: "one logged in broseph", loggedIn: true, uid: action.uid, loginStarted: false };
     case LOGIN_FAIL:
       return { ...state, loginStarted: false };
     default:
@@ -32,16 +33,16 @@ export function userLogin() {
     dispatch(userLoginStart());
 
     firebase.auth().signInAnonymously()
-    .then((user) => {
-      console.log("login success");
-      console.log('user:', user);
-      dispatch(userLoginSuccess());
-    })
-    .catch((e) => {
-      console.log("login error, yo");
-      console.log(e);
-      dispatch(userLoginFail());
-    });
+      .then((user) => {
+        console.log("login success");
+        console.log('user:', user);
+        dispatch(userLoginSuccess(user.uid));
+      })
+      .catch((e) => {
+        console.log("login error, yo");
+        console.log(e);
+        dispatch(userLoginFail());
+      });
   }
 }
 
@@ -57,8 +58,9 @@ function userLoginFail() {
   }
 }
 
-function userLoginSuccess() {
+function userLoginSuccess(uid) {
   return {
-    type: LOGIN_SUCCESS
+    type: LOGIN_SUCCESS,
+    uid
   }
 }

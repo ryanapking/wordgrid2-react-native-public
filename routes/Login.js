@@ -3,22 +3,20 @@ import {StyleSheet, Text} from "react-native";
 import Wordbutton from "../components/Wordbutton";
 import { Button, Container } from "native-base";
 import React, { Component } from "react";
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-native';
+
+import { userLogin } from '../ducks/user';
 
 
-export default class Login extends Component {
+class Login extends Component {
   render() {
     return (
         <Grid style={loginStyles.container}>
-          <Row>
-            <Col style={loginStyles.center}><Text>Mo text!</Text></Col>
-            <Col style={loginStyles.center}><Text>Changes you make will automatically reload.</Text></Col>
-            <Col style={loginStyles.center}><Text>Shake your phone to open the developer menu.</Text></Col>
-          </Row>
           <Row style={loginStyles.center}>
             <Col>
-              <Wordbutton />
-              <Button block success style={loginStyles.center}>
-                <Text>app.js Button Text</Text>
+              <Button block danger onPress={this.props.userLogin}>
+                <Text>Login</Text>
               </Button>
             </Col>
           </Row>
@@ -39,3 +37,15 @@ const loginStyles = StyleSheet.create({
     justifyContent: 'center',
   }
 });
+
+const mapStateToProps = () => {
+  return {
+
+  };
+};
+
+const mapDispatchToProps = {
+  userLogin
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
