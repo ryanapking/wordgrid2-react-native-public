@@ -4,6 +4,7 @@ import firebase from 'react-native-firebase';
 export const LOGIN_START = 'wordgrid2/login/LOGIN_START';
 export const LOGIN_SUCCESS = 'wordgrid2/login/LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'wordgrid2/login/LOGIN_FAIL';
+export const LOGIN_LOST = 'wordgrid2/login/LOGIN_LOST';
 
 // initial state
 const initialState = {
@@ -22,6 +23,8 @@ export default function reducer(state = initialState, action) {
       return { ...state, username: "one logged in broseph", loggedIn: true, uid: action.uid, loginStarted: false };
     case LOGIN_FAIL:
       return { ...state, loginStarted: false };
+    case LOGIN_LOST:
+      return { ...state, uid: null };
     default:
       return state;
   }
@@ -46,6 +49,18 @@ export function userLogin() {
   }
 }
 
+export function fetchUser() {
+  return (dispatch) => {
+    firebase.auth().onAuthStateChanged( (user) => {
+      if (user) {
+        dispatch(userLoginSuccess(user.uid));
+      } else {
+        dispatch(userLoggedOut());
+      }
+    })
+  }
+}
+
 function userLoginStart() {
   return {
     type: LOGIN_START
@@ -62,5 +77,11 @@ function userLoginSuccess(uid) {
   return {
     type: LOGIN_SUCCESS,
     uid
+  }
+}
+
+function userLoggedOut() {
+  return {
+    type: LOGIN_LOST
   }
 }
