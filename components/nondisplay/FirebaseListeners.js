@@ -23,11 +23,7 @@ class FirebaseListeners extends Component {
   }
 
   componentDidUpdate() {
-    console.log('firebase listener component updated');
-    console.log('user state:', this.props.user);
-
     if (this.uid !== this.props.user.uid) {
-      console.log('setting user snapshot')
       this.uid = this.props.user.uid;
 
       // unsubscribe from any previous lists
