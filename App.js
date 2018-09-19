@@ -13,7 +13,8 @@ import Game from "./routes/Game";
 import Games from "./routes/Games";
 
 // redirect all non-logged in users to the login screen
-import LoginRedirect from "./components/LoginRedirect";
+import LoginRedirect from "./components/nondisplay/LoginRedirect";
+import FirebaseListeners from './components/nondisplay/FirebaseListeners';
 
 const store = configureStore();
 
@@ -47,6 +48,7 @@ export default class App extends Component {
                 <Route path="/games" component={Games}/>
               </Row>
               <LoginRedirect />
+              <FirebaseListeners />
             </Col>
           </Grid>
         </NativeRouter>
