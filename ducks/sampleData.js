@@ -1,3 +1,6 @@
+import getRandomBoard from '../utilities/getRandomBoard';
+import getRandomPiece from '../utilities/getRandomPiece';
+
 export const game1Source = {
   p1: 'erica',
   p2: 'joseph',
@@ -5,16 +8,17 @@ export const game1Source = {
     {
       w: null,
       p: null,
-      b: "game one  abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg ",
+      // b: "game one  abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg ",
+      b: getRandomBoard(),
       p1: [
-        "p   l   u   g   ",
-        " o   q   z   c  ",
-        "po  p   t   k   "
+        getRandomPiece(),
+        getRandomPiece(),
+        getRandomPiece(),
       ],
       p2: [
-        "p   l   u   g   ",
-        " o   q   z   c  ",
-        "po  p   t   k   "
+        getRandomPiece(),
+        getRandomPiece(),
+        getRandomPiece(),
       ]
     },
   ],
@@ -29,16 +33,17 @@ export const game2Source = {
     {
       w: null,
       p: null,
-      b: "game two  abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg ",
+      // b: "game two  abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg abc  defg ",
+      b: getRandomBoard(),
       p1: [
-        "p   l   u   g   ",
-        " o   q   z   c  ",
-        "po  p   t   k   "
+        getRandomPiece(),
+        getRandomPiece(),
+        getRandomPiece(),
       ],
       p2: [
-        "p   l   u   g   ",
-        " o   q   z   c  ",
-        "po  p   t   k   "
+        getRandomPiece(),
+        getRandomPiece(),
+        getRandomPiece(),
       ]
     },
   ],

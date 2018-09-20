@@ -56,10 +56,6 @@ export default function getRandomPiece(pieceSize = 4) {
   let piece = " ".repeat(possibleSpaces);
 
   randomSpaces.forEach( (space) => {
-    let row = Math.floor(space / settings.maxPieceWidth);
-    let column = space % settings.maxPieceWidth;
-    console.log('x,y', row, column);
-    // piece.push(new LetterTile(row, column, settings.getRandomLetter()));
     piece = setCharAt(piece, space, getRandomLetter());
   });
 
