@@ -2,21 +2,34 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-native';
-import { List, ListItem } from 'native-base';
+import { List, ListItem, Button } from 'native-base';
 
 import { setCurrentGame } from "../ducks/gameData";
 
 class Games extends Component {
+  constructor() {
+    super();
+    this.createGame = this.createGame.bind(this);
+  }
   render() {
     return (
-      <List>
-        { this.props.gameIDs.map( (idObject, index) =>
-          <ListItem onPress={() => this.props.history.push(`/game/${idObject.id}`)} key={index}>
-            <Text>{ idObject.name }</Text>
-          </ListItem>
-        )}
-      </List>
+      <View style={{width: '100%'}}>
+        <List>
+          { this.props.gameIDs.map( (idObject, index) =>
+            <ListItem onPress={() => this.props.history.push(`/game/${idObject.id}`)} key={index}>
+              <Text>{ idObject.name }</Text>
+            </ListItem>
+          )}
+        </List>
+        <Button full info onPress={() => this.createGame()}>
+          <Text>Create Game</Text>
+        </Button>
+      </View>
     );
+  }
+
+  createGame() {
+    console.log('create game function');
   }
 }
 

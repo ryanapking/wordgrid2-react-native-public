@@ -9,35 +9,46 @@ class GamePhaseDisplay extends Component {
   render() {
     const wordPlayed = !!this.props.game.word;
 
-    let playDisabled = false;
-    let placeDisabled = false;
+    let playStyles = styles.disabled;
+    let placeStyles = styles.disabled;
 
     if (!wordPlayed) {
-      placeDisabled = true;
+      playStyles = styles.enabled;
     } else if (!this.props.game.piecePlaced) {
-      playDisabled = true;
-    } else if (this.props.game.piecePlaced) {
-      playDisabled = true;
-      placeDisabled = true;
+      placeStyles = styles.enabled;
     }
 
     return (
-      <View >
-        <Button full disabled={playDisabled}>
-          <Text>Play Word</Text>
-        </Button>
-        <Button full disabled={placeDisabled}>
-          <Text>Place Piece</Text>
-        </Button>
+      <View style={{height: 35}}>
+        <Grid>
+          <Row>
+            <Col style={[styles.col, playStyles]}>
+              <Text>
+                Play Word
+              </Text>
+            </Col>
+            <Col style={[styles.col, placeStyles]}>
+              <Text>
+                Place Piece
+              </Text>
+            </Col>
+          </Row>
+        </Grid>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-    flexDirection: 'row'
+  col: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  disabled: {
+    backgroundColor: 'lightgray'
+  },
+  enabled: {
+    backgroundColor: '#53adff'
   }
 });
 
