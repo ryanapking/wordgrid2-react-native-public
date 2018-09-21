@@ -29,7 +29,7 @@ class Games extends Component {
   }
 
   createGame() {
-    console.log('create game function');
+    this.props.createGame();
   }
 }
 

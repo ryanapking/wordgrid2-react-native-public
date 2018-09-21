@@ -1,5 +1,6 @@
 import firebase from 'react-native-firebase';
 import * as sampleData from './sampleData';
+import { remoteToLocal, generateGame } from '../utilities';
 
 // available actions
 export const PLACE_PIECE = 'wordgrid2/gameData/PLACE_PIECE';
@@ -163,15 +164,15 @@ function createGameReducer(state, action) {
     ...state,
     allIDs: [
       ...allIDs,
-      {id: action.gameID, name: "broseph"}
+      action.gameID
     ],
     byID: {
       ...byID,
-      [action.gameID]: 'this is a string that is something!'
+      [action.gameID.id]: action.localData
     },
     sourceDataByID: {
       ... sourceDataByID,
-      [action.gameID]: 'this is another string!'
+      [action.gameID.id]: action.remoteData
     }
   };
 }
@@ -267,11 +268,15 @@ export function playWord(consumedSquares, rows, gameID) {
   };
 }
 
-export function createGame(gameState, gameID) {
+export function createGame() {
+  const remoteData = generateGame();
+  const localData = remoteToLocal(remoteData);
+  const gameID = {id: new Date().getTime(), name: new Date().getTime()};
   return {
     type: CREATE_GAME,
     gameID,
-    gameState
+    remoteData,
+    localData
   }
 }
 
