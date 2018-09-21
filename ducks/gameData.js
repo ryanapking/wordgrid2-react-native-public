@@ -9,6 +9,7 @@ export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES
 export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 export const PLAY_WORD_STARTED = 'wordgrid2/gameData/PLAY_WORD_STARTED';
 export const PLAY_WORD_ENDED = 'wordgrid2/gameData/PLAY_WORD_ENDED';
+export const CREATE_GAME = 'wordgrid2/gameData/CREATE_GAME';
 
 
 // reducer manager
@@ -28,6 +29,8 @@ export default function reducer(state = initialState, action) {
       return endPlayWordReducer(state, action);
     case PLAY_WORD:
       return playWordReducer(state, action);
+    case CREATE_GAME:
+      return createGameReducer(state, action);
     default:
       return state;
   }
@@ -151,6 +154,28 @@ function startPlayWordReducer(state, action) {
   };
 }
 
+function createGameReducer(state, action) {
+  console.log('create game reducer');
+  const byID = state.byID;
+  const allIDs = state.allIDs;
+  const sourceDataByID = state.sourceDataByID;
+  return {
+    ...state,
+    allIDs: [
+      ...allIDs,
+      {id: action.gameID, name: "broseph"}
+    ],
+    byID: {
+      ...byID,
+      [action.gameID]: 'this is a string that is something!'
+    },
+    sourceDataByID: {
+      ... sourceDataByID,
+      [action.gameID]: 'this is another string!'
+    }
+  };
+}
+
 // action creators
 export function placePiece(rows = [], pieceIndex, gameID) {
   return {
@@ -240,6 +265,14 @@ export function playWord(consumedSquares, rows, gameID) {
         console.log("error fetching doc:", e);
       });
   };
+}
+
+export function createGame(gameState, gameID) {
+  return {
+    type: CREATE_GAME,
+    gameID,
+    gameState
+  }
 }
 
 // initial state

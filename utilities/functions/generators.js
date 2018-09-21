@@ -1,7 +1,48 @@
-import settings from './config';
-import { getRandomLetter, setCharAt } from "./tools";
+import settings from '../config';
 
-export default function getRandomPiece(pieceSize = 4) {
+export function generateGame() {
+  return {
+    p1: 'billy',
+    p2: 'jimmy',
+    history: [
+      {
+        w: null,
+        p: null,
+        b: generateBoard(),
+        p1: [
+          generatePiece(),
+          generatePiece(),
+          generatePiece(),
+        ],
+        p2: [
+          generatePiece(),
+          generatePiece(),
+          generatePiece(),
+        ]
+      }
+    ]
+  }
+}
+
+// a board is a 100 character string, filled to the defined density with random characters
+export function generateBoard() {
+  var randomSpaces = [];
+  var boardSpaceCount = settings.boardWidth * settings.boardHeight;
+  // get board spaces until we excede the starting board density
+  while ((randomSpaces.length / boardSpaceCount) < settings.startingLetterDensity) {
+    var rando = Math.floor(Math.random() * boardSpaceCount);
+    if (!randomSpaces.includes(rando)) {
+      randomSpaces.push(rando);
+    }
+  }
+  let board = " ".repeat(settings.boardWidth * settings.boardHeight);
+  randomSpaces.forEach( (space) => {
+    board = setCharAt(board, space, getRandomLetter());
+  });
+  return board;
+}
+
+export function generatePiece(pieceSize = 4) {
   // number of possible spaces
   let possibleSpaces = settings.maxPieceWidth * settings.maxPieceHeight;
 
@@ -62,3 +103,13 @@ export default function getRandomPiece(pieceSize = 4) {
   return piece;
 }
 
+export function getRandomLetter(letterString = settings.availableLetters) {
+  let randoMax = letterString.length;
+  let rando = Math.floor((Math.random() * randoMax));
+  return letterString.charAt(rando);
+}
+
+export function setCharAt(str, index, chr) {
+  if(index > str.length-1) return str;
+  return str.substr(0,index) + chr + str.substr(index+1);
+}

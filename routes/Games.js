@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-native';
 import { List, ListItem, Button } from 'native-base';
 
-import { setCurrentGame } from "../ducks/gameData";
+import { setCurrentGame, createGame } from '../ducks/gameData';
 
 class Games extends Component {
   constructor() {
@@ -40,7 +40,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setCurrentGame
+  setCurrentGame,
+  createGame
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Games));

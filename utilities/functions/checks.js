@@ -1,6 +1,6 @@
-import settings from './config';
+import settings from '../config';
 
-function checkPieceFit(player) {
+export function checkPieceFit(player) {
   // checks a player's pieces to see if any of them will fit on the board
   // loops until a piece that fits is found
   var spaceCheck = false;
@@ -39,4 +39,18 @@ function checkPieceFit(player) {
     checkRow++;
   }
   return spaceCheck;
+}
+
+export function scoreWord(word) {
+  // calculate the score
+  var wordScore = 0;
+  for (var i = 0; i < word.length; i++) {
+    var letter = word[i];
+    var letterValue = eval(`this.letterValues.${letter}`);
+    wordScore += letterValue;
+  }
+  // add it the player's current score
+  this.currentPlayer.score += wordScore;
+  // return the score to be attached to the word history
+  return wordScore;
 }
