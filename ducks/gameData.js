@@ -12,18 +12,17 @@ export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 export const PLAY_WORD_STARTED = 'wordgrid2/gameData/PLAY_WORD_STARTED';
 export const PLAY_WORD_ENDED = 'wordgrid2/gameData/PLAY_WORD_ENDED';
 
-// data manipulation
-export const UPDATE_LOCAL_GAME_IDS = 'wordgrid2/gameData/UPDATE_LOCAL_GAME_IDS';
-export const UPDATE_REMOTE_SYNCING_IDS = 'wordgrid2/gameData/UPDATE_REMOTE_SYNCING_IDS';
-export const UPDATE_LOCAL_GAME = 'wordgrid2/gameData/UPDATE_LOCAL_GAME';
+// syncing actions
+export const SET_LOCAL_GAME_IDS = 'wordgrid2/gameData/SET_LOCAL_GAME_IDS';
+export const SET_REMOTE_SYNCING_IDS = 'wordgrid2/gameData/SET_REMOTE_SYNCING_IDS';
+export const SET_LOCAL_GAME_BY_ID = 'wordgrid2/gameData/SET_LOCAL_GAME_BY_ID';
 
 // initial state
 const initialState = {
   sourceDataByID: {},
   byID: {},
   allIDs: [],
-  gameListeners: [],
-  userListener: null
+  gameListeners: []
 };
 
 // reducer manager
@@ -43,11 +42,11 @@ export default function reducer(state = initialState, action) {
       return endPlayWordReducer(state, action);
     case PLAY_WORD:
       return playWordReducer(state, action);
-    case UPDATE_LOCAL_GAME_IDS:
+    case SET_LOCAL_GAME_IDS:
       return updateLocalGameIDsReducer(state, action);
-    case UPDATE_REMOTE_SYNCING_IDS:
+    case SET_REMOTE_SYNCING_IDS:
       return updateRemoteSyncingIDsReducer(state, action);
-    case UPDATE_LOCAL_GAME:
+    case SET_LOCAL_GAME_BY_ID:
       return updateLocalGameReducer(state, action);
     default:
       return state;
@@ -345,7 +344,7 @@ export function remoteUpdateGame(gameID, userID, localGameData) {
 
 function updateLocalGameIDs(gameIDs) {
   return {
-    type: UPDATE_LOCAL_GAME_IDS,
+    type: SET_LOCAL_GAME_IDS,
     gameIDs
   }
 }
@@ -407,14 +406,14 @@ export function startRemoteGameSyncs(gameIDs) {
 
 export function updateRemoteSyncingIDs(gameIDs) {
   return {
-    type: UPDATE_REMOTE_SYNCING_IDS,
+    type: SET_REMOTE_SYNCING_IDS,
     gameListeners: gameIDs
   }
 }
 
 export function updateLocalGame(gameID, sourceData) {
   return {
-    type: UPDATE_LOCAL_GAME,
+    type: SET_LOCAL_GAME_BY_ID,
     localData: remoteToLocal(sourceData),
     sourceData,
     gameID

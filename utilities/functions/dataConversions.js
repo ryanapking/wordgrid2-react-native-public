@@ -7,15 +7,22 @@ export function remoteToLocal(source) {
     them: current.p2.map( (piece) => pieceStringToArray(piece)),
     word: "",
     piecePlaced: false,
-    validatingWord: false
+    validatingWord: false,
+
+    // used when converting back to remote
+    history: source.history,
+    p1: source.p1,
+    p2: source.p2
   }
 }
 
-export function localToRemote(local) {
+export function localToRemote(localData) {
   return {
-    b: arrayToString(local.rows),
-    p1: local.me.map( (piece) => arrayToString(piece) ),
-    p2: local.them.map( (piece) => arrayToString(piece) )
+    w: localData.word,
+    p: null, // will be the id of the use who created this history item
+    b: arrayToString(localData.rows),
+    p1: localData.me.map( (piece) => arrayToString(piece) ),
+    p2: localData.them.map( (piece) => arrayToString(piece) )
   }
 }
 
