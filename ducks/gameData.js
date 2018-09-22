@@ -1,6 +1,6 @@
 import firebase from 'react-native-firebase';
 
-import { remoteToLocal, generateGame } from '../utilities';
+import { remoteToLocal } from '../utilities';
 
 // available actions
 // game actions
@@ -14,8 +14,17 @@ export const PLAY_WORD_ENDED = 'wordgrid2/gameData/PLAY_WORD_ENDED';
 
 // data manipulation
 export const UPDATE_LOCAL_GAME_IDS = 'wordgrid2/gameData/UPDATE_LOCAL_GAME_IDS';
+export const UPDATE_REMOTE_SYNCING_IDS = 'wordgrid2/gameData/UPDATE_REMOTE_SYNCING_IDS';
+export const UPDATE_LOCAL_GAME = 'wordgrid2/gameData/UPDATE_LOCAL_GAME';
 
-
+// initial state
+const initialState = {
+  sourceDataByID: {},
+  byID: {},
+  allIDs: [],
+  gameListeners: [],
+  userListener: null
+};
 
 // reducer manager
 export default function reducer(state = initialState, action) {
@@ -36,6 +45,10 @@ export default function reducer(state = initialState, action) {
       return playWordReducer(state, action);
     case UPDATE_LOCAL_GAME_IDS:
       return updateLocalGameIDsReducer(state, action);
+    case UPDATE_REMOTE_SYNCING_IDS:
+      return updateRemoteSyncingIDsReducer(state, action);
+    case UPDATE_LOCAL_GAME:
+      return updateLocalGameReducer(state, action);
     default:
       return state;
   }
@@ -160,13 +173,38 @@ function startPlayWordReducer(state, action) {
 }
 
 function updateLocalGameIDsReducer(state, action) {
-  const byID = state.byID;
-  const sourceDataByID = state.sourceDataByID;
   const allIDs = action.gameIDs;
   return {
     ...state,
     allIDs
   }
+}
+
+function updateRemoteSyncingIDsReducer(state, action) {
+  return {
+    ...state,
+    gameListeners: action.gameListeners
+  }
+}
+
+function updateLocalGameReducer(state, action) {
+  const byID = state.byID;
+  const sourceDataByID = state.sourceDataByID;
+  let newState = {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: action.localData
+    },
+    sourceDataByID: {
+      ...sourceDataByID,
+      [action.gameID]: action.sourceData
+    }
+  };
+
+  console.log("new state:", newState);
+
+  return newState;
 }
 
 // action creators
@@ -312,9 +350,9 @@ function updateLocalGameIDs(gameIDs) {
   }
 }
 
-export function startRemoteGameIDSync(userID) {
-  console.log('sync started');
-  const userDocRef = firebase.firestore().collection('users').doc("YyRC4i6F5IVSmlYPjSGsUEiz0Qs2");
+export function startRemoteIDSync(userID) {
+  // console.log('sync started');
+  const userDocRef = firebase.firestore().collection('users').doc(userID);
 
   return (dispatch) => {
     userDocRef.onSnapshot( (userDoc) => {
@@ -323,17 +361,62 @@ export function startRemoteGameIDSync(userID) {
 
       const gameIDs = userDoc.data().games ? userDoc.data().games : [];
 
-      dispatch (updateLocalGameIDs(gameIDs));
+      dispatch(updateLocalGameIDs(gameIDs));
+      dispatch(startRemoteGameSyncs(gameIDs));
 
-      console.log('from sync: userDoc:', userDoc.data());
+      // console.log('from sync: userDoc:', userDoc.data());
 
-    })
+    });
+
   }
 }
 
-// initial state
-const initialState = {
-  sourceDataByID: {},
-  byID: {},
-  allIDs: [],
-};
+export function startRemoteGameSyncs(gameIDs) {
+
+  return (dispatch, getState) => {
+
+    // remove the non-firebase uuid stuff
+    const currentRemoteGameIDs = gameIDs.map( (gameID) => {
+      return gameID.id;
+    });
+
+    // grab the already present listeners, to prevent duplicates
+    const alreadyListening = getState().gameData.gameListeners;
+
+    // figure out which new listeners would be duplicates
+    // add the other listeners
+    currentRemoteGameIDs.filter( (gameID) => {
+      return !alreadyListening.includes(gameID);
+    }).forEach( (gameID) => {
+
+      console.log('starting sync for new game:', gameID);
+      const gameDocRef = firebase.firestore().collection('games').doc(gameID);
+      gameDocRef.onSnapshot( (gameDoc) => {
+
+        if (!gameDoc.exists) return;
+        dispatch(updateLocalGame(gameID, gameDoc.data()));
+
+      });
+
+    });
+
+    dispatch(updateRemoteSyncingIDs(currentRemoteGameIDs));
+
+  }
+}
+
+export function updateRemoteSyncingIDs(gameIDs) {
+  return {
+    type: UPDATE_REMOTE_SYNCING_IDS,
+    gameListeners: gameIDs
+  }
+}
+
+export function updateLocalGame(gameID, sourceData) {
+  return {
+    type: UPDATE_LOCAL_GAME,
+    localData: remoteToLocal(sourceData),
+    sourceData,
+    gameID
+  }
+}

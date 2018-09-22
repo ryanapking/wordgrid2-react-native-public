@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
-import { startRemoteGameIDSync } from "../../ducks/gameData";
+import { startRemoteIDSync } from "../../ducks/gameData";
 
 // this component is dumb
 // it stores firebase onSnapshot listeners so they can later to deleted
@@ -26,7 +26,7 @@ class FirebaseListeners extends Component {
 
   componentDidMount() {
     // console.log('user id:', this.props.user.uid);
-    // this.props.startRemoteGameIDSync(this.props.user.uid);
+    // this.props.startRemoteIDSync(this.props.user.uid);
   }
 
   componentDidUpdate() {
@@ -110,7 +110,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  startRemoteGameIDSync
+  startRemoteGameIDSync: startRemoteIDSync
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));
