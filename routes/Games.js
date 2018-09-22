@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-native';
 import { List, ListItem, Button } from 'native-base';
 
-import { setCurrentGame, createGame } from '../ducks/gameData';
+import { remoteSaveGame } from '../ducks/gameData';
+import { generateGame } from "../utilities";
 
 class Games extends Component {
   constructor() {
@@ -12,6 +13,7 @@ class Games extends Component {
     this.createGame = this.createGame.bind(this);
   }
   render() {
+    // console.log('game data:', this.props.gameData);
     return (
       <View style={{width: '100%'}}>
         <List>
@@ -29,19 +31,20 @@ class Games extends Component {
   }
 
   createGame() {
-    this.props.createGame();
+    this.props.remoteSaveGame(this.props.uid, generateGame());
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    gameIDs: state.gameData.allIDs
+    uid: state.user.uid,
+    gameIDs: state.gameData.allIDs,
+    gameData: state.gameData
   };
 };
 
 const mapDispatchToProps = {
-  setCurrentGame,
-  createGame
+  remoteSaveGame
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Games));

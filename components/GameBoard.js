@@ -51,8 +51,8 @@ class GameBoard extends Component {
                   fillStyle = styles.emptySquare;
                 }
                 return (
-                  <Col key={columnIndex}>
-                    <Text style={[styles.base, fillStyle]}>{letter}</Text>
+                  <Col key={columnIndex} style={[styles.centered, fillStyle]}>
+                    <Text style={[styles.letter]}>{letter}</Text>
                   </Col>
                 )
               })}
@@ -177,12 +177,15 @@ class GameBoard extends Component {
 
 const styles = StyleSheet.create({
   base: {
-    width: "100%",
-    height: "100%",
-    borderWidth: 1,
+    // width: "100%",
+    // height: "100%",
+    // borderWidth: 1,
     // borderRadius: 5,
-    borderColor: 'white',
-
+    // borderColor: 'white',
+    // fontSize: 20,
+  },
+  letter: {
+    fontSize: 20
   },
   filledSquare: {
     backgroundColor: "#ffd27b",
@@ -197,6 +200,13 @@ const styles = StyleSheet.create({
     //   { scale: 1.05 },
     // ],
   },
+  centered: {
+    borderColor: 'white',
+    borderWidth: 1,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 const mapStateToProps = (state, ownProps) => {

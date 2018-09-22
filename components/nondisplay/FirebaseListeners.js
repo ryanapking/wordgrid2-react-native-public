@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
+import { startRemoteGameIDSync } from "../../ducks/gameData";
+
 // this component is dumb
 // it stores firebase onSnapshot listeners so they can later to deleted
 // it dispatch the appropriate local data updates
@@ -22,9 +24,17 @@ class FirebaseListeners extends Component {
     this.onGameSnapshot = this.onGameSnapshot.bind(this);
   }
 
+  componentDidMount() {
+    // console.log('user id:', this.props.user.uid);
+    // this.props.startRemoteGameIDSync(this.props.user.uid);
+  }
+
   componentDidUpdate() {
     if (this.uid !== this.props.user.uid) {
       this.uid = this.props.user.uid;
+
+      // this should be moved elsewhere and this whole component scrapped
+      this.props.startRemoteGameIDSync(this.uid);
 
       // unsubscribe from any previous lists
       if (this.gameList) this.gameList();
@@ -42,6 +52,8 @@ class FirebaseListeners extends Component {
   }
 
   onUserSnapshot(doc) {
+    // just ... stop
+    return;
     // this is the dumb, ugly function
     // set listeners for new games
     // remove listeners for defunct games
@@ -82,7 +94,7 @@ class FirebaseListeners extends Component {
   }
 
   onGameSnapshot(doc) {
-    console.log('game doc updated', doc.exists);
+    console.log('game snapshot:', doc.data());
   }
 
   render() {
@@ -98,7 +110,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-
+  startRemoteGameIDSync
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));

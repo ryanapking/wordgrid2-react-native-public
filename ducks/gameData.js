@@ -1,8 +1,9 @@
 import firebase from 'react-native-firebase';
-import * as sampleData from './sampleData';
+
 import { remoteToLocal, generateGame } from '../utilities';
 
 // available actions
+// game actions
 export const PLACE_PIECE = 'wordgrid2/gameData/PLACE_PIECE';
 export const CONSUME_SQUARE = 'wordgrid2/gameData/CONSUME_SQUARE';
 export const REMOVE_SQUARE = 'wordgrid2/gameData/REMOVE_SQUARE';
@@ -10,7 +11,10 @@ export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES
 export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 export const PLAY_WORD_STARTED = 'wordgrid2/gameData/PLAY_WORD_STARTED';
 export const PLAY_WORD_ENDED = 'wordgrid2/gameData/PLAY_WORD_ENDED';
-export const CREATE_GAME = 'wordgrid2/gameData/CREATE_GAME';
+
+// data manipulation
+export const UPDATE_LOCAL_GAME_IDS = 'wordgrid2/gameData/UPDATE_LOCAL_GAME_IDS';
+
 
 
 // reducer manager
@@ -30,8 +34,8 @@ export default function reducer(state = initialState, action) {
       return endPlayWordReducer(state, action);
     case PLAY_WORD:
       return playWordReducer(state, action);
-    case CREATE_GAME:
-      return createGameReducer(state, action);
+    case UPDATE_LOCAL_GAME_IDS:
+      return updateLocalGameIDsReducer(state, action);
     default:
       return state;
   }
@@ -155,26 +159,14 @@ function startPlayWordReducer(state, action) {
   };
 }
 
-function createGameReducer(state, action) {
-  console.log('create game reducer');
+function updateLocalGameIDsReducer(state, action) {
   const byID = state.byID;
-  const allIDs = state.allIDs;
   const sourceDataByID = state.sourceDataByID;
+  const allIDs = action.gameIDs;
   return {
     ...state,
-    allIDs: [
-      ...allIDs,
-      action.gameID
-    ],
-    byID: {
-      ...byID,
-      [action.gameID.id]: action.localData
-    },
-    sourceDataByID: {
-      ... sourceDataByID,
-      [action.gameID.id]: action.remoteData
-    }
-  };
+    allIDs
+  }
 }
 
 // action creators
@@ -268,32 +260,80 @@ export function playWord(consumedSquares, rows, gameID) {
   };
 }
 
-export function createGame() {
-  const remoteData = generateGame();
-  const localData = remoteToLocal(remoteData);
-  const gameID = {id: new Date().getTime(), name: new Date().getTime()};
+export function remoteSaveGame(userID, newGameData) {
+  // save a game (initial save only) remotely from local data
+
+  const userDocRef = firebase.firestore().collection('users').doc(userID);
+  const newGameDocRef = firebase.firestore().collection('games').doc();
+  const newGameID = { id: newGameDocRef.id, name: newGameDocRef.id };
+
+  return (dispatch) => {
+
+    firebase.firestore().runTransaction( (transaction) => {
+
+      return transaction.get(userDocRef).then( (userDoc) => {
+
+        if (!userDoc.exists) return;
+
+        const currentUserGames = userDoc.data().games ? userDoc.data().games : [];
+
+        transaction.update(userDocRef, {
+          games: [ ...currentUserGames, newGameID ]
+        });
+
+        transaction.set(newGameDocRef, newGameData );
+
+        console.log('gameDocRef:', newGameDocRef);
+
+
+      });
+
+    }).then( () => {
+      console.log('sweet game save successsssss');
+    }).catch( (err) => {
+      console.log('error:', err);
+    });
+
+  }
+
+}
+
+export function remoteUpdateGame(gameID, userID, localGameData) {
+  // update a remote game from local data
   return {
-    type: CREATE_GAME,
-    gameID,
-    remoteData,
-    localData
+    type: REMOTE_UPDATE_GAME
+  }
+}
+
+function updateLocalGameIDs(gameIDs) {
+  return {
+    type: UPDATE_LOCAL_GAME_IDS,
+    gameIDs
+  }
+}
+
+export function startRemoteGameIDSync(userID) {
+  console.log('sync started');
+  const userDocRef = firebase.firestore().collection('users').doc("YyRC4i6F5IVSmlYPjSGsUEiz0Qs2");
+
+  return (dispatch) => {
+    userDocRef.onSnapshot( (userDoc) => {
+
+      if (!userDoc.exists) return;
+
+      const gameIDs = userDoc.data().games ? userDoc.data().games : [];
+
+      dispatch (updateLocalGameIDs(gameIDs));
+
+      console.log('from sync: userDoc:', userDoc.data());
+
+    })
   }
 }
 
 // initial state
 const initialState = {
-  sourceDataByID: {
-    1: sampleData.game1Source,
-    2: sampleData.game2Source
-  },
-  byID: {
-    1: sampleData.game1Local,
-    2: sampleData.game2Local
-  },
-  allIDs: [
-    {id: "1", name:"nicholas"},
-    {id: "2", name: "cage" }
-  ],
+  sourceDataByID: {},
+  byID: {},
+  allIDs: [],
 };
-
-// console.log('initial state: ', initialState);
