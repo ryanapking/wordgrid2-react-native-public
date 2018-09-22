@@ -1,6 +1,6 @@
 import firebase from 'react-native-firebase';
 
-import { remoteToLocal } from '../utilities';
+import { remoteToLocal, localToRemote } from '../utilities';
 
 // available actions
 // game actions
@@ -300,11 +300,11 @@ export function playWord(consumedSquares, rows, gameID) {
 export function remoteSaveGame(userID, newGameData) {
   // save a game (initial save only) remotely from local data
 
-  const userDocRef = firebase.firestore().collection('users').doc(userID);
-  const newGameDocRef = firebase.firestore().collection('games').doc();
-  const newGameID = { id: newGameDocRef.id, name: newGameDocRef.id };
-
   return (dispatch) => {
+
+    const userDocRef = firebase.firestore().collection('users').doc(userID);
+    const newGameDocRef = firebase.firestore().collection('games').doc();
+    const newGameID = { id: newGameDocRef.id, name: newGameDocRef.id };
 
     firebase.firestore().runTransaction( (transaction) => {
 
@@ -322,7 +322,6 @@ export function remoteSaveGame(userID, newGameData) {
 
         console.log('gameDocRef:', newGameDocRef);
 
-
       });
 
     }).then( () => {
@@ -335,11 +334,38 @@ export function remoteSaveGame(userID, newGameData) {
 
 }
 
-export function remoteUpdateGame(gameID, userID, localGameData) {
+export function saveMoveRemotely(gameID, localGameData) {
   // update a remote game from local data
-  return {
-    type: REMOTE_UPDATE_GAME
-  }
+
+  return (dispatch) => {
+
+    const gameDocRef = firebase.firestore().collection('games').doc(gameID);
+    const newMove = localToRemote(localGameData);
+
+    console.log('localGameData:', localGameData);
+    console.log('newMove:', newMove);
+
+    firebase.firestore().runTransaction( (transaction) => {
+
+      return transaction.get(gameDocRef).then( (gameDoc) => {
+
+        if (!gameDoc.exists) return;
+
+        const currentHistory = gameDoc.data().history;
+
+        transaction.update(gameDocRef, {
+          history: [ ...currentHistory, newMove ]
+        });
+
+      });
+
+    }).then( () => {
+      console.log('game update succeeded');
+    }).catch( (err) => {
+      console.log('game update error:', err);
+    });
+
+  };
 }
 
 function updateLocalGameIDs(gameIDs) {

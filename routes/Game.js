@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Container } from 'native-base';
+import { Container, Button } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
@@ -9,7 +9,8 @@ import GameWordDisplay from '../components/GameWordDisplay';
 import GamePhaseDisplay from '../components/GamePhaseDisplay';
 import GameBoard from '../components/GameBoard';
 
-import { setGameboardLocation } from "../ducks/gameDisplay";
+import { setGameboardLocation } from '../ducks/gameDisplay';
+import { saveMoveRemotely } from '../ducks/gameData'
 
 
 class Game extends Component {
@@ -24,6 +25,8 @@ class Game extends Component {
       interaction = <GameWordDisplay />;
     } else if (!this.props.game.piecePlaced) {
       interaction = <GamePieceSection />;
+    } else {
+      interaction = <Button full onPress={() => this.submitMove()}><Text>Submit Move</Text></Button>
     }
 
     // console.log('interaction: ', interaction);
@@ -44,6 +47,11 @@ class Game extends Component {
       this.props.setGameboardLocation(x, y, width, height);
     });
   }
+
+  submitMove() {
+    console.log('submit move');
+    this.props.saveMoveRemotely(this.props.gameID, this.props.game);
+  }
 }
 
 const styles = StyleSheet.create({
@@ -62,7 +70,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  setGameboardLocation
+  setGameboardLocation,
+  saveMoveRemotely
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));
