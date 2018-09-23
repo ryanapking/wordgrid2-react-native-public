@@ -19,7 +19,6 @@ export const SET_LOCAL_GAME_BY_ID = 'wordgrid2/gameData/SET_LOCAL_GAME_BY_ID';
 
 // initial state
 const initialState = {
-  sourceDataByID: {},
   byID: {},
   allIDs: [],
   gameListeners: []
@@ -188,17 +187,12 @@ function updateRemoteSyncingIDsReducer(state, action) {
 
 function updateLocalGameReducer(state, action) {
   const byID = state.byID;
-  const sourceDataByID = state.sourceDataByID;
   let newState = {
     ...state,
     byID: {
       ...byID,
       [action.gameID]: action.localData
     },
-    sourceDataByID: {
-      ...sourceDataByID,
-      [action.gameID]: action.sourceData
-    }
   };
 
   console.log("new state:", newState);
@@ -441,7 +435,6 @@ export function updateLocalGame(gameID, sourceData) {
   return {
     type: SET_LOCAL_GAME_BY_ID,
     localData: remoteToLocal(sourceData),
-    sourceData,
     gameID
   }
 }
