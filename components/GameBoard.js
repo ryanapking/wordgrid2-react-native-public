@@ -141,7 +141,7 @@ class GameBoard extends Component {
   _onPanResponderGrant(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
 
-    if (this._checkSquareAdjacent(square)) {
+    if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
       this.props.consumeSquare(square, this.props.gameID);
     } else if (!this._checkIfLastSquarePlayed(square)) {
       this.props.clearConsumedSquares(this.props.gameID);
