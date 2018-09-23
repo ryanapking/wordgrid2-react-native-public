@@ -12,17 +12,18 @@ export function remoteToLocal(source) {
     // used when converting back to remote
     history: source.history,
     p1: source.p1,
-    p2: source.p2
+    p2: source.p2,
+    turn: source.t
   }
 }
 
 export function localToRemote(localData) {
   return {
     w: localData.word,
-    p: null, // will be the id of the use who created this history item
+    p: null, // will store the id of the use who created this history item
     b: arrayToString(localData.rows),
     p1: localData.me.map( (piece) => arrayToString(piece) ),
-    p2: localData.them.map( (piece) => arrayToString(piece) )
+    p2: localData.them.map( (piece) => arrayToString(piece) ),
   }
 }
 

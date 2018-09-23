@@ -14,15 +14,38 @@ class Games extends Component {
   }
   render() {
     // console.log('game data:', this.props.gameData);
+
+    const readyToPlay = Object.keys(this.props.gameData.byID).filter( (gameID) => {
+      const game = this.props.gameData.byID[gameID];
+      return ( game.turn === null || game.turn === this.props.uid );
+    });
+
+    const waitingOnOpponent = Object.keys(this.props.gameData.byID).filter( (gameID) => {
+      const game = this.props.gameData.byID[gameID];
+      return ( game.turn !== null && game.turn !== this.props.uid );
+    });
+
     return (
       <View style={{width: '100%'}}>
         <List>
-          { this.props.gameIDs.map( (idObject, index) =>
-            <ListItem onPress={() => this.props.history.push(`/game/${idObject.id}`)} key={index}>
-              <Text>{ idObject.name }</Text>
+          <ListItem itemDivider >
+            <Text>Ready to Play:</Text>
+          </ListItem>
+          { readyToPlay.map( (gameID, index) =>
+            <ListItem onPress={() => this.props.history.push(`/game/${gameID}`)} key={index}>
+              <Text>{ this.props.gameData.byID[gameID].p1 }</Text>
+            </ListItem>
+          )}
+          <ListItem itemDivider>
+            <Text>Opponent's Move:</Text>
+          </ListItem>
+          { waitingOnOpponent.map( (gameID, index) =>
+            <ListItem key={index}>
+              <Text>{ this.props.gameData.byID[gameID].p1 }</Text>
             </ListItem>
           )}
         </List>
+
         <Button full info onPress={() => this.createGame()}>
           <Text>Create Game</Text>
         </Button>
@@ -31,7 +54,7 @@ class Games extends Component {
   }
 
   createGame() {
-    this.props.remoteSaveGame(this.props.uid, generateGame());
+    this.props.remoteSaveGame(this.props.uid, generateGame(this.props.uid));
   }
 }
 

@@ -42,6 +42,15 @@ class Game extends Component {
     );
   }
 
+  componentDidUpdate() {
+    if ( this.props.uid !== this.props.game.turn ) {
+      this.props.history.push(`/games`);
+      console.log('redirecting...');
+      console.log('uid:', this.props.uid);
+      console.log('turn:', this.props.game.turn);
+    }
+  }
+
   _onLayout() {
     this.gameBoard.measureInWindow((x, y, width, height) => {
       this.props.setGameboardLocation(x, y, width, height);
@@ -50,7 +59,7 @@ class Game extends Component {
 
   submitMove() {
     console.log('submit move');
-    this.props.saveMoveRemotely(this.props.gameID, this.props.game);
+    this.props.saveMoveRemotely(this.props.gameID, this.props.uid, this.props.game);
   }
 }
 
@@ -66,6 +75,7 @@ const mapStateToProps = (state, ownProps) => {
     gameID: gameID,
     game: state.gameData.byID[gameID],
     display: state.display,
+    uid: state.user.uid
   };
 };
 

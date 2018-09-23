@@ -331,7 +331,7 @@ export function remoteSaveGame(userID, newGameData) {
 
 }
 
-export function saveMoveRemotely(gameID, localGameData) {
+export function saveMoveRemotely(gameID, userID, localGameData) {
   // update a remote game from local data
 
   return (dispatch) => {
@@ -350,8 +350,19 @@ export function saveMoveRemotely(gameID, localGameData) {
 
         const currentHistory = gameDoc.data().history;
 
+        // if there is no opponent yet, set the turn to "p2", which will be used for querying games when trying to join a new one
+        let turn = "p2";
+
+        // if there is an opponent, set the turn value to their uid
+        if ( localGameData.p1 !== null && localGameData.p1 !== userID ) {
+          turn = localGameData.p1;
+        } else if ( localGameData.p2 !== null && localGameData.p2 !== userID ) {
+          turn = localGameData.p2;
+        }
+
         transaction.update(gameDocRef, {
-          history: [ ...currentHistory, newMove ]
+          history: [ ...currentHistory, newMove ],
+          t: turn
         });
 
       });

@@ -1,9 +1,10 @@
 import settings from '../config';
 
-export function generateGame() {
+export function generateGame(userID = null) {
   return {
-    p1: 'billy',
-    p2: 'jimmy',
+    p1: userID,
+    p2: null,
+    t: userID,
     history: [
       {
         w: null,
