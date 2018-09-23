@@ -304,13 +304,16 @@ export function remoteSaveGame(userID, newGameData) {
 
       return transaction.get(userDocRef).then( (userDoc) => {
 
-        if (!userDoc.exists) return;
-
-        const currentUserGames = userDoc.data().games ? userDoc.data().games : [];
-
-        transaction.update(userDocRef, {
-          games: [ ...currentUserGames, newGameID ]
-        });
+        if (!userDoc.exists) {
+          transaction.set(userDocRef, {
+            games: [newGameID]
+          });
+        } else {
+          const currentUserGames = userDoc.data().games ? userDoc.data().games : [];
+          transaction.update(userDocRef, {
+            games: [ ...currentUserGames, newGameID ]
+          });
+        }
 
         transaction.set(newGameDocRef, newGameData );
 
@@ -321,7 +324,7 @@ export function remoteSaveGame(userID, newGameData) {
     }).then( () => {
       console.log('sweet game save successsssss');
     }).catch( (err) => {
-      console.log('error:', err);
+      console.log(err);
     });
 
   }
