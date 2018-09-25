@@ -1,6 +1,6 @@
 import firebase from 'react-native-firebase';
 
-import { remoteToLocal, localToRemote } from '../utilities';
+import { remoteToLocal, localToRemote, generateGame } from '../utilities';
 
 // available actions
 // game actions
@@ -291,11 +291,89 @@ export function playWord(consumedSquares, rows, gameID) {
   };
 }
 
-export function remoteSaveGame(userID, newGameData) {
+export function joinRemoteGame(userID) {
+  // try to join a remote game
+  // if join fails, create a new one
+
+  return (dispatch) => {
+
+    const gamesCollectionRef = firebase.firestore().collection('games');
+    const userDocRef = firebase.firestore().collection('users').doc(userID);
+
+    // query to find a game waiting for a partner
+    gamesCollectionRef
+      .where( "t", "==", "p2" )
+      .where( "p2", "==", null )
+      .limit(1)
+      .get()
+      .then( (games) => {
+
+        console.log('games', games);
+
+        // game found
+        if (games.docs.length > 0) {
+
+          const gameDoc = games.docs[0];
+          const joinGameID = { id: gameDoc.id, name: gameDoc.id };
+          const joinGameDocRef = gamesCollectionRef.doc(gameDoc.id);
+
+          // inequality queries don't exist in firestore
+          // if we happened to grab our own game, then we are out of luck
+          if (gameDoc.data().p1 === userID) {
+            console.log('we grabbed our own game! creating a new one...');
+            dispatch(remoteSaveGame(userID));
+            return;
+          }
+
+          // try to claim the game in firebase
+          firebase.firestore().runTransaction( (transaction) => {
+            return transaction.get(userDocRef).then( (userDoc) => {
+
+              if (!userDoc.exists) {
+                transaction.set(userDocRef, {
+                  games: [joinGameID]
+                });
+              } else {
+                const currentUserGames = userDoc.data().games ? userDoc.data().games : [];
+                transaction.update(userDocRef, {
+                  games: [ ...currentUserGames, joinGameID ]
+                });
+              }
+              transaction.update(joinGameDocRef, {
+                t: userID,
+                p2: userID
+              });
+
+            }).then( () => {
+              console.log('join game success');
+            }).catch( (err) => {
+              console.log('failed to join game. creating a new one...');
+              console.log('just in case, printing error:', err);
+              dispatch(remoteSaveGame(userID));
+            });
+          });
+
+        } else {
+          console.log('found no game to join. creating a new one...')
+          dispatch(remoteSaveGame(userID));
+        }
+      })
+      .catch( (err) => {
+        // query failed
+        // (failure is not the same as no results. probably connection issues)
+        console.log('err', err);
+      });
+
+
+  }
+}
+
+export function remoteSaveGame(userID) {
   // save a game (initial save only) remotely from local data
 
   return (dispatch) => {
 
+    const newGameData = generateGame(userID);
     const userDocRef = firebase.firestore().collection('users').doc(userID);
     const newGameDocRef = firebase.firestore().collection('games').doc();
     const newGameID = { id: newGameDocRef.id, name: newGameDocRef.id };

@@ -4,8 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-native';
 import { List, ListItem, Button } from 'native-base';
 
-import { remoteSaveGame } from '../ducks/gameData';
-import { generateGame } from "../utilities";
+import { joinRemoteGame } from '../ducks/gameData';
 
 class Games extends Component {
   constructor() {
@@ -54,7 +53,7 @@ class Games extends Component {
   }
 
   createGame() {
-    this.props.remoteSaveGame(this.props.uid, generateGame(this.props.uid));
+    this.props.joinRemoteGame(this.props.uid);
   }
 }
 
@@ -67,7 +66,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  remoteSaveGame
+  joinRemoteGame
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Games));
