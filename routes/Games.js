@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-native';
-import { List, ListItem, Button } from 'native-base';
+import { withRouter } from 'react-router-native';
+import { List, ListItem, Button, Spinner, Container, Header, Content } from 'native-base';
 import firebase from "react-native-firebase";
 
 import {joinRemoteGame, remoteSaveGame} from '../ducks/gameData';
@@ -11,12 +11,25 @@ import {generateGame} from "../utilities";
 class Games extends Component {
   constructor() {
     super();
+
+    this.state = {
+      working: false,
+    };
+
+    this.newGame = this.newGame.bind(this);
     this.joinRemoteGame = this.joinRemoteGame.bind(this);
     this.createRemoteGame = this.createRemoteGame.bind(this);
   }
 
   render() {
-    // console.log('game data:', this.props.gameData);
+
+    if (this.state.working) {
+      return (
+        <Container>
+          <Spinner color='blue' />
+        </Container>
+      );
+    }
 
     const readyToPlay = Object.keys(this.props.gameData.byID).filter( (gameID) => {
       const game = this.props.gameData.byID[gameID];
@@ -49,16 +62,47 @@ class Games extends Component {
           )}
         </List>
 
-        <Button full info onPress={() => this.joinRemoteGame()}>
+        <Button full info onPress={() => this.newGame()}>
           <Text>New Game</Text>
         </Button>
       </View>
     );
   }
 
-  joinRemoteGame() {
+  newGame() {
 
-    // if the join game fails, a new game is created instead
+    this.setState({
+      working: true
+    });
+
+    new Promise( this.joinRemoteGame )
+      .then( (something) => {
+        console.log('something', something);
+        this.setState({
+          working: false
+        })
+      })
+      .catch( (err) => {
+        console.log('REJECTED!', err);
+
+        new Promise( this.createRemoteGame )
+          .then( (something) => {
+            console.log(something);
+          })
+          .catch( (err) => {
+            console.log('create failed!', err);
+          })
+          .finally( () => {
+            console.log('last thing, i hope');
+            this.setState({
+              working: false
+            })
+          });
+
+      });
+  }
+
+  joinRemoteGame(resolve, reject) {
 
     const userID = this.props.uid;
     const gamesCollectionRef = firebase.firestore().collection('games');
@@ -84,8 +128,7 @@ class Games extends Component {
           // inequality queries don't exist in firestore
           // if we happened to grab our own game, then we are out of luck
           if (gameDoc.data().p1 === userID) {
-            console.log('we grabbed our own game! creating a new one...');
-            this.createRemoteGame();
+            reject('we grabbed our own game! creating a new one...')
             return;
           }
 
@@ -111,15 +154,12 @@ class Games extends Component {
             }).then( () => {
               console.log('join game success');
             }).catch( (err) => {
-              console.log('failed to join game. creating a new one...');
-              console.log('just in case, printing error:', err);
-              this.createRemoteGame();
+              reject('failed to join game. creating a new one...');
             });
           });
 
         } else {
-          console.log('found no game to join. creating a new one...')
-          this.createRemoteGame();
+          reject('found no game to join. creating a new one...');
         }
       })
       .catch( (err) => {
@@ -130,7 +170,7 @@ class Games extends Component {
 
   }
 
-  createRemoteGame() {
+  createRemoteGame(resolve, reject) {
 
     const userID = this.props.uid;
     const newGameData = generateGame(userID);
@@ -160,9 +200,9 @@ class Games extends Component {
       });
 
     }).then( () => {
-      console.log('sweet game save successsssss');
+      resolve('sweet game save successsssss');
     }).catch( (err) => {
-      console.log(err);
+      reject(err);
     });
 
   }
