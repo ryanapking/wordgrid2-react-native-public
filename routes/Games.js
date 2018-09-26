@@ -23,8 +23,14 @@ class Games extends Component {
 
   render() {
 
+    let button = (
+      <Button full info onPress={() => this.newGame()}>
+        <Text>New Game</Text>
+      </Button>
+    );
+
     if (this.state.working) {
-      return (
+      button = (
         <Container>
           <Spinner color='blue' />
         </Container>
@@ -62,9 +68,7 @@ class Games extends Component {
           )}
         </List>
 
-        <Button full info onPress={() => this.newGame()}>
-          <Text>New Game</Text>
-        </Button>
+        {button}
       </View>
     );
   }
