@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Container, Button } from 'native-base';
+import {Container, Button, Spinner} from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from "react-native-firebase";
@@ -18,6 +18,11 @@ import {localToRemote} from "../utilities";
 class Game extends Component {
   constructor() {
     super();
+
+    this.state = {
+      working: false
+    };
+
     this.saveRemoteMove = this.saveRemoteMove.bind(this);
   }
 
@@ -28,7 +33,13 @@ class Game extends Component {
 
     // console.log('piece placed? ', this.props.game.piecePlaced);
 
-    if (!wordPlayed) {
+    if (this.state.working) {
+      interaction = (
+        <Container>
+          <Spinner color='blue' />
+        </Container>
+      );
+    } else if (!wordPlayed) {
       interaction = <GameWordDisplay />;
     } else if (!this.props.game.piecePlaced) {
       interaction = <GamePieceSection />;
@@ -65,6 +76,10 @@ class Game extends Component {
   }
 
   saveRemoteMove() {
+
+    this.setState({
+      working: true
+    });
 
     const gameID = this.props.gameID;
     const userID = this.props.uid;
@@ -105,6 +120,10 @@ class Game extends Component {
       console.log('game update succeeded');
     }).catch( (err) => {
       console.log('game update error:', err);
+    }).finally( () => {
+      this.setState({
+        working: false
+      })
     });
 
   }
