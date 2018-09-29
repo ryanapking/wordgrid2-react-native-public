@@ -25,7 +25,6 @@ export function remoteToLocal(source, userID) {
 }
 
 export function localToRemote(localData, userID) {
-  console.log('userID:', userID);
   return {
     w: localData.word,
     wv: localData.wordValue,

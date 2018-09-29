@@ -11,6 +11,7 @@ import Home from "./routes/Home";
 import Login from "./routes/Login";
 import Game from "./routes/Game";
 import Games from "./routes/Games";
+import Settings from "./routes/Settings";
 
 // redirect all non-logged in users to the login screen
 import LoginRedirect from "./components/nondisplay/LoginRedirect";
@@ -29,16 +30,16 @@ export default class App extends Component {
             <Col>
               <Row size={5}>
                 <Link
-                  to="/"
-                  underlayColor='#f0f4f7'
-                  style={styles.navItem}>
-                  <Text>Home</Text>
-                </Link>
-                <Link
                   to="/games"
                   underlayColor='#f0f4f7'
                   style={styles.navItem}>
                   <Text>Games</Text>
+                </Link>
+                <Link
+                  to="/settings"
+                  underlayColor='#f0f4f7'
+                  style={styles.navItem}>
+                  <Text>Settings</Text>
                 </Link>
               </Row>
               <Row size={95}>
@@ -46,6 +47,7 @@ export default class App extends Component {
                 <Route path="/login" component={Login} />
                 <Route path="/game/:gameID" component={Game}/>
                 <Route path="/games" component={Games}/>
+                <Route path="/settings" component={Settings}/>
               </Row>
               <LoginRedirect />
               <FirebaseListeners />
