@@ -55,7 +55,7 @@ class Games extends Component {
           </ListItem>
           { readyToPlay.map( (gameID, index) =>
             <ListItem onPress={() => this.props.history.push(`/game/${gameID}`)} key={index}>
-              <Text>{ this.props.gameData.byID[gameID].opponentID ? this.props.gameData.byID[gameID].opponentID : 'waiting for opponent' }</Text>
+              <Text>{ this.props.gameData.byID[gameID].opponentName }</Text>
             </ListItem>
           )}
           <ListItem itemDivider>
@@ -63,7 +63,7 @@ class Games extends Component {
           </ListItem>
           { waitingOnOpponent.map( (gameID, index) =>
             <ListItem key={index}>
-              <Text>{ this.props.gameData.byID[gameID].opponentID ? this.props.gameData.byID[gameID].opponentID : 'waiting for opponent' }</Text>
+              <Text>{ this.props.gameData.byID[gameID].opponentName }</Text>
             </ListItem>
           )}
         </List>

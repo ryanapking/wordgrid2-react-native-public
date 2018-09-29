@@ -12,20 +12,20 @@ class Settings extends Component {
     super();
     this.state = {
       displayName: "",
-      loading: false,
-      docExists: false,
-      settingsUserID: null
+      newDisplayName: "",
+      displayingUserID: null,
+      loading: false
     };
   }
 
   componentDidMount() {
-    this.getSettings();
+    this.getDisplayName();
   }
 
   componentDidUpdate() {
     // we might be displaying a different user's settings, though it's not terribly likely
-    if (!this.state.loading && this.state.settingsUserID !== this.props.userID) {
-      this.getSettings();
+    if (!this.state.loading && this.state.displayingUserID !== this.props.userID) {
+      this.getDisplayName();
     }
   }
 
@@ -47,65 +47,114 @@ class Settings extends Component {
           <Item floatingLabel>
             <Label>Display Name</Label>
             <Input
-              value={this.state.displayName}
-              onChangeText={ (displayName) => this.setState({displayName})}
+              value={this.state.newDisplayName}
+              onChangeText={ (newDisplayName) => this.setState({newDisplayName})}
             />
           </Item>
         </Form>
-        <Button style={{ marginTop: 5 }} full info onPress={() => this.saveSettings()}>
+        <Button style={{ marginTop: 5 }} full info onPress={() => this.saveDisplayName()}>
           <Text>Save</Text>
         </Button>
       </Content>
     )
   }
 
-  saveSettings() {
-    this.setState({loading: true});
+  getDisplayName() {
+    this.setState({
+      loading: true,
+      displayName: ""
+    });
 
-    if (this.state.docExists) {
-      // if userdoc already exists, update it
-      this.updateExistingUserdoc();
-    } else {
-      // this might be a user's first action. create the doc if necessary
-      this.saveNewUserdoc();
-    }
-  }
+    const displayNamesRef = firebase.firestore().collection('displayNames');
 
-  updateExistingUserdoc() {
-    const userDocRef = firebase.firestore().collection('users').doc(this.props.userID);
-
-    userDocRef.update({
-      dname: this.state.displayName
-    })
-      .then( () => {
-        console.log('update succeeded');
+    displayNamesRef
+      .where("id", "==", this.props.userID)
+      .limit(1)
+      .get()
+      .then( (results) => {
+        console.log('got display name');
+        const displayName = (results.docs.length > 0) ? results.docs[0].id : "";
+        this.setState({
+          displayName,
+          newDisplayName: displayName,
+          displayingUserID: this.props.userID
+        });
       })
       .catch( (err) => {
-        // should probs do something here...
-        console.log('update failed');
+        // who knows what happened...
       })
       .finally( () => {
-        this.getSettings();
-      })
-  }
-
-  saveNewUserdoc() {
-    const userDocRef = firebase.firestore().collection('users').doc(this.props.userID);
-
-    userDocRef.set({
-      dname: this.state.displayName
-    })
-      .then( () => {
-        console.log("new userdoc created... hope you weren't already a user...");
-      })
-      .catch( () => {
-        // do WHAT, man?
-        console.log('attempt to create new userDoc failed');
-      })
-      .finally( () => {
-        this.getSettings();
+        this.setState({
+          loading: false
+        });
       });
+
   }
+
+  saveDisplayName() {
+    // only try to save if the displayName has changed.
+    if (this.state.displayName === this.state.newDisplayName) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    const displayNamesRef = firebase.firestore().collection('displayNames');
+    const newDisplayNameRef = displayNamesRef.doc(this.state.newDisplayName);
+
+    // search for existing names to be deleted
+    displayNamesRef
+      .where("id", "==", this.props.userID)
+      .get()
+      .then( (results) => {
+
+        let batch = firebase.firestore().batch();
+
+        results.docs.forEach( (doc) => {
+          const docRef = firebase.firestore().collection('displayNames').doc(doc.id);
+          batch.delete( docRef );
+        });
+
+        batch.set(newDisplayNameRef, {
+          id: this.props.userID
+        });
+
+        batch.commit()
+          .then( () => {
+            console.log('batch success');
+          })
+          .catch( (err) => {
+            console.log('batch error:', err);
+          })
+          .finally( () => {
+
+          });
+
+
+      })
+      .catch( (err) => {
+        // who knows what happened...
+      })
+      .finally( () => {
+        this.setState({
+          loading: false
+        });
+      });
+
+  }
+
+
+
+
+
+
+
+
+
+
+  // will likely use this in the near future for settings besides display name
 
   getSettings() {
     this.setState({

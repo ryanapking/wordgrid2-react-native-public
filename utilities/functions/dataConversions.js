@@ -3,6 +3,7 @@ export function remoteToLocal(source, userID) {
   const me = (source.p1 === userID) ? current.p1 : current.p2;
   const them = (source.p1 === userID) ? current.p2 : current.p1;
   const opponentID = (source.p1 === userID) ? source.p2 : source.p1;
+  const opponentName = "unknown opponent";
   return {
     consumedSquares: [],
     rows: boardStringToArray(current.b),
@@ -15,6 +16,7 @@ export function remoteToLocal(source, userID) {
 
     // strictly used for displaying opponent name in /games screen
     opponentID,
+    opponentName,
 
     // used when converting back to remote
     history: source.history,
