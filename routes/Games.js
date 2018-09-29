@@ -55,7 +55,7 @@ class Games extends Component {
           </ListItem>
           { readyToPlay.map( (gameID, index) =>
             <ListItem onPress={() => this.props.history.push(`/game/${gameID}`)} key={index}>
-              <Text>{ this.props.gameData.byID[gameID].p1 }</Text>
+              <Text>{ this.props.gameData.byID[gameID].opponentID ? this.props.gameData.byID[gameID].opponentID : 'waiting for opponent' }</Text>
             </ListItem>
           )}
           <ListItem itemDivider>
@@ -63,7 +63,7 @@ class Games extends Component {
           </ListItem>
           { waitingOnOpponent.map( (gameID, index) =>
             <ListItem key={index}>
-              <Text>{ this.props.gameData.byID[gameID].p1 }</Text>
+              <Text>{ this.props.gameData.byID[gameID].opponentID ? this.props.gameData.byID[gameID].opponentID : 'waiting for opponent' }</Text>
             </ListItem>
           )}
         </List>
@@ -156,7 +156,7 @@ class Games extends Component {
               });
 
             }).then( () => {
-              console.log('join game success');
+              resolve('join game success');
             }).catch( (err) => {
               reject('failed to join game. creating a new one...');
             });

@@ -86,7 +86,7 @@ class Game extends Component {
     const localGameData = this.props.game;
 
     const gameDocRef = firebase.firestore().collection('games').doc(gameID);
-    const newMove = localToRemote(localGameData);
+    const newMove = localToRemote(localGameData, this.props.uid);
 
     console.log('localGameData:', localGameData);
     console.log('newMove:', newMove);

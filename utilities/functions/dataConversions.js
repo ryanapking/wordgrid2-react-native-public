@@ -1,13 +1,20 @@
-export function remoteToLocal(source) {
+export function remoteToLocal(source, userID) {
   const current = source.history[source.history.length - 1];
+  const me = (source.p1 === userID) ? current.p1 : current.p2;
+  const them = (source.p1 === userID) ? current.p2 : current.p1;
+  const opponentID = (source.p1 === userID) ? source.p2 : source.p1;
   return {
     consumedSquares: [],
     rows: boardStringToArray(current.b),
-    me: current.p1.map( (piece) => pieceStringToArray(piece)),
-    them: current.p2.map( (piece) => pieceStringToArray(piece)),
+    me: me.map( (piece) => pieceStringToArray(piece)),
+    them: them.map( (piece) => pieceStringToArray(piece)),
     word: "",
+    wordValue: 0,
     piecePlaced: false,
     validatingWord: false,
+
+    // strictly used for displaying opponent name in /games screen
+    opponentID,
 
     // used when converting back to remote
     history: source.history,
@@ -17,10 +24,12 @@ export function remoteToLocal(source) {
   }
 }
 
-export function localToRemote(localData) {
+export function localToRemote(localData, userID) {
+  console.log('userID:', userID);
   return {
     w: localData.word,
-    p: null, // will store the id of the use who created this history item
+    wv: localData.wordValue,
+    p: userID, // will store the id of the use who created this history item
     b: arrayToString(localData.rows),
     p1: localData.me.map( (piece) => arrayToString(piece) ),
     p2: localData.them.map( (piece) => arrayToString(piece) ),

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { Button } from 'native-base';
+import { Button, Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
 import { playWord } from '../ducks/gameData';
+import { calculateWordValue } from "../utilities";
 
 class GameWordDisplay extends Component {
   render() {
@@ -15,7 +16,7 @@ class GameWordDisplay extends Component {
         <Text style={{padding: 20, textAlign: 'center'}}>{displayWord}</Text>
         { longEnough ?
           <Button full light onPress={() => this.playWord()}>
-            <Text>Submit Your Word</Text>
+            <Text>Submit Your Word for {calculateWordValue(displayWord)} points</Text>
           </Button>
           : null
         }
@@ -34,6 +35,7 @@ const mapStateToProps = (state, ownProps) => {
     gameID: gameID,
     consumedSquares: state.gameData.byID[gameID].consumedSquares,
     rows: state.gameData.byID[gameID].rows,
+    wordValue: state.gameData.byID[gameID].wordValue
   }
 };
 

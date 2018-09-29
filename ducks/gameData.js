@@ -1,6 +1,6 @@
 import firebase from 'react-native-firebase';
 
-import { remoteToLocal, localToRemote, generateGame } from '../utilities';
+import { remoteToLocal, calculateWordValue } from '../utilities';
 
 // available actions
 // game actions
@@ -130,6 +130,7 @@ function playWordReducer(state, action) {
       [action.gameID]: {
         ...game,
         word: action.word,
+        wordValue: action.wordValue,
         rows: action.rows,
         consumedSquares: [],
         validatingWord: false
@@ -249,6 +250,7 @@ export function endPlayWord(gameID) {
 export function playValidatedWord(consumedSquares, rows, gameID) {
   // build the word from the consumed squares
   const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
+  const wordValue = calculateWordValue(word);
 
   // map the played squares onto the board
   const newRows = rows.map( (row, rowIndex ) => {
@@ -262,6 +264,7 @@ export function playValidatedWord(consumedSquares, rows, gameID) {
     type: PLAY_WORD,
     rows: newRows,
     word,
+    wordValue,
     gameID
   }
 }
@@ -310,7 +313,7 @@ export function startRemoteIDSync(userID) {
       const gameIDs = userDoc.data().games ? userDoc.data().games : [];
 
       dispatch(updateLocalGameIDs(gameIDs));
-      dispatch(startRemoteGameSyncs(gameIDs));
+      dispatch(startRemoteGameSyncs(gameIDs, userID));
 
       // console.log('from sync: userDoc:', userDoc.data());
 
@@ -319,7 +322,7 @@ export function startRemoteIDSync(userID) {
   }
 }
 
-export function startRemoteGameSyncs(gameIDs) {
+export function startRemoteGameSyncs(gameIDs, userID) {
 
   return (dispatch, getState) => {
 
@@ -342,7 +345,7 @@ export function startRemoteGameSyncs(gameIDs) {
       gameDocRef.onSnapshot( (gameDoc) => {
 
         if (!gameDoc.exists) return;
-        dispatch(updateLocalGame(gameID, gameDoc.data()));
+        dispatch(updateLocalGame(gameID, userID, gameDoc.data()));
 
       });
 
@@ -360,10 +363,10 @@ export function updateRemoteSyncingIDs(gameIDs) {
   }
 }
 
-export function updateLocalGame(gameID, sourceData) {
+export function updateLocalGame(gameID, userID, sourceData) {
   return {
     type: SET_LOCAL_GAME_BY_ID,
-    localData: remoteToLocal(sourceData),
+    localData: remoteToLocal(sourceData, userID),
     gameID
   }
 }
