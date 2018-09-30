@@ -41,9 +41,9 @@ export default function reducer(state = initialState, action) {
     case PLAY_WORD:
       return playWordReducer(state, action);
     case SET_LOCAL_GAME_IDS:
-      return updateLocalGameIDsReducer(state, action);
+      return setLocalGameIDsReducer(state, action);
     case SET_LOCAL_GAME_BY_ID:
-      return updateLocalGameReducer(state, action);
+      return setLocalGameDataReducer(state, action);
     case SET_OPPONENT_NAME:
       return setOpponentNameReducer(state, action);
     default:
@@ -170,7 +170,7 @@ function startPlayWordReducer(state, action) {
   };
 }
 
-function updateLocalGameIDsReducer(state, action) {
+function setLocalGameIDsReducer(state, action) {
   const allIDs = action.gameIDs;
   return {
     ...state,
@@ -178,7 +178,7 @@ function updateLocalGameIDsReducer(state, action) {
   }
 }
 
-function updateLocalGameReducer(state, action) {
+function setLocalGameDataReducer(state, action) {
   const byID = state.byID;
   let newState = {
     ...state,
@@ -302,14 +302,14 @@ export function playWord(consumedSquares, rows, gameID) {
   };
 }
 
-export function updateLocalGameIDs(gameIDs) {
+export function setLocalGameIDs(gameIDs) {
   return {
     type: SET_LOCAL_GAME_IDS,
     gameIDs
   }
 }
 
-export function updateLocalGame(gameID, userID, sourceData) {
+export function setLocalGameDataByID(gameID, userID, sourceData) {
   const localData = remoteToLocal(sourceData, userID);
   return {
     type: SET_LOCAL_GAME_BY_ID,

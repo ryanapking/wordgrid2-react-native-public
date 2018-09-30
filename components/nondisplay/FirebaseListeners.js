@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
-import { getOpponentName, updateLocalGame, updateLocalGameIDs } from "../../ducks/gameData";
+import { getOpponentName, setLocalGameDataByID, setLocalGameIDs } from "../../ducks/gameData";
 
 class FirebaseListeners extends Component {
   constructor() {
@@ -52,7 +52,7 @@ class FirebaseListeners extends Component {
     const userListener = userDocRef.onSnapshot( (userDoc) => {
       if (!userDoc.exists) return;
       const gameIDs = userDoc.data().games ? userDoc.data().games : [];
-      this.props.updateLocalGameIDs(gameIDs);
+      this.props.setLocalGameIDs(gameIDs);
       this.manageRemoteGameSyncs(gameIDs, this.props.userID);
     });
 
@@ -84,7 +84,7 @@ class FirebaseListeners extends Component {
       gameDocRef.onSnapshot( (gameDoc) => {
 
         if (!gameDoc.exists) return;
-        this.props.updateLocalGame(gameID, userID, gameDoc.data());
+        this.props.setLocalGameDataByID(gameID, userID, gameDoc.data());
         this.props.getOpponentName(gameID);
 
       });
@@ -109,8 +109,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   getOpponentName,
-  updateLocalGame,
-  updateLocalGameIDs
+  setLocalGameDataByID,
+  setLocalGameIDs
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));
