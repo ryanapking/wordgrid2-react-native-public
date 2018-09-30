@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
-import { getOpponentName, setLocalGameDataByID, setLocalGameIDs } from "../../ducks/gameData";
+import { getOpponentName, setLocalGameDataByID, setLocalGameIDs, removeLocalGameByID } from "../../ducks/gameData";
 
 class FirebaseListeners extends Component {
   constructor() {
@@ -81,7 +81,8 @@ class FirebaseListeners extends Component {
 
       console.log('starting sync for new game:', gameID);
       const gameDocRef = firebase.firestore().collection('games').doc(gameID);
-      gameDocRef.onSnapshot( (gameDoc) => {
+
+      let gameListener = gameDocRef.onSnapshot( (gameDoc) => {
 
         if (!gameDoc.exists) return;
         this.props.setLocalGameDataByID(gameID, userID, gameDoc.data());
@@ -89,10 +90,33 @@ class FirebaseListeners extends Component {
 
       });
 
+      this.setState({
+        gameListeners: {...this.state.gameListeners, [gameID]: gameListener}
+      });
+
     });
 
+    // our list of local games should now reflect the remote list
     this.setState({
       gameListenerIDs: currentRemoteGameIDs
+    });
+
+    // remove any defunct listeners
+    for (let gameID in this.state.gameListeners) {
+      if (!this.state.gameListenerIDs.includes(gameID)) {
+        console.log('game defunct. removing listener...');
+        this.state.gameListeners[gameID]();
+        this.props.removeLocalGameByID(gameID);
+      }
+    }
+
+    // create a new object describing and containing the current remote game listeners
+    const gameListeners = {};
+    this.state.gameListenerIDs.forEach( (gameID) => {
+      gameListeners[gameID] = this.state.gameListeners[gameID];
+    });
+    this.setState({
+      gameListeners
     });
 
   }
@@ -102,15 +126,14 @@ class FirebaseListeners extends Component {
 const mapStateToProps = (state) => {
   return {
     userID: state.user.uid,
-    gameData: state.gameData,
-    allIDs: state.gameData.allIDs
   };
 };
 
 const mapDispatchToProps = {
   getOpponentName,
   setLocalGameDataByID,
-  setLocalGameIDs
+  setLocalGameIDs,
+  removeLocalGameByID
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));
