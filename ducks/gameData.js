@@ -289,31 +289,6 @@ export function playValidatedWord(consumedSquares, rows, gameID) {
   }
 }
 
-export function playWord(consumedSquares, rows, gameID) {
-  const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
-
-  // check if the word is valid and dispatch the appropriate action
-  return (dispatch) => {
-
-    dispatch(startPlayWord(gameID));
-
-    firebase.firestore().collection('dictionary').doc(word).get()
-      .then((doc) => {
-        console.log(`${word} exists? ${doc.exists}`);
-
-        if (doc.exists) {
-          dispatch(playValidatedWord(consumedSquares, rows, gameID));
-        } else {
-          dispatch(endPlayWord(gameID));
-        }
-
-      })
-      .catch((e) => {
-        console.log("error fetching doc:", e);
-      });
-  };
-}
-
 export function setLocalGameIDs(gameIDs) {
   return {
     type: SET_LOCAL_GAME_IDS,
@@ -330,35 +305,6 @@ export function setLocalGameDataByID(gameID, userID, sourceData) {
   }
 }
 
-export function getOpponentName(gameID) {
-
-  return (dispatch, getState) => {
-
-    const state = getState();
-    const game = state.gameData.byID[gameID];
-    const opponentID = game.opponentID;
-
-    if (!opponentID) return;
-
-    firebase.firestore().collection('displayNames')
-      .where("id", "==", opponentID)
-      .limit(1)
-      .get()
-      .then( (results) => {
-        // console.log('name search complete');
-        if (results.docs.length > 0) {
-          dispatch(setOpponentName(gameID, results.docs[0].id));
-        }
-      })
-      .catch( (err) => {
-        console.log('error fetching opponent:', err);
-      })
-      .finally( () => {
-        // console.log('finally...');
-      })
-  }
-}
-
 export function setOpponentName(gameID, opponentName) {
   return {
     type: SET_OPPONENT_NAME,
@@ -368,7 +314,6 @@ export function setOpponentName(gameID, opponentName) {
 }
 
 export function removeLocalGameByID(gameID) {
-  console.log('removeLocalGameByID()');
   return {
     type: REMOVE_LOCAL_GAME_BY_ID,
     gameID

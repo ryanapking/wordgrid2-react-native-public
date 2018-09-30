@@ -3,7 +3,12 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
-import { getOpponentName, setLocalGameDataByID, setLocalGameIDs, removeLocalGameByID } from "../../ducks/gameData";
+import {
+  setLocalGameDataByID,
+  setLocalGameIDs,
+  removeLocalGameByID,
+  setOpponentName
+} from "../../ducks/gameData";
 
 class FirebaseListeners extends Component {
   constructor() {
@@ -83,11 +88,9 @@ class FirebaseListeners extends Component {
       const gameDocRef = firebase.firestore().collection('games').doc(gameID);
 
       let gameListener = gameDocRef.onSnapshot( (gameDoc) => {
-
         if (!gameDoc.exists) return;
         this.props.setLocalGameDataByID(gameID, userID, gameDoc.data());
-        this.props.getOpponentName(gameID);
-
+        this.getOpponentName(gameID);
       });
 
       this.setState({
@@ -121,16 +124,43 @@ class FirebaseListeners extends Component {
 
   }
 
+  getOpponentName(gameID) {
+
+    const game = this.props.gamesByID[gameID];
+    const opponentID = game.opponentID;
+
+    if (!opponentID) return;
+
+    firebase.firestore().collection('displayNames')
+      .where("id", "==", opponentID)
+      .limit(1)
+      .get()
+      .then( (results) => {
+        // console.log('name search complete');
+        if (results.docs.length > 0) {
+          this.props.setOpponentName(gameID, results.docs[0].id);
+        }
+      })
+      .catch( (err) => {
+        console.log('error fetching opponent:', err);
+      })
+      .finally( () => {
+        // console.log('finally...');
+      });
+
+  }
+
 }
 
 const mapStateToProps = (state) => {
   return {
     userID: state.user.uid,
+    gamesByID: state.gameData.byID
   };
 };
 
 const mapDispatchToProps = {
-  getOpponentName,
+  setOpponentName,
   setLocalGameDataByID,
   setLocalGameIDs,
   removeLocalGameByID
