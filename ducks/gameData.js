@@ -313,7 +313,7 @@ export function playWord(consumedSquares, rows, gameID) {
   };
 }
 
-function updateLocalGameIDs(gameIDs) {
+export function updateLocalGameIDs(gameIDs) {
   return {
     type: SET_LOCAL_GAME_IDS,
     gameIDs

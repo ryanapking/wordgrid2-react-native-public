@@ -30,17 +30,17 @@ class FirebaseListeners extends Component {
   }
 
   componentDidUpdate() {
-    if (this.uid !== this.props.user.uid) {
-      this.uid = this.props.user.uid;
-
-      // this should be moved elsewhere and this whole component scrapped
-      this.props.startRemoteGameIDSync(this.uid);
-
-      // unsubscribe from any previous lists
-      if (this.gameList) this.gameList();
-
-      this.gameList = this.createUserListener(this.uid);
-    }
+    // if (this.uid !== this.props.user.uid) {
+    //   this.uid = this.props.user.uid;
+    //
+    //   // this should be moved elsewhere and this whole component scrapped
+    //   this.props.startRemoteGameIDSync(this.uid);
+    //
+    //   // unsubscribe from any previous lists
+    //   if (this.gameList) this.gameList();
+    //
+    //   this.gameList = this.createUserListener(this.uid);
+    // }
   }
 
   createUserListener(uid) {

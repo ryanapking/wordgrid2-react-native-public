@@ -12,7 +12,7 @@ class NewGameButton extends Component {
     super();
 
     this.state = {
-      working: true,
+      working: false,
     };
 
     this.newGame = this.newGame.bind(this);
