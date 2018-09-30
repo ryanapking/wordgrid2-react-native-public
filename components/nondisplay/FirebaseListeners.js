@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
-import { startRemoteIDSync } from "../../ducks/gameData";
+import {
+  getOpponentName,
+  startRemoteIDSync,
+  updateLocalGame,
+  updateLocalGameIDs,
+  updateRemoteSyncingIDs
+} from "../../ducks/gameData";
 
 // this component is dumb
 // it stores firebase onSnapshot listeners so they can later to deleted
@@ -15,102 +21,110 @@ import { startRemoteIDSync } from "../../ducks/gameData";
 class FirebaseListeners extends Component {
   constructor() {
     super();
-    this.uid = null;
-    this.gameIDs = ['cherry'];
-    this.gameList = null;
-    this.games = {};
 
-    this.onUserSnapshot = this.onUserSnapshot.bind(this);
-    this.onGameSnapshot = this.onGameSnapshot.bind(this);
-  }
+    this.state = {
+      gameListenerIDs: [],
+      gameListeners: {},
+      userListenerID: null,
+      userListener: null
+    };
 
-  componentDidMount() {
-    // console.log('user id:', this.props.user.uid);
-    // this.props.startRemoteIDSync(this.props.user.uid);
-  }
-
-  componentDidUpdate() {
-    // if (this.uid !== this.props.user.uid) {
-    //   this.uid = this.props.user.uid;
-    //
-    //   // this should be moved elsewhere and this whole component scrapped
-    //   this.props.startRemoteGameIDSync(this.uid);
-    //
-    //   // unsubscribe from any previous lists
-    //   if (this.gameList) this.gameList();
-    //
-    //   this.gameList = this.createUserListener(this.uid);
-    // }
-  }
-
-  createUserListener(uid) {
-    return firebase.firestore().collection('users').doc(uid).onSnapshot( this.onUserSnapshot )
-  }
-
-  createGameListener(gameID) {
-    return firebase.firestore().collection('games').doc(gameID).onSnapshot( this.onGameSnapshot );
-  }
-
-  onUserSnapshot(doc) {
-    // just ... stop
-    return;
-    // this is the dumb, ugly function
-    // set listeners for new games
-    // remove listeners for defunct games
-
-    // probably an error if the doc doesn't exist
-    // just wait until it does
-    if (!doc.exists) return;
-
-    const remoteIDs = ("games" in doc.data()) ? doc.data().games : [];
-
-    // for any new games, set a listener
-    const newGames = remoteIDs.filter( (gameID) => {
-      return !this.gameIDs.includes(gameID);
-    });
-
-    newGames.forEach( (gameID) => {
-      this.games[gameID] = this.createGameListener(gameID);
-    });
-
-    // the returned list of gameIDs is now our local list
-    this.gameIDs = remoteIDs;
-
-    // filter for games that are no longer found in firebase
-    const removedGames = Object.keys(this.games)
-      .filter( (gameID) => {
-        return !this.gameIDs.includes(gameID);
-      });
-
-    // remove listeners for these games
-    removedGames.forEach( (gameID) => {
-      if (this.game[gameID]) this.games[gameID]();
-      delete this.games[gameID];
-    });
-
-    // console.log('this.games', this.games);
-    // console.log('this.gameIDs', this.gameIDs);
-
-  }
-
-  onGameSnapshot(doc) {
-    console.log('game snapshot:', doc.data());
+    this.manageRemoteGameListSync = this.manageRemoteGameListSync.bind(this);
+    this.manageRemoteGameSyncs = this.manageRemoteGameSyncs.bind(this);
   }
 
   render() {
     return null;
   }
+
+  componentWillUnmount() {
+    console.log('firebase listeners component will unmount');
+  }
+
+  componentDidMount() {
+    this.manageRemoteGameListSync();
+  }
+
+  componentDidUpdate() {
+    this.manageRemoteGameListSync();
+  }
+
+  manageRemoteGameListSync() {
+
+    // we probably don't need to do anything and don't want to repeat this function to prevent duplicate listeners
+    if ( this.props.userID === this.state.userListenerID ) {
+      return;
+    } else if ( this.state.userListener ) {
+      this.state.userListener();
+    }
+
+    console.log('user game list sync starting');
+
+    const userDocRef = firebase.firestore().collection('users').doc(this.props.userID);
+
+    const userListener = userDocRef.onSnapshot( (userDoc) => {
+      if (!userDoc.exists) return;
+      const gameIDs = userDoc.data().games ? userDoc.data().games : [];
+      this.props.updateLocalGameIDs(gameIDs);
+      this.manageRemoteGameSyncs(gameIDs, this.props.userID);
+    });
+
+    this.setState({
+      userListenerID: this.props.userID,
+      userListener
+    });
+
+  }
+
+  manageRemoteGameSyncs(gameIDs, userID) {
+
+    // remove the non-firebase uuid stuff
+    const currentRemoteGameIDs = gameIDs.map( (gameID) => {
+      return gameID.id;
+    });
+
+    // grab the already present listeners, to prevent duplicates
+    const alreadyListening = this.state.gameListenerIDs;
+
+    // figure out which new listeners would be duplicates
+    // add the other listeners
+    currentRemoteGameIDs.filter( (gameID) => {
+      return !alreadyListening.includes(gameID);
+    }).forEach( (gameID) => {
+
+      console.log('starting sync for new game:', gameID);
+      const gameDocRef = firebase.firestore().collection('games').doc(gameID);
+      gameDocRef.onSnapshot( (gameDoc) => {
+
+        if (!gameDoc.exists) return;
+        this.props.updateLocalGame(gameID, userID, gameDoc.data());
+        this.props.getOpponentName(gameID);
+
+      });
+
+    });
+
+    this.setState({
+      gameListenerIDs: currentRemoteGameIDs
+    });
+
+  }
+
 }
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    gameList: state.gameData.allIDs
-  }
+    userID: state.user.uid,
+    gameData: state.gameData,
+    allIDs: state.gameData.allIDs
+  };
 };
 
 const mapDispatchToProps = {
-  startRemoteGameIDSync: startRemoteIDSync
+  getOpponentName,
+  updateLocalGame,
+  updateRemoteSyncingIDs,
+  updateLocalGameIDs
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));

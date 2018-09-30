@@ -67,11 +67,11 @@ class Games extends Component {
   }
 
   componentDidMount() {
-    this.manageRemoteGameListSync();
+    // this.manageRemoteGameListSync();
   }
 
   componentDidUpdate() {
-    this.manageRemoteGameListSync();
+    // this.manageRemoteGameListSync();
   }
 
   manageRemoteGameListSync() {
