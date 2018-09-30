@@ -15,14 +15,12 @@ export const SET_OPPONENT_NAME = 'wordgrid2/gameData/SET_OPPONENT_NAME';
 
 // syncing actions
 export const SET_LOCAL_GAME_IDS = 'wordgrid2/gameData/SET_LOCAL_GAME_IDS';
-export const SET_REMOTE_SYNCING_IDS = 'wordgrid2/gameData/SET_REMOTE_SYNCING_IDS';
 export const SET_LOCAL_GAME_BY_ID = 'wordgrid2/gameData/SET_LOCAL_GAME_BY_ID';
 
 // initial state
 const initialState = {
   byID: {},
   allIDs: [],
-  gameListeners: []
 };
 
 // reducer manager
@@ -44,8 +42,6 @@ export default function reducer(state = initialState, action) {
       return playWordReducer(state, action);
     case SET_LOCAL_GAME_IDS:
       return updateLocalGameIDsReducer(state, action);
-    case SET_REMOTE_SYNCING_IDS:
-      return updateRemoteSyncingIDsReducer(state, action);
     case SET_LOCAL_GAME_BY_ID:
       return updateLocalGameReducer(state, action);
     case SET_OPPONENT_NAME:
@@ -182,13 +178,6 @@ function updateLocalGameIDsReducer(state, action) {
   }
 }
 
-function updateRemoteSyncingIDsReducer(state, action) {
-  return {
-    ...state,
-    gameListeners: action.gameListeners
-  }
-}
-
 function updateLocalGameReducer(state, action) {
   const byID = state.byID;
   let newState = {
@@ -317,70 +306,6 @@ export function updateLocalGameIDs(gameIDs) {
   return {
     type: SET_LOCAL_GAME_IDS,
     gameIDs
-  }
-}
-
-export function startRemoteIDSync(userID) {
-  // console.log('sync started');
-  const userDocRef = firebase.firestore().collection('users').doc(userID);
-
-  return (dispatch) => {
-    userDocRef.onSnapshot( (userDoc) => {
-
-      if (!userDoc.exists) return;
-
-      const gameIDs = userDoc.data().games ? userDoc.data().games : [];
-
-      dispatch(updateLocalGameIDs(gameIDs));
-      dispatch(startRemoteGameSyncs(gameIDs, userID));
-
-      // console.log('from sync: userDoc:', userDoc.data());
-
-    });
-
-  }
-}
-
-export function startRemoteGameSyncs(gameIDs, userID) {
-
-  return (dispatch, getState) => {
-
-    // remove the non-firebase uuid stuff
-    const currentRemoteGameIDs = gameIDs.map( (gameID) => {
-      return gameID.id;
-    });
-
-    // grab the already present listeners, to prevent duplicates
-    const alreadyListening = getState().gameData.gameListeners;
-
-    // figure out which new listeners would be duplicates
-    // add the other listeners
-    currentRemoteGameIDs.filter( (gameID) => {
-      return !alreadyListening.includes(gameID);
-    }).forEach( (gameID) => {
-
-      console.log('starting sync for new game:', gameID);
-      const gameDocRef = firebase.firestore().collection('games').doc(gameID);
-      gameDocRef.onSnapshot( (gameDoc) => {
-
-        if (!gameDoc.exists) return;
-        dispatch(updateLocalGame(gameID, userID, gameDoc.data()));
-
-        dispatch(getOpponentName(gameID));
-
-      });
-
-    });
-
-    dispatch(updateRemoteSyncingIDs(currentRemoteGameIDs));
-
-  }
-}
-
-export function updateRemoteSyncingIDs(gameIDs) {
-  return {
-    type: SET_REMOTE_SYNCING_IDS,
-    gameListeners: gameIDs
   }
 }
 

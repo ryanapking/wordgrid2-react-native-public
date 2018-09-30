@@ -3,20 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from 'react-native-firebase';
 
-import {
-  getOpponentName,
-  startRemoteIDSync,
-  updateLocalGame,
-  updateLocalGameIDs,
-  updateRemoteSyncingIDs
-} from "../../ducks/gameData";
-
-// this component is dumb
-// it stores firebase onSnapshot listeners so they can later to deleted
-// it dispatch the appropriate local data updates
-// i need to be able to remove defunct listeners, like after a game is complete
-// i need to prevent duplicate listeners
-// this is the best way I can think to do it right now
+import { getOpponentName, updateLocalGame, updateLocalGameIDs } from "../../ducks/gameData";
 
 class FirebaseListeners extends Component {
   constructor() {
@@ -123,7 +110,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getOpponentName,
   updateLocalGame,
-  updateRemoteSyncingIDs,
   updateLocalGameIDs
 };
 
