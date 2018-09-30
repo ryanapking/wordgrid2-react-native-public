@@ -11,6 +11,7 @@ export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES
 export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 export const PLAY_WORD_STARTED = 'wordgrid2/gameData/PLAY_WORD_STARTED';
 export const PLAY_WORD_ENDED = 'wordgrid2/gameData/PLAY_WORD_ENDED';
+export const SET_OPPONENT_NAME = 'wordgrid2/gameData/SET_OPPONENT_NAME';
 
 // syncing actions
 export const SET_LOCAL_GAME_IDS = 'wordgrid2/gameData/SET_LOCAL_GAME_IDS';
@@ -47,6 +48,8 @@ export default function reducer(state = initialState, action) {
       return updateRemoteSyncingIDsReducer(state, action);
     case SET_LOCAL_GAME_BY_ID:
       return updateLocalGameReducer(state, action);
+    case SET_OPPONENT_NAME:
+      return setOpponentNameReducer(state, action);
     default:
       return state;
   }
@@ -196,9 +199,25 @@ function updateLocalGameReducer(state, action) {
     },
   };
 
-  console.log("new state:", newState);
+  // console.log("new state:", newState);
 
   return newState;
+}
+
+function setOpponentNameReducer(state, action) {
+  console.log('setOpponentNameReducer');
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        opponentName: action.opponentName
+      }
+    }
+  };
 }
 
 // action creators
@@ -347,6 +366,8 @@ export function startRemoteGameSyncs(gameIDs, userID) {
         if (!gameDoc.exists) return;
         dispatch(updateLocalGame(gameID, userID, gameDoc.data()));
 
+        dispatch(getOpponentName(gameID));
+
       });
 
     });
@@ -364,9 +385,47 @@ export function updateRemoteSyncingIDs(gameIDs) {
 }
 
 export function updateLocalGame(gameID, userID, sourceData) {
+  const localData = remoteToLocal(sourceData, userID);
   return {
     type: SET_LOCAL_GAME_BY_ID,
-    localData: remoteToLocal(sourceData, userID),
+    localData,
     gameID
+  }
+}
+
+export function getOpponentName(gameID) {
+
+  return (dispatch, getState) => {
+
+    const state = getState();
+    const game = state.gameData.byID[gameID];
+    const opponentID = game.opponentID;
+
+    if (!opponentID) return;
+
+    firebase.firestore().collection('displayNames')
+      .where("id", "==", opponentID)
+      .limit(1)
+      .get()
+      .then( (results) => {
+        // console.log('name search complete');
+        if (results.docs.length > 0) {
+          dispatch(setOpponentName(gameID, results.docs[0].id));
+        }
+      })
+      .catch( (err) => {
+        console.log('error fetching opponent:', err);
+      })
+      .finally( () => {
+        // console.log('finally...');
+      })
+  }
+}
+
+export function setOpponentName(gameID, opponentName) {
+  return {
+    type: SET_OPPONENT_NAME,
+    gameID,
+    opponentName
   }
 }
