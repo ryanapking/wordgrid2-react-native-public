@@ -1,56 +1,48 @@
 import settings from '../config';
 
-export function checkPieceFit(player) {
+export function checkPieceFit(playerPieces, boardState) {
   // checks a player's pieces to see if any of them will fit on the board
   // loops until a piece that fits is found
-  var spaceCheck = false;
-  var checkRow = 0;
-  while (spaceCheck === false && checkRow < settings.boardHeight) {
-    var checkColumn = 0;
-    while (spaceCheck === false && checkColumn < settings.boardWidth) {
-      // we only care if this is an empty space
-      if (settings.boardState[checkRow][checkColumn].letter === "") {
-        // check each piece
-        player.pieces.forEach( (piece) => {
-          var referenceRow = piece[0].row;
-          var referenceColumn = piece[0].column;
-          var pieceCheck = true;
-          piece.forEach( (letterTile) => {
-            var rowDiff = parseInt(letterTile.row) - referenceRow;
-            var columnDiff = parseInt(letterTile.column) - referenceColumn;
-            var row = checkRow + rowDiff;
-            var column = checkColumn + columnDiff;
-            // console.log("row: ", row, "column: ", column);
-            if (row < 0 || column < 0 || row >= settings.boardHeight || column >= settings.boardWidth || settings.boardState[row][column].letter !== "") {
-              pieceCheck = false;
+  let spaceCheck = false;
+
+  const rowStart = -3;
+  const columnStart = -3;
+  const rowEnd = 13;
+  const columnEnd = 13;
+
+  playerPieces.forEach( (piece) => {
+    for (let row = rowStart; row < rowEnd; row++) {
+      for (let column = columnStart; column < columnEnd; column++) {
+
+        let collision = false;
+
+        piece.forEach( (pieceRow, pieceRowIndex) => {
+          pieceRow.forEach( (letter, pieceColumnIndex) => {
+            if (letter) {
+              const checkBoardRow = row + pieceRowIndex;
+              const checkBoardColumn = column + pieceColumnIndex;
+              if (
+                checkBoardRow < 0
+                || checkBoardRow >= settings.boardHeight
+                || checkBoardColumn < 0
+                || checkBoardColumn >= settings.boardWidth
+                || boardState[checkBoardRow][checkBoardColumn]
+              ) {
+                collision = true;
+              }
             }
           });
-          if (pieceCheck) {
-            spaceCheck = true;
-            // console.log("check true");
-            // console.log("piece: ", piece);
-            // console.log("space: ", checkRow, checkColumn);
-          }
         });
 
-      }
-      checkColumn++;
-    }
-    checkRow++;
-  }
-  return spaceCheck;
-}
+        if (!collision) {
+          console.log('piece fits here');
+          console.log('boardRow, columnRow', row, column);
+          spaceCheck = true;
+        }
 
-export function scoreWord(word) {
-  // calculate the score
-  var wordScore = 0;
-  for (var i = 0; i < word.length; i++) {
-    var letter = word[i];
-    var letterValue = eval(`this.letterValues.${letter}`);
-    wordScore += letterValue;
-  }
-  // add it the player's current score
-  this.currentPlayer.score += wordScore;
-  // return the score to be attached to the word history
-  return wordScore;
+      }
+    }
+  });
+
+  return spaceCheck;
 }
