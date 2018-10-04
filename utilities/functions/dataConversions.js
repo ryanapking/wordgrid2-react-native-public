@@ -13,8 +13,8 @@ export function remoteToLocal(source, userID) {
     wordValue: 0,
     piecePlaced: false,
     validatingWord: false,
-    myScore: calculateScore(source.history, me),
-    theirScore: calculateScore(source.history, them),
+    myScore: calculateScore(source.history, userID),
+    theirScore: calculateScore(source.history, opponentID),
 
     // strictly used for displaying opponent name in /games screen
     opponentID,
@@ -25,7 +25,7 @@ export function remoteToLocal(source, userID) {
     p1: source.p1,
     p2: source.p2,
     turn: source.t
-  }
+  };
 }
 
 export function localToRemote(localData, userID) {
