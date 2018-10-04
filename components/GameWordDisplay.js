@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import {Button, Container, Spinner} from 'native-base';
+import { Text, View } from 'react-native';
+import {Button, Spinner} from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from "react-native-firebase";
 
 import { playWord, setBoardRows, addOpponentPiece } from '../ducks/gameData';
-import { calculateWordValue } from "../utilities";
+import { calculateWordValue, generateLocalPiece } from "../utilities";
 
 class GameWordDisplay extends Component {
   constructor() {
@@ -95,7 +95,18 @@ class GameWordDisplay extends Component {
 
     this.props.setBoardRows(this.props.gameID, newRows);
 
-    console.log('game state:', this.props.game);
+    // if the opponent is missing a piece, we need to set their next one
+
+    // filter out empty pieces to see if we need to create a new one
+    // ... because this is the way i previously decided to deal with these
+    const pieces = this.props.game.them.filter( (piece) => piece.length);
+
+    // add a new piece if needed
+    if (pieces.length < 3) {
+      const newPiece = generateLocalPiece(word.length);
+      const newPieces = [...pieces, newPiece];
+      this.props.addOpponentPiece(this.props.gameID, newPieces);
+    }
   }
 
 }

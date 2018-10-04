@@ -10,7 +10,7 @@ export function checkPieceFit(playerPieces, boardState) {
   const rowEnd = 13;
   const columnEnd = 13;
 
-  playerPieces.forEach( (piece) => {
+  playerPieces.forEach( (piece, pieceIndex) => {
     for (let row = rowStart; row < rowEnd; row++) {
       for (let column = columnStart; column < columnEnd; column++) {
 
@@ -35,8 +35,7 @@ export function checkPieceFit(playerPieces, boardState) {
         });
 
         if (!collision) {
-          console.log('piece fits here');
-          console.log('boardRow, columnRow', row, column);
+          console.log(`piece ${pieceIndex} fits in row: ${row}, col: ${column}`);
           spaceCheck = true;
         }
 

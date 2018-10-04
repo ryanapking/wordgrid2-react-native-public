@@ -50,7 +50,7 @@ class FirebaseListeners extends Component {
       this.state.userListener();
     }
 
-    console.log('user game list sync starting');
+    // console.log('user game list sync starting');
 
     const userDocRef = firebase.firestore().collection('users').doc(this.props.userID);
 
@@ -84,7 +84,7 @@ class FirebaseListeners extends Component {
       return !alreadyListening.includes(gameID);
     }).forEach( (gameID) => {
 
-      console.log('starting sync for new game:', gameID);
+      // console.log('starting sync for new game:', gameID);
       const gameDocRef = firebase.firestore().collection('games').doc(gameID);
 
       let gameListener = gameDocRef.onSnapshot( (gameDoc) => {

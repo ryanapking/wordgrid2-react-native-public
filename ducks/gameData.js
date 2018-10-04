@@ -1,6 +1,4 @@
-import firebase from 'react-native-firebase';
-
-import { remoteToLocal, calculateWordValue } from '../utilities';
+import { remoteToLocal } from '../utilities';
 
 // available actions
 // game actions
@@ -146,7 +144,6 @@ function setLocalGameDataReducer(state, action) {
 }
 
 function setOpponentNameReducer(state, action) {
-  console.log('setOpponentNameReducer');
   const byID = state.byID;
   const game = state.byID[action.gameID];
   return {

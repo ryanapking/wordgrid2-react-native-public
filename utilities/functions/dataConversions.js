@@ -38,6 +38,7 @@ export function localToRemote(localData, userID) {
 }
 
 export function pieceStringToArray(pieceSource) {
+  if (!pieceSource) return [];
   return Array(4).fill(1).map( (val, index ) => {
     const start = index * 4;
     const end = start + 4;

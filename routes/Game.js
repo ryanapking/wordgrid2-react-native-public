@@ -26,8 +26,8 @@ class Game extends Component {
   }
 
   componentDidMount() {
-    console.log('game.js component mounted');
-    console.log('game:', this.props.game);
+    // console.log('game.js component mounted');
+    // console.log('game:', this.props.game);
 
     checkPieceFit(this.props.game.me, this.props.game.rows);
   }
@@ -38,6 +38,7 @@ class Game extends Component {
     let interaction = null;
 
     // console.log('piece placed? ', this.props.game.piecePlaced);
+    // console.log('game state:', this.props.game);
 
     if (this.state.working) {
       interaction = (

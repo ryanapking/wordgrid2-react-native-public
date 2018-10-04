@@ -1,5 +1,7 @@
 import settings from '../config';
 
+import { pieceStringToArray } from "./dataConversions";
+
 export function generateGame(userID = null) {
   return {
     p1: userID,
@@ -102,6 +104,11 @@ export function generatePiece(pieceSize = 4) {
   });
 
   return piece;
+}
+
+export function generateLocalPiece(pieceSize = 4) {
+  const piece = generatePiece(pieceSize);
+  return pieceStringToArray(piece);
 }
 
 export function getRandomLetter(letterString = settings.availableLetters) {
