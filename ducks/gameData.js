@@ -8,10 +8,10 @@ export const PLACE_PIECE = 'wordgrid2/gameData/PLACE_PIECE';
 export const CONSUME_SQUARE = 'wordgrid2/gameData/CONSUME_SQUARE';
 export const REMOVE_SQUARE = 'wordgrid2/gameData/REMOVE_SQUARE';
 export const CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CLEAR_CONSUMED_SQUARES';
-export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
-export const PLAY_WORD_STARTED = 'wordgrid2/gameData/PLAY_WORD_STARTED';
-export const PLAY_WORD_ENDED = 'wordgrid2/gameData/PLAY_WORD_ENDED';
 export const SET_OPPONENT_NAME = 'wordgrid2/gameData/SET_OPPONENT_NAME';
+export const ADD_OPPONENT_PIECE = 'wordgrid2/gameData/ADD_OPPONENT_PIECE';
+export const SET_BOARD_ROWS = 'wordgrid2/gameData/SET_BOARD_ROWS';
+export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 
 // syncing actions
 export const SET_LOCAL_GAME_IDS = 'wordgrid2/gameData/SET_LOCAL_GAME_IDS';
@@ -35,12 +35,6 @@ export default function reducer(state = initialState, action) {
       return removeSquareReducer(state, action);
     case CLEAR_CONSUMED_SQUARES:
       return clearConsumedSquareReducer(state, action);
-    case PLAY_WORD_STARTED:
-      return startPlayWordReducer(state, action);
-    case PLAY_WORD_ENDED:
-      return endPlayWordReducer(state, action);
-    case PLAY_WORD:
-      return playWordReducer(state, action);
     case SET_LOCAL_GAME_IDS:
       return setLocalGameIDsReducer(state, action);
     case SET_LOCAL_GAME_BY_ID:
@@ -49,6 +43,12 @@ export default function reducer(state = initialState, action) {
       return setOpponentNameReducer(state, action);
     case REMOVE_LOCAL_GAME_BY_ID:
       return removeLocalGameByIDReducer(state, action);
+    case ADD_OPPONENT_PIECE:
+      return addOpponentPieceReducer(state, action);
+    case SET_BOARD_ROWS:
+      return setBoardRowsReducer(state, action);
+    case PLAY_WORD:
+      return playWordReducer(state, action);
     default:
       return state;
   }
@@ -122,57 +122,6 @@ function clearConsumedSquareReducer(state, action) {
   };
 }
 
-function playWordReducer(state, action) {
-  const byID = state.byID;
-  const game = state.byID[action.gameID];
-  return {
-    ...state,
-    byID: {
-      ...byID,
-      [action.gameID]: {
-        ...game,
-        word: action.word,
-        wordValue: action.wordValue,
-        rows: action.rows,
-        consumedSquares: [],
-        validatingWord: false
-      }
-    }
-  };
-}
-
-function endPlayWordReducer(state, action) {
-  const byID = state.byID;
-  const game = state.byID[action.gameID];
-  return {
-    ...state,
-    byID: {
-      ...byID,
-      [action.gameID]: {
-        ...game,
-        validatingWord: false,
-        consumedSquares: []
-      }
-    }
-  };
-}
-
-function startPlayWordReducer(state, action) {
-  console.log('play started reducer');
-  const byID = state.byID;
-  const game = state.byID[action.gameID];
-  return {
-    ...state,
-    byID: {
-      ...byID,
-      [action.gameID]: {
-        ...game,
-        validatingWord: true
-      }
-    }
-  };
-}
-
 function setLocalGameIDsReducer(state, action) {
   const allIDs = action.gameIDs;
   return {
@@ -221,6 +170,53 @@ function removeLocalGameByIDReducer(state, action) {
   }
 }
 
+function addOpponentPieceReducer(state, action) {
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        them: action.pieces
+      }
+    }
+  };
+}
+
+function setBoardRowsReducer(state, action) {
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        rows: action.rows,
+      }
+    }
+  };
+}
+
+function playWordReducer(state, action) {
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        word: action.word,
+        wordValue: action.wordValue,
+        consumedSquares: [],
+      }
+    }
+  };
+}
+
 // action creators
 export function placePiece(rows = [], pieceIndex, gameID) {
   return {
@@ -253,42 +249,6 @@ export function clearConsumedSquares(gameID) {
   }
 }
 
-export function startPlayWord(gameID) {
-  return {
-    type: PLAY_WORD_STARTED,
-    gameID
-  }
-}
-
-export function endPlayWord(gameID) {
-  return {
-    type: PLAY_WORD_ENDED,
-    gameID
-  }
-}
-
-export function playValidatedWord(consumedSquares, rows, gameID) {
-  // build the word from the consumed squares
-  const word = consumedSquares.reduce( (word, square) => word + square.letter, "");
-  const wordValue = calculateWordValue(word);
-
-  // map the played squares onto the board
-  const newRows = rows.map( (row, rowIndex ) => {
-    return row.map( (letter, columnIndex) => {
-      const letterPlayed = consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
-      return letterPlayed ? "" : letter;
-    });
-  });
-
-  return {
-    type: PLAY_WORD,
-    rows: newRows,
-    word,
-    wordValue,
-    gameID
-  }
-}
-
 export function setLocalGameIDs(gameIDs) {
   return {
     type: SET_LOCAL_GAME_IDS,
@@ -317,5 +277,30 @@ export function removeLocalGameByID(gameID) {
   return {
     type: REMOVE_LOCAL_GAME_BY_ID,
     gameID
+  }
+}
+
+export function addOpponentPiece(gameID, pieces) {
+  return {
+    type: ADD_OPPONENT_PIECE,
+    gameID,
+    pieces
+  };
+}
+
+export function setBoardRows(gameID, rows) {
+  return {
+    type: SET_BOARD_ROWS,
+    gameID,
+    rows
+  }
+}
+
+export function playWord(gameID, word, wordValue) {
+  return {
+    type: PLAY_WORD,
+    gameID,
+    word,
+    wordValue
   }
 }

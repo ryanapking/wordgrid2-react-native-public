@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from "react-native-firebase";
 
-import { playValidatedWord } from '../ducks/gameData';
+import { playWord, setBoardRows, addOpponentPiece } from '../ducks/gameData';
 import { calculateWordValue } from "../utilities";
 
 class GameWordDisplay extends Component {
@@ -17,18 +17,18 @@ class GameWordDisplay extends Component {
       wordValid: false
     };
 
-    this.playWord = this.playWord.bind(this);
+    this.validateThenPlayWord = this.validateThenPlayWord.bind(this);
   }
 
   render() {
-    const displayWord = this.props.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
     const longEnough = (displayWord.length >= 4);
 
     let button = null;
 
     if (longEnough) {
       button = (
-        <Button full light onPress={() => this.playWord()}>
+        <Button full light onPress={() => this.validateThenPlayWord()}>
           <Text>Submit Your Word for {calculateWordValue(displayWord)} points</Text>
         </Button>
       );
@@ -50,10 +50,10 @@ class GameWordDisplay extends Component {
     );
   }
 
-  playWord() {
+  validateThenPlayWord() {
     // validate the word, update data if valid
 
-    const word = this.props.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    const word = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
 
     this.setState({
       validatingWord: true
@@ -69,7 +69,7 @@ class GameWordDisplay extends Component {
         console.log(`${word} exists? ${doc.exists}`);
 
         if (doc.exists) {
-          this.props.playValidatedWord(this.props.consumedSquares, this.props.rows, this.props.gameID);
+          this.playValidatedWord(word);
         }
 
       })
@@ -82,20 +82,36 @@ class GameWordDisplay extends Component {
 
   }
 
+  playValidatedWord(word) {
+    console.log('word validated...', this.props.game);
+    this.props.playWord(this.props.gameID, word, calculateWordValue(word));
+
+    const newRows = this.props.game.rows.map( (row, rowIndex ) => {
+      return row.map( (letter, columnIndex) => {
+        const letterPlayed = this.props.game.consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
+        return letterPlayed ? "" : letter;
+      });
+    });
+
+    this.props.setBoardRows(this.props.gameID, newRows);
+
+    console.log('game state:', this.props.game);
+  }
+
 }
 
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;
   return {
     gameID: gameID,
-    consumedSquares: state.gameData.byID[gameID].consumedSquares,
-    rows: state.gameData.byID[gameID].rows,
-    wordValue: state.gameData.byID[gameID].wordValue
+    game: state.gameData.byID[gameID],
   }
 };
 
 const mapDispatchToProps = {
-  playValidatedWord
+  playWord,
+  setBoardRows,
+  addOpponentPiece
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameWordDisplay));

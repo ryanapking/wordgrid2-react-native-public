@@ -11,8 +11,7 @@ import GamePhaseDisplay from '../components/GamePhaseDisplay';
 import GameBoard from '../components/GameBoard';
 
 import { setGameboardLocation } from '../ducks/gameDisplay';
-import { saveMoveRemotely } from '../ducks/gameData'
-import {localToRemote} from "../utilities";
+import { localToRemote, checkPieceFit } from "../utilities";
 
 
 class Game extends Component {
@@ -24,6 +23,13 @@ class Game extends Component {
     };
 
     this.saveRemoteMove = this.saveRemoteMove.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('game.js component mounted');
+    console.log('game:', this.props.game);
+
+    checkPieceFit(this.props.game.me, this.props.game.rows);
   }
 
   render() {
@@ -46,6 +52,8 @@ class Game extends Component {
     } else {
       interaction = <Button full onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
     }
+
+    // interaction = <GamePieceSection />;
 
     // console.log('interaction: ', interaction);
 
@@ -147,7 +155,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   setGameboardLocation,
-  saveMoveRemotely
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));
