@@ -13,6 +13,8 @@ export function remoteToLocal(source, userID) {
     wordValue: 0,
     piecePlaced: false,
     validatingWord: false,
+    myScore: calculateScore(source.history, me),
+    theirScore: calculateScore(source.history, them),
 
     // strictly used for displaying opponent name in /games screen
     opponentID,
@@ -64,4 +66,14 @@ export function arrayToString(array) {
   return array.map( (row) => {
     return row.map( letter => letter === "" ? " " : letter).join("");
   }).join("");
+}
+
+export function calculateScore(history, playerID) {
+  return history.reduce( (totalScore, move) => {
+    if (move.p && move.p === playerID) {
+      return totalScore + move.wv;
+    } else {
+      return totalScore;
+    }
+  }, 0);
 }

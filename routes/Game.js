@@ -38,7 +38,7 @@ class Game extends Component {
     let interaction = null;
 
     // console.log('piece placed? ', this.props.game.piecePlaced);
-    // console.log('game state:', this.props.game);
+    console.log('game state:', this.props.game);
 
     if (this.state.working) {
       interaction = (
@@ -65,6 +65,8 @@ class Game extends Component {
           <GameBoard />
         </View>
         { interaction }
+        <Text>My score: {this.props.game.myScore}</Text>
+        <Text>Their score: {this.props.game.theirScore}</Text>
       </Container>
     );
   }
