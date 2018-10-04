@@ -29,13 +29,15 @@ export function remoteToLocal(source, userID) {
 }
 
 export function localToRemote(localData, userID) {
+  const p1Array = (localData.p1 === userID) ? localData.me : localData.them;
+  const p2Array = (localData.p2 === userID) ? localData.me : localData.them;
   return {
     w: localData.word,
     wv: localData.wordValue,
     p: userID, // will store the id of the use who created this history item
     b: arrayToString(localData.rows),
-    p1: localData.me.map( (piece) => arrayToString(piece) ),
-    p2: localData.them.map( (piece) => arrayToString(piece) ),
+    p1: p1Array.map( (piece) => arrayToString(piece) ),
+    p2: p2Array.map( (piece) => arrayToString(piece) ),
   }
 }
 
