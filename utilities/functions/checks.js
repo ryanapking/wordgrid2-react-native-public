@@ -45,3 +45,40 @@ export function checkPieceFit(playerPieces, boardState) {
 
   return spaceCheck;
 }
+
+export function gameOverCheck(game, userID) {
+  const turns = turnCounter(game);
+  const scores = scoreTabulator(game);
+
+  const turnsReached = (turns.p2 >= settings.naturalTurns && turns.p1 === turns.p2);
+  const gameTied = (scores.p1 === scores.p2);
+
+  const gameOver = (turnsReached && !gameTied);
+  console.log('game over?', gameOver);
+
+  return gameOver;
+}
+
+function turnCounter(game) {
+  return game.history.reduce( (turnCount, move) => {
+    if (move.p === game.p1) {
+      return {...turnCount, p1: turnCount.p1 + 1};
+    } else if (move.p === game.p2) {
+      return {...turnCount, p2: turnCount.p2 + 1};
+    } else {
+      return turnCount;
+    }
+  }, {p1: 0, p2: 0});
+}
+
+function scoreTabulator(game) {
+  return game.history.reduce( (scoreTab, move) => {
+    if (move.p === game.p1) {
+      return {...scoreTab, p1: scoreTab.p1 + move.wv};
+    } else if (move.p === game.p2) {
+      return {...scoreTab, p2: scoreTab.p2 + move.wv};
+    } else {
+      return scoreTab;
+    }
+  }, {p1: 0, p2: 0});
+}
