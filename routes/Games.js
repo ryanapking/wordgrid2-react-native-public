@@ -16,7 +16,12 @@ class Games extends Component {
 
     const waitingOnOpponent = Object.keys(this.props.gameData.byID).filter( (gameID) => {
       const game = this.props.gameData.byID[gameID];
-      return ( game.turn !== null && game.turn !== this.props.userID );
+      return ( game.turn !== null && game.turn !== "over" && game.turn !== this.props.userID );
+    });
+
+    const over = Object.keys(this.props.gameData.byID).filter( (gameID) => {
+      const game = this.props.gameData.byID[gameID];
+      return ( game.turn === "over");
     });
 
     return (
