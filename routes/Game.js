@@ -119,7 +119,9 @@ class Game extends Component {
         let turn = "p2";
 
         // if there is an opponent, set the turn value to their uid
-        if ( localGameData.p1 !== null && localGameData.p1 !== userID ) {
+        if (winner) {
+          turn = "over";
+        } else if ( localGameData.p1 !== null && localGameData.p1 !== userID ) {
           turn = localGameData.p1;
         } else if ( localGameData.p2 !== null && localGameData.p2 !== userID ) {
           turn = localGameData.p2;
