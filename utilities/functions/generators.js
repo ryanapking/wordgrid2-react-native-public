@@ -4,20 +4,21 @@ import { pieceStringToArray } from "./dataConversions";
 
 export function generateGame(userID = null) {
   return {
-    p1: userID,
-    p2: null,
-    t: userID,
+    p1: userID, // user ID of player 2
+    p2: null, // user ID of player 1
+    t: userID, // user ID of next player to take a turn
+    w: null, // string declaring a winner - "p1" or "p2"
     history: [
       {
-        w: null,
-        p: null,
-        b: generateBoard(),
-        p1: [
+        w: null, // word played
+        p: null, // user ID of player to make the move
+        b: generateBoard(), // board status at the end of the move
+        p1: [ // player 1 pieces at the end of the move
           generatePiece(),
           generatePiece(),
           generatePiece(),
         ],
-        p2: [
+        p2: [ // player 2 pieces at the end of the move
           generatePiece(),
           generatePiece(),
           generatePiece(),
@@ -29,11 +30,11 @@ export function generateGame(userID = null) {
 
 // a board is a 100 character string, filled to the defined density with random characters
 export function generateBoard() {
-  var randomSpaces = [];
-  var boardSpaceCount = settings.boardWidth * settings.boardHeight;
-  // get board spaces until we excede the starting board density
+  let randomSpaces = [];
+  let boardSpaceCount = settings.boardWidth * settings.boardHeight;
+  // get board spaces until we exceed the starting board density
   while ((randomSpaces.length / boardSpaceCount) < settings.startingLetterDensity) {
-    var rando = Math.floor(Math.random() * boardSpaceCount);
+    let rando = Math.floor(Math.random() * boardSpaceCount);
     if (!randomSpaces.includes(rando)) {
       randomSpaces.push(rando);
     }

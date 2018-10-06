@@ -15,6 +15,7 @@ export function remoteToLocal(source, userID) {
     validatingWord: false,
     myScore: calculateScore(source.history, userID),
     theirScore: calculateScore(source.history, opponentID),
+    winner: source.w,
 
     // strictly used for displaying opponent name in /games screen
     opponentID,

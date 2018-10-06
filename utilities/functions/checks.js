@@ -46,7 +46,7 @@ export function checkPieceFit(playerPieces, boardState) {
   return spaceCheck;
 }
 
-export function gameOverCheck(game, userID) {
+export function gameOverCheck(game) {
   const turns = turnCounter(game);
   const scores = scoreTabulator(game);
 
