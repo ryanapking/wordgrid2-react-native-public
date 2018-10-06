@@ -1,5 +1,5 @@
 export function remoteToLocal(source, userID) {
-  const current = source.history[source.history.length - 1];
+  const current = source.h[source.h.length - 1];
   const me = (source.p1 === userID) ? current.p1 : current.p2;
   const them = (source.p1 === userID) ? current.p2 : current.p1;
   const opponentID = (source.p1 === userID) ? source.p2 : source.p1;
@@ -13,8 +13,8 @@ export function remoteToLocal(source, userID) {
     wordValue: 0,
     piecePlaced: false,
     validatingWord: false,
-    myScore: calculateScore(source.history, userID),
-    theirScore: calculateScore(source.history, opponentID),
+    myScore: calculateScore(source.h, userID),
+    theirScore: calculateScore(source.h, opponentID),
     winner: source.w,
 
     // strictly used for displaying opponent name in /games screen
@@ -22,7 +22,7 @@ export function remoteToLocal(source, userID) {
     opponentName,
 
     // used when converting back to remote
-    history: source.history,
+    history: source.h,
     p1: source.p1,
     p2: source.p2,
     turn: source.t

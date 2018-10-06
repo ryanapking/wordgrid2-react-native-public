@@ -8,7 +8,7 @@ export function generateGame(userID = null) {
     p2: null, // user ID of player 1
     t: userID, // user ID of next player to take a turn
     w: null, // string declaring a winner - "p1" or "p2"
-    history: [
+    h: [ // move history
       {
         w: null, // word played
         p: null, // user ID of player to make the move

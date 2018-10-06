@@ -11,7 +11,7 @@ import GamePhaseDisplay from '../components/GamePhaseDisplay';
 import GameBoard from '../components/GameBoard';
 
 import { setGameboardLocation } from '../ducks/gameDisplay';
-import { localToRemote, checkPieceFit } from "../utilities";
+import { localToRemote, checkPieceFit, getWinner } from "../utilities";
 
 
 class Game extends Component {
@@ -29,7 +29,8 @@ class Game extends Component {
     // console.log('game.js component mounted');
     // console.log('game:', this.props.game);
 
-    checkPieceFit(this.props.game.me, this.props.game.rows);
+    // checkPieceFit(this.props.game.me, this.props.game.rows);
+    // gameOverCheck(this.props.game);
   }
 
   render() {
@@ -38,7 +39,7 @@ class Game extends Component {
     let interaction = null;
 
     // console.log('piece placed? ', this.props.game.piecePlaced);
-    console.log('game state:', this.props.game);
+    // console.log('game state:', this.props.game);
 
     if (this.state.working) {
       interaction = (
@@ -75,8 +76,8 @@ class Game extends Component {
     if ( this.props.uid !== this.props.game.turn ) {
       this.props.history.push(`/games`);
       console.log('redirecting...');
-      console.log('uid:', this.props.uid);
-      console.log('turn:', this.props.game.turn);
+      // console.log('uid:', this.props.uid);
+      // console.log('turn:', this.props.game.turn);
     }
   }
 
@@ -99,16 +100,20 @@ class Game extends Component {
     const gameDocRef = firebase.firestore().collection('games').doc(gameID);
     const newMove = localToRemote(localGameData, this.props.uid);
 
-    console.log('localGameData:', localGameData);
-    console.log('newMove:', newMove);
+    const newGameObject = {
+      ...localGameData,
+      history: [
+        ...localGameData.history, newMove
+      ]
+    };
+
+    const winner = getWinner(newGameObject);
 
     firebase.firestore().runTransaction( (transaction) => {
 
       return transaction.get(gameDocRef).then( (gameDoc) => {
 
         if (!gameDoc.exists) return;
-
-        const currentHistory = gameDoc.data().history;
 
         // if there is no opponent yet, set the turn to "p2", which will be used for querying games when trying to join a new one
         let turn = "p2";
@@ -121,8 +126,9 @@ class Game extends Component {
         }
 
         transaction.update(gameDocRef, {
-          history: [ ...currentHistory, newMove ],
-          t: turn
+          h: newGameObject.history,
+          t: turn,
+          w: winner
         });
 
       });

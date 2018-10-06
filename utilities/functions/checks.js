@@ -71,7 +71,7 @@ function turnCounter(game) {
   }, {p1: 0, p2: 0});
 }
 
-function scoreTabulator(game) {
+export function scoreTabulator(game) {
   return game.history.reduce( (scoreTab, move) => {
     if (move.p === game.p1) {
       return {...scoreTab, p1: scoreTab.p1 + move.wv};
@@ -81,4 +81,16 @@ function scoreTabulator(game) {
       return scoreTab;
     }
   }, {p1: 0, p2: 0});
+}
+
+export function getWinner(game) {
+  const gameOver = gameOverCheck(game);
+  if (!gameOver) return null;
+
+  const scores = scoreTabulator(game);
+  if (scores.p1 > scores.p2) {
+    return "p1";
+  } else {
+    return "p2";
+  }
 }
