@@ -1,11 +1,5 @@
 import DICE from './dice';
-import Trie from './trie';
-import dictionary from './english';
-
-const english = new Trie; // store all words in a trie
-dictionary.words.forEach( (word) => {
-  english.add(word.trim());
-});
+import english from '../english';
 
 /** Class representing a Boggle board. */
 export default class Boggle {
@@ -194,7 +188,7 @@ export default class Boggle {
    * @param {Boggle~containsCallback} done - Callback to run when done verifying.
    */
   contains(target, done) {
-    if (target.length < 3) {
+    if (target.length < 4) {
       return done(false);
     }
     if (!english.contains(target)) {

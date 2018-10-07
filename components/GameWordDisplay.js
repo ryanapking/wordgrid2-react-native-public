@@ -1,25 +1,14 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import {Button, Spinner} from 'native-base';
+import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-import firebase from "react-native-firebase";
 
 import { playWord, setBoardRows, addOpponentPiece } from '../ducks/gameData';
 import { calculateWordValue, generateLocalPiece } from "../utilities";
+import english from '../utilities/english';
 
 class GameWordDisplay extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      validatingWord: false,
-      wordValid: false
-    };
-
-    this.validateThenPlayWord = this.validateThenPlayWord.bind(this);
-  }
-
   render() {
     const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
     const longEnough = (displayWord.length >= 4);
@@ -34,14 +23,6 @@ class GameWordDisplay extends Component {
       );
     }
 
-    if (this.state.validatingWord) {
-      button = (
-        <Button full info disabled>
-          <Spinner color='blue' />
-        </Button>
-      );
-    }
-
     return (
       <View>
         <Text style={{padding: 20, textAlign: 'center'}}>{displayWord}</Text>
@@ -51,35 +32,12 @@ class GameWordDisplay extends Component {
   }
 
   validateThenPlayWord() {
-    // validate the word, update data if valid
-
     const word = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    const wordExists = english.contains(word);
 
-    this.setState({
-      validatingWord: true
-    });
-
-    firebase.firestore().collection('dictionary').doc(word).get()
-      .then((doc) => {
-
-        this.setState({
-          validatingWord: false
-        });
-
-        console.log(`${word} exists? ${doc.exists}`);
-
-        if (doc.exists) {
-          this.playValidatedWord(word);
-        }
-
-      })
-      .catch((e) => {
-        console.log("error fetching doc:", e);
-        this.setState({
-          validatingWord: false
-        });
-      });
-
+    if (wordExists) {
+      this.playValidatedWord(word);
+    }
   }
 
   playValidatedWord(word) {
