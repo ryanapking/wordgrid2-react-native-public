@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from "react-native-firebase";
 
-import { Boggle } from '../utilities/boggle-solver';
+import Boggle from '../utilities/boggle-solver';
 import GamePieceSection from '../components/GamePieceSection';
 import GameWordDisplay from '../components/GameWordDisplay';
 import GamePhaseDisplay from '../components/GamePhaseDisplay';
