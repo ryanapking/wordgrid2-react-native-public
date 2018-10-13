@@ -41,20 +41,6 @@ export default class App extends Component {
                     <Text >Open Drawer</Text>
                   </Button>
                 </Row>
-                <Row size={5}>
-                  <Link
-                    to="/games"
-                    underlayColor='#f0f4f7'
-                    style={styles.navItem}>
-                    <Text>Games</Text>
-                  </Link>
-                  <Link
-                    to="/settings"
-                    underlayColor='#f0f4f7'
-                    style={styles.navItem}>
-                    <Text>Settings</Text>
-                  </Link>
-                </Row>
                 <Row size={95}>
                   <Route exact path="/" component={Home}/>
                   <Route path="/login" component={Login} />
