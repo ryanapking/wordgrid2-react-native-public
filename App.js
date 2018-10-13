@@ -3,6 +3,7 @@ import { StatusBar, StyleSheet, Text } from 'react-native';
 import { Provider } from 'react-redux';
 import { NativeRouter, Link, Route } from'react-router-native';
 import { Col, Grid, Row } from "react-native-easy-grid";
+import { Button, Drawer } from 'native-base';
 
 import configureStore from './store/configureStore';
 
@@ -16,46 +17,66 @@ import Settings from "./routes/Settings";
 // redirect all non-logged in users to the login screen
 import LoginRedirect from "./components/nondisplay/LoginRedirect";
 import FirebaseListeners from './components/nondisplay/FirebaseListeners';
+import NavMenu from "./components/NavMenu";
 
 const store = configureStore();
 
 StatusBar.setHidden(true);
+console.disableYellowBox = true;
 
 export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
         <NativeRouter>
-          <Grid>
-            <Col>
-              <Row size={5}>
-                <Link
-                  to="/games"
-                  underlayColor='#f0f4f7'
-                  style={styles.navItem}>
-                  <Text>Games</Text>
-                </Link>
-                <Link
-                  to="/settings"
-                  underlayColor='#f0f4f7'
-                  style={styles.navItem}>
-                  <Text>Settings</Text>
-                </Link>
-              </Row>
-              <Row size={95}>
-                <Route exact path="/" component={Home}/>
-                <Route path="/login" component={Login} />
-                <Route path="/game/:gameID" component={Game}/>
-                <Route path="/games" component={Games}/>
-                <Route path="/settings" component={Settings}/>
-              </Row>
-              <LoginRedirect />
-              <FirebaseListeners />
-            </Col>
-          </Grid>
+          <Drawer
+            ref={(ref) => { this.drawer = ref; }}
+            content={<NavMenu closeDrawer={() => this.closeDrawer()}/>}
+            onClose={() => this.closeDrawer()}
+          >
+            <Grid>
+              <Col>
+                <Row size={5}>
+                  <Button onPress={() => this.openDrawer()}>
+                    <Text >Open Drawer</Text>
+                  </Button>
+                </Row>
+                <Row size={5}>
+                  <Link
+                    to="/games"
+                    underlayColor='#f0f4f7'
+                    style={styles.navItem}>
+                    <Text>Games</Text>
+                  </Link>
+                  <Link
+                    to="/settings"
+                    underlayColor='#f0f4f7'
+                    style={styles.navItem}>
+                    <Text>Settings</Text>
+                  </Link>
+                </Row>
+                <Row size={95}>
+                  <Route exact path="/" component={Home}/>
+                  <Route path="/login" component={Login} />
+                  <Route path="/game/:gameID" component={Game}/>
+                  <Route path="/games" component={Games}/>
+                  <Route path="/settings" component={Settings}/>
+                </Row>
+                <LoginRedirect />
+                <FirebaseListeners />
+              </Col>
+            </Grid>
+          </Drawer>
         </NativeRouter>
       </Provider>
     );
+  }
+  closeDrawer() {
+    this.drawer._root.close()
+  }
+
+  openDrawer() {
+    this.drawer._root.open()
   }
 }
 
