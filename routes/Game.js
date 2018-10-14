@@ -73,7 +73,6 @@ class Game extends Component {
     return (
       <Container>
         <Container>
-
           <Grid>
             <Row>
               <Col>
@@ -86,7 +85,6 @@ class Game extends Component {
               </Col>
             </Row>
           </Grid>
-
         </Container>
         <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <GameBoard />

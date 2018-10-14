@@ -10,13 +10,13 @@ class TopBar extends Component {
       <Grid>
         <Row>
           <Col>
-            <Icon name='menu' style={styles.menuButton} onPress={() => this.props.openDrawer()} />
+            <Icon type='MaterialCommunityIcons' name='menu' style={styles.menuButton} onPress={() => this.props.openDrawer()} />
           </Col>
           <Col style={styles.titleContainer}>
             <Text style={styles.title} >Title</Text>
           </Col>
           <Col>
-            <Icon name='home' style={styles.homeButton} onPress={() => this.props.history.push('/')} />
+            <Icon type='MaterialCommunityIcons' name='home' style={styles.homeButton} onPress={() => this.props.history.push('/')} />
           </Col>
         </Row>
       </Grid>

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
 import { placePiece } from '../ducks/gameData';
+import GameLetter from './GameLetter';
 
 class GamePiece extends Component {
 
@@ -76,7 +77,7 @@ class GamePiece extends Component {
               <Row key={index}>
                 {pieceRow.map( (letter, index) =>
                   <Col key={index}>
-                    { letter ? <Text style={[styles.letter, letterDragStyles]}>{letter}</Text> : null }
+                    { letter ? <GameLetter dragStyles={letterDragStyles} letter={letter} /> : null }
                   </Col>
                 )}
               </Row>
@@ -231,14 +232,6 @@ const styles = StyleSheet.create({
   square: {
     width: "100%",
     height: "100%",
-  },
-  letter: {
-    width: "100%",
-    height: "100%",
-    borderWidth: 1,
-    // borderRadius: 5,
-    borderColor: 'white',
-    backgroundColor: "#ffd27b",
   },
   canDrop: {
     backgroundColor: '#55a22e'
