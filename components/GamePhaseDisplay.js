@@ -21,18 +21,18 @@ class GamePhaseDisplay extends Component {
     return (
       <View style={{height: 35}}>
         <Grid>
-          <Row>
-            <Col style={[styles.col, playStyles]}>
+          <Col>
+            <Row style={[styles.col, playStyles]}>
               <Text>
                 Play Word
               </Text>
-            </Col>
-            <Col style={[styles.col, placeStyles]}>
+            </Row>
+            <Row style={[styles.col, placeStyles]}>
               <Text>
                 Place Piece
               </Text>
-            </Col>
-          </Row>
+            </Row>
+          </Col>
         </Grid>
       </View>
     );

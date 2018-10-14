@@ -4,6 +4,7 @@ import {Container, Button, Spinner} from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import firebase from "react-native-firebase";
+import { Row, Col, Grid } from 'react-native-easy-grid';
 
 import Boggle from '../utilities/boggle-solver';
 import GamePieceSection from '../components/GamePieceSection';
@@ -60,18 +61,33 @@ class Game extends Component {
     } else if (!wordPlayed) {
       interaction = <GameWordDisplay />;
     } else if (!this.props.game.piecePlaced) {
-      interaction = <GamePieceSection />;
+      interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
     } else {
       interaction = <Button full onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
     }
 
-    // interaction = <GamePieceSection />;
+    interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
 
     // console.log('interaction: ', interaction);
 
     return (
       <Container>
-        <GamePhaseDisplay/>
+        <Container>
+
+          <Grid>
+            <Row>
+              <Col>
+                <GamePhaseDisplay/>
+              </Col>
+              <Col>
+                <Text>Opponent:</Text>
+                <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
+                <Text>Points: {this.props.game.theirScore}</Text>
+              </Col>
+            </Row>
+          </Grid>
+
+        </Container>
         <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <GameBoard />
         </View>

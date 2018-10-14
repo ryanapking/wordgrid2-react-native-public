@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    pieces: state.gameData.byID[ownProps.match.params.gameID].me
+    // pieces: state.gameData.byID[ownProps.match.params.gameID].me
   };
 };
 
