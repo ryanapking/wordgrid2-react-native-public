@@ -3,7 +3,7 @@ import { StatusBar, StyleSheet, Text } from 'react-native';
 import { Provider } from 'react-redux';
 import { NativeRouter, Link, Route } from'react-router-native';
 import { Col, Grid, Row } from "react-native-easy-grid";
-import { Button, Drawer } from 'native-base';
+import { Button, Drawer, Icon } from 'native-base';
 
 import configureStore from './store/configureStore';
 
@@ -17,7 +17,8 @@ import Settings from "./routes/Settings";
 // redirect all non-logged in users to the login screen
 import LoginRedirect from "./components/nondisplay/LoginRedirect";
 import FirebaseListeners from './components/nondisplay/FirebaseListeners';
-import NavMenu from "./components/NavMenu";
+import NavMenu from './components/NavMenu';
+import TopBar from './components/TopBar';
 
 const store = configureStore();
 
@@ -37,9 +38,7 @@ export default class App extends Component {
             <Grid>
               <Col>
                 <Row size={5}>
-                  <Button onPress={() => this.openDrawer()}>
-                    <Text >Open Drawer</Text>
-                  </Button>
+                  <TopBar openDrawer={() => this.openDrawer()}/>
                 </Row>
                 <Row size={95}>
                   <Route exact path="/" component={Home}/>
@@ -90,5 +89,5 @@ const styles = StyleSheet.create({
   topic: {
     textAlign: 'center',
     fontSize: 15,
-  }
+  },
 });
