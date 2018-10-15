@@ -66,7 +66,7 @@ class Game extends Component {
       interaction = <Button full onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
     }
 
-    interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
+    // interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
 
     // console.log('interaction: ', interaction);
 

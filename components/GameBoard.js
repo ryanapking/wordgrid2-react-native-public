@@ -5,6 +5,7 @@ import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
 
 import GameBoardPathCreator from './GameBoardPathCreator';
+import GameLetter from './GameLetter';
 
 import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
 
@@ -52,7 +53,8 @@ class GameBoard extends Component {
                 }
                 return (
                   <Col key={columnIndex} style={[styles.centered, fillStyle]}>
-                    <Text style={[styles.letter]}>{letter}</Text>
+                    <GameLetter letter={letter} style={fillStyle}/>
+                    {/*<Text style={[styles.letter]}>{letter}</Text>*/}
                   </Col>
                 )
               })}
