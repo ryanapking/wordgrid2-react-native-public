@@ -32,7 +32,7 @@ class GameBoard extends Component {
     const { game } = this.props;
 
     // if a word has already been played, we don't need any of this to be possible
-    const pointerEvents = this.props.game.word ? 'none' : 'auto'
+    const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
     return(
       <View style={{width: "100%", height: "100%"}}>
@@ -53,7 +53,7 @@ class GameBoard extends Component {
                 }
                 return (
                   <Col key={columnIndex} style={[styles.centered, fillStyle]}>
-                    <GameLetter letter={letter} style={fillStyle}/>
+                    <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
                     {/*<Text style={[styles.letter]}>{letter}</Text>*/}
                   </Col>
                 )

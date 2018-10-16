@@ -19,12 +19,10 @@ class GamePiece extends Component {
       // used for styling the current piece
       dragging: false,
       canDrop: false,
-    };
 
-    // height of the GamePiece, before scaling
-    this.baseSize = {
-      width: 0,
-      height: 0,
+      // height of the GamePiece, before scaling
+      baseWidth: null,
+      baseHeight: null
     };
 
     // height of the GamePiece after scaling
@@ -61,6 +59,7 @@ class GamePiece extends Component {
 
     const dragTransforms = {transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}]};
     const letterDragStyles = this.state.canDrop ? styles.canDrop : {};
+    const letterHeight = this.state.baseHeight / 4;
 
     return (
       <View
@@ -77,7 +76,7 @@ class GamePiece extends Component {
               <Row key={index}>
                 {pieceRow.map( (letter, index) =>
                   <Col key={index}>
-                    { letter ? <GameLetter dragStyles={letterDragStyles} letter={letter} /> : null }
+                    { letter ? <GameLetter style={letterDragStyles} letter={letter} letterHeight={letterHeight}/> : null }
                   </Col>
                 )}
               </Row>
@@ -92,14 +91,17 @@ class GamePiece extends Component {
     // measure the size of the base view, which does not scale with the visible game piece
     // when the piece scales, this is our reference point to calculate
     this.baseView.measureInWindow((x, y, width, height) => {
-      this.baseSize = {width, height};
+      this.setState({
+        baseWidth: width,
+        baseHeight: height
+      })
     });
   }
 
   _setCurrentSize(currentScale) {
     // use the base piece size and current scale to determine the piece's current size
-    const height = this.baseSize.height * currentScale.value;
-    const width = this.baseSize.width * currentScale.value;
+    const height = this.state.baseHeight * currentScale.value;
+    const width = this.state.baseWidth * currentScale.value;
     this.currentSize = {width, height};
     this._setRelativeMiddlePoints();
   }

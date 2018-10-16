@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Text, StyleSheet, Image } from 'react-native';
-import { Icon, Container } from 'native-base';
-
-import LetterImages from '../assets/png-letters';
+import { Container } from 'native-base';
 
 export default class GameLetter extends Component {
   render() {
@@ -12,9 +10,14 @@ export default class GameLetter extends Component {
 
     const UCLetter = this.props.letter.toUpperCase();
 
+    const textStyles = {
+      textAlign: 'center',
+      fontSize: this.props.letterHeight ? this.props.letterHeight * .75 : 28,
+    };
+
     return (
       <Container style={[styles.letter, this.props.style]}>
-        <Image style={styles.full} source={LetterImages[UCLetter]} />
+        <Text style={textStyles}>{ UCLetter }</Text>
       </Container>
     );
   }
