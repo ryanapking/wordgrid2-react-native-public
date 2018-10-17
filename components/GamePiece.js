@@ -180,9 +180,10 @@ class GamePiece extends Component {
   _onPanResponderGrant() {
     this.setState({dragging: true, canDrop: false});
     this.state.pan.setValue({x: 0, y: 0});
+    const scaleTo = this.props.boardLocation.rowHeight / (this.state.baseHeight / 4);
     Animated.timing(
       this.state.scale,
-      { toValue: 1.33, duration: 200 }
+      { toValue: scaleTo, duration: 200 }
     ).start();
   }
 
