@@ -12,7 +12,6 @@ import GameWordDisplay from '../components/GameWordDisplay';
 import GamePhaseDisplay from '../components/GamePhaseDisplay';
 import GameBoard from '../components/GameBoard';
 
-import { setGameboardLocation } from '../ducks/gameDisplay';
 import { localToRemote, checkPieceFit, getWinner } from "../utilities";
 
 class Game extends Component {
@@ -72,26 +71,32 @@ class Game extends Component {
 
     return (
       <Container>
-        <Container>
-          <Grid>
-            <Row>
-              <Col>
-                <GamePhaseDisplay/>
-              </Col>
-              <Col>
-                <Text>Opponent:</Text>
-                <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
-                <Text>Points: {this.props.game.theirScore}</Text>
-              </Col>
+        <Grid>
+          <Col>
+            <Row size={15}>
+              <Row>
+                <Col>
+                  <GamePhaseDisplay/>
+                </Col>
+                <Col>
+                  <Text>Opponent:</Text>
+                  <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
+                  <Text>Points: {this.props.game.theirScore}</Text>
+                </Col>
+              </Row>
             </Row>
-          </Grid>
-        </Container>
-        <View style={styles.gameBoardView} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
-          <GameBoard />
-        </View>
-        { interaction }
-        <Text>My score: {this.props.game.myScore}</Text>
-        <Text>Their score: {this.props.game.theirScore}</Text>
+            <Row size={60}>
+              <View style={styles.gameBoardView} >
+                <GameBoard />
+              </View>
+            </Row>
+            <Row size={25}>
+              { interaction }
+              <Text>My score: {this.props.game.myScore}</Text>
+              <Text>Their score: {this.props.game.theirScore}</Text>
+            </Row>
+          </Col>
+        </Grid>
       </Container>
     );
   }
@@ -103,12 +108,6 @@ class Game extends Component {
       // console.log('uid:', this.props.uid);
       // console.log('turn:', this.props.game.turn);
     }
-  }
-
-  _onLayout() {
-    this.gameBoard.measureInWindow((x, y, width, height) => {
-      this.props.setGameboardLocation(x, y, width, height);
-    });
   }
 
   saveRemoteMove() {
@@ -174,7 +173,10 @@ class Game extends Component {
 
 const styles = StyleSheet.create({
   gameBoardView: {
-    aspectRatio: 1
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%'
   },
 });
 
@@ -189,7 +191,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  setGameboardLocation,
+
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));

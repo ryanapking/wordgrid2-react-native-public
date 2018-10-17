@@ -1,25 +1,16 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 import { withRouter } from 'react-router-native';
-import { Col, Row, Grid } from "react-native-easy-grid";
 import { Icon } from "native-base";
 
 class TopBar extends Component {
   render() {
     return (
-      <Grid>
-        <Row>
-          <Col>
-            <Icon type='MaterialCommunityIcons' name='menu' style={styles.menuButton} onPress={() => this.props.openDrawer()} />
-          </Col>
-          <Col style={styles.titleContainer}>
-            <Text style={styles.title} >Title</Text>
-          </Col>
-          <Col>
-            <Icon type='MaterialCommunityIcons' name='home' style={styles.homeButton} onPress={() => this.props.history.push('/')} />
-          </Col>
-        </Row>
-      </Grid>
+      <View style={styles.view}>
+        <Icon type='MaterialCommunityIcons' name='menu' style={styles.menuButton} onPress={() => this.props.openDrawer()} />
+        <Text style={styles.title} >Title</Text>
+        <Icon type='MaterialCommunityIcons' name='home' style={styles.homeButton} onPress={() => this.props.history.push('/')} />
+      </View>
     );
   }
 }
@@ -27,10 +18,12 @@ class TopBar extends Component {
 const styles = StyleSheet.create({
   homeButton: {
     paddingRight: 10,
-    textAlign: 'right'
+    textAlign: 'right',
+    backgroundColor: 'green'
   },
   menuButton: {
-    paddingLeft: 10
+    paddingLeft: 10,
+    backgroundColor: 'gray'
   },
   title: {
     textAlign: 'center',
@@ -40,6 +33,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  view: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   }
 });
 

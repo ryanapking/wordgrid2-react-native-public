@@ -8,6 +8,7 @@ import GameBoardPathCreator from './GameBoardPathCreator';
 import GameLetter from './GameLetter';
 
 import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
+import { setGameboardLocation } from "../ducks/gameDisplay";
 
 class GameBoard extends Component {
   constructor() {
@@ -35,7 +36,7 @@ class GameBoard extends Component {
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
     return(
-      <View style={{width: "100%", height: "100%"}}>
+      <View style={{width: "100%", height: "100%", maxWidth: "100%", maxHeight: "100%", aspectRatio: 1}} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
         <Grid {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
           {game.rows.map((row, rowIndex) =>
             <Row key={rowIndex}>
@@ -175,6 +176,12 @@ class GameBoard extends Component {
   static _panResponderCaptureTrue() {
     return true;
   }
+
+  _onLayout() {
+    this.gameBoard.measureInWindow((x, y, width, height) => {
+      this.props.setGameboardLocation(x, y, width, height);
+    });
+  }
 }
 
 const styles = StyleSheet.create({
@@ -223,7 +230,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = {
   consumeSquare,
   removeSquare,
-  clearConsumedSquares
+  clearConsumedSquares,
+  setGameboardLocation
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameBoard));

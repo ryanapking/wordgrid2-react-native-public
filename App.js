@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet, Text } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
-import { NativeRouter, Link, Route } from'react-router-native';
-import { Col, Grid, Row } from "react-native-easy-grid";
-import { Button, Drawer, Icon } from 'native-base';
+import { NativeRouter, Route } from'react-router-native';
+import { Drawer } from 'native-base';
 
 import configureStore from './store/configureStore';
 
@@ -34,23 +33,16 @@ export default class App extends Component {
             ref={(ref) => { this.drawer = ref; }}
             content={<NavMenu closeDrawer={() => this.closeDrawer()}/>}
             onClose={() => this.closeDrawer()}
+            acceptPan={false}
           >
-            <Grid>
-              <Col>
-                <Row size={5}>
-                  <TopBar openDrawer={() => this.openDrawer()}/>
-                </Row>
-                <Row size={95}>
-                  <Route exact path="/" component={Home}/>
-                  <Route path="/login" component={Login} />
-                  <Route path="/game/:gameID" component={Game}/>
-                  <Route path="/games" component={Games}/>
-                  <Route path="/settings" component={Settings}/>
-                </Row>
-                <LoginRedirect />
-                <FirebaseListeners />
-              </Col>
-            </Grid>
+            <TopBar openDrawer={() => this.openDrawer()} />
+            <Route exact path="/" component={Home}/>
+            <Route path="/login" component={Login} />
+            <Route path="/game/:gameID" component={Game}/>
+            <Route path="/games" component={Games}/>
+            <Route path="/settings" component={Settings}/>
+            <LoginRedirect />
+            <FirebaseListeners />
           </Drawer>
         </NativeRouter>
       </Provider>
