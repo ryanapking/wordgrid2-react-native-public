@@ -19,11 +19,9 @@ const styles = StyleSheet.create({
   homeButton: {
     paddingRight: 10,
     textAlign: 'right',
-    backgroundColor: 'green'
   },
   menuButton: {
     paddingLeft: 10,
-    backgroundColor: 'gray'
   },
   title: {
     textAlign: 'center',

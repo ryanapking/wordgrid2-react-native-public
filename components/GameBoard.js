@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {PanResponder, StyleSheet, Text, View} from 'react-native';
-import {Col, Grid, Row} from "react-native-easy-grid";
 import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
 
@@ -36,35 +35,37 @@ class GameBoard extends Component {
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
     return(
-      <View style={{width: "100%", height: "100%", maxWidth: "100%", maxHeight: "100%", aspectRatio: 1}} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
-        <Grid {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
+      <View style={styles.base} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
+        <View style={styles.grid} {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
           {game.rows.map((row, rowIndex) =>
-            <Row key={rowIndex}>
+            <View key={rowIndex} style={styles.row}>
               {row.map( (letter, columnIndex) => {
-                const squareUsed = this.props.game.consumedSquares.reduce( (foundStatus, square) => {
-                  return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
-                }, false);
-                let fillStyle = null;
-                if (squareUsed) {
-                  fillStyle = styles.usedSquare;
-                } else if (letter) {
-                  fillStyle = styles.filledSquare;
-                } else {
-                  fillStyle = styles.emptySquare;
-                }
+                const fillStyle = this._getSquareFillStyle(rowIndex, columnIndex, letter);
                 return (
-                  <Col key={columnIndex} style={[styles.centered, fillStyle]}>
+                  <View key={columnIndex} style={[styles.centered, styles.column, this._getSquareFillStyle(rowIndex, columnIndex, letter)]}>
                     <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
-                    {/*<Text style={[styles.letter]}>{letter}</Text>*/}
-                  </Col>
+                  </View>
                 )
               })}
-            </Row>
+            </View>
           )}
-        </Grid>
+        </View>
         <GameBoardPathCreator />
       </View>
     );
+  }
+
+  _getSquareFillStyle(rowIndex, columnIndex, letter) {
+    const squareUsed = this.props.game.consumedSquares.reduce( (foundStatus, square) => {
+      return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
+    }, false);
+    if (squareUsed) {
+      return styles.usedSquare;
+    } else if (letter) {
+      return styles.filledSquare;
+    } else {
+      return styles.emptySquare;
+    }
   }
 
   _findSquareByCoordinates(x, y) {
@@ -186,12 +187,25 @@ class GameBoard extends Component {
 
 const styles = StyleSheet.create({
   base: {
-    // width: "100%",
-    // height: "100%",
-    // borderWidth: 1,
-    // borderRadius: 5,
-    // borderColor: 'white',
-    // fontSize: 20,
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+    maxHeight: "100%",
+    aspectRatio: 1
+  },
+  grid: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    width: '100%'
+  },
+  row: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  column: {
+    flex: 1
   },
   letter: {
     fontSize: 20
@@ -204,10 +218,6 @@ const styles = StyleSheet.create({
   },
   usedSquare: {
     backgroundColor: "#ffa487",
-    // transform: [
-    //   { rotate: '-45deg'},
-    //   { scale: 1.05 },
-    // ],
   },
   centered: {
     borderColor: 'white',
