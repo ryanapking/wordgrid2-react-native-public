@@ -35,22 +35,24 @@ class GameBoard extends Component {
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
     return(
-      <View style={styles.base} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
-        <View style={styles.grid} {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
-          {game.rows.map((row, rowIndex) =>
-            <View key={rowIndex} style={styles.row}>
-              {row.map( (letter, columnIndex) => {
-                const fillStyle = this._getSquareFillStyle(rowIndex, columnIndex, letter);
-                return (
-                  <View key={columnIndex} style={[styles.centered, styles.column, this._getSquareFillStyle(rowIndex, columnIndex, letter)]}>
-                    <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
-                  </View>
-                )
-              })}
-            </View>
-          )}
+      <View style={styles.gameBoardView}>
+        <View style={styles.base} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
+          <View style={styles.grid} {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
+            {game.rows.map((row, rowIndex) =>
+              <View key={rowIndex} style={styles.row}>
+                {row.map( (letter, columnIndex) => {
+                  const fillStyle = this._getSquareFillStyle(rowIndex, columnIndex, letter);
+                  return (
+                    <View key={columnIndex} style={[styles.centered, styles.column, this._getSquareFillStyle(rowIndex, columnIndex, letter)]}>
+                      <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
+                    </View>
+                  )
+                })}
+              </View>
+            )}
+          </View>
+          <GameBoardPathCreator />
         </View>
-        <GameBoardPathCreator />
       </View>
     );
   }
@@ -225,7 +227,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  gameBoardView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%'
+  },
 });
 
 const mapStateToProps = (state, ownProps) => {
