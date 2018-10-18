@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Button } from 'native-base';
+import { Button, Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
@@ -24,10 +24,10 @@ class GameWordDisplay extends Component {
     }
 
     return (
-      <View>
-        <Text style={{padding: 20, textAlign: 'center'}}>{displayWord}</Text>
+      <Container style={this.props.style}>
+        <Text style={{padding: 20, textAlign: 'center'}}>test test test{displayWord}</Text>
         {button}
-      </View>
+      </Container>
     );
   }
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { withRouter } from 'react-router-native';
 import { connect } from 'react-redux';
 import firebase from 'react-native-firebase';
@@ -28,7 +28,11 @@ class GameInteraction extends Component {
     if (this.state.working) {
       interaction = <Spinner color='blue' />;
     } else if (!wordPlayed) {
-      interaction = <GameWordDisplay/>;
+      interaction =
+        <Container style={[styles.flex, {backgroundColor: 'none'}]}>
+          <GameWordDisplay style={styles.twoColumns}/>
+          <GamePieceSection style={styles.twoColumns} pieces={this.props.game.me} allowDrag={true}/>;
+        </Container>;
     } else if (!this.props.game.piecePlaced) {
       interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
     } else {
@@ -102,6 +106,19 @@ class GameInteraction extends Component {
 
   }
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  twoColumns: {
+    flexBasis: '50%',
+    flex: 1,
+  }
+});
 
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;

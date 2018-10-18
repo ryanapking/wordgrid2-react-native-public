@@ -1,49 +1,37 @@
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
-import { Grid, Row, Col } from 'react-native-easy-grid';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
+import { Container } from 'native-base';
 
 import GamePiece from './GamePiece';
 
 class GamePieceSection extends Component {
   render() {
     return (
-      <Grid>
-        <Row>
-          <Col size={2.5} style={styles.spacer} />
-          <Col size={30} style={styles.pieceSpace}>
-            <GamePiece piece={this.props.pieces[0]} pieceIndex={0}/>
-          </Col>
-          <Col size={2.5} style={styles.spacer} />
-          <Col size={30} style={styles.pieceSpace}>
-            <GamePiece piece={this.props.pieces[1]} pieceIndex={1}/>
-          </Col>
-          <Col size={2.5} style={styles.spacer} />
-          <Col size={30} style={styles.pieceSpace}>
-            <GamePiece piece={this.props.pieces[2]} pieceIndex={2}/>
-          </Col>
-          <Col size={2.5} style={styles.spacer} />
-        </Row>
-      </Grid>
+      <Container style={[this.props.style, styles.container]}>
+        <GamePiece piece={this.props.pieces[0]} pieceIndex={0} style={styles.gamePiece}/>
+        <GamePiece piece={this.props.pieces[1]} pieceIndex={1} style={styles.gamePiece}/>
+        <GamePiece piece={this.props.pieces[2]} pieceIndex={2} style={styles.gamePiece}/>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  pieceSpace: {
-    backgroundColor: "gray",
-    aspectRatio: 1,
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    // justifyContent: 'center',
+    // alignItems: 'center'
   },
-  spacer: {
-
+  gamePiece: {
+    backgroundColor: 'gray',
+    flex: 1,
+    aspectRatio: 1,
+    maxWidth: '100%',
+    maxHeight: '100%',
+    margin: 5
   }
 });
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    // pieces: state.gameData.byID[ownProps.match.params.gameID].me
-  };
-};
-
-export default withRouter(connect(mapStateToProps)(GamePieceSection));
+export default withRouter(GamePieceSection);

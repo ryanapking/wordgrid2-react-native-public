@@ -65,6 +65,7 @@ class GamePiece extends Component {
       <View
         ref={baseView => this.baseView = baseView}
         onLayout={ () => this._onLayout() }
+        style={this.props.style}
       >
         <Animated.View
           {...this.panResponder.panHandlers}
