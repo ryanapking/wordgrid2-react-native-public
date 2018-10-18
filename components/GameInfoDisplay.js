@@ -10,7 +10,7 @@ import GamePieceSection from "./GamePieceSection";
 class GameInfoDisplay extends Component {
   render() {
     return(
-      <Row>
+      <Row style={this.props.style}>
         <Col>
           <GamePhaseDisplay/>
         </Col>

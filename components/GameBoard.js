@@ -35,7 +35,7 @@ class GameBoard extends Component {
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
     return(
-      <View style={styles.gameBoardView}>
+      <View style={[this.props.style, styles.gameBoardView]}>
         <View style={styles.base} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <View style={styles.grid} {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
             {game.rows.map((row, rowIndex) =>

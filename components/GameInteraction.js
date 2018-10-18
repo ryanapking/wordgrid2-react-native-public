@@ -30,8 +30,8 @@ class GameInteraction extends Component {
     } else if (!wordPlayed) {
       interaction =
         <Container style={[styles.flex, {backgroundColor: 'none'}]}>
-          <GameWordDisplay style={styles.twoColumns}/>
-          <GamePieceSection style={styles.twoColumns} pieces={this.props.game.me} allowDrag={true}/>;
+          <GameWordDisplay style={[styles.twoColumns, {backgroundColor: 'none'}]}/>
+          <GamePieceSection style={[styles.twoColumns, {backgroundColor: 'none'}]} pieces={this.props.game.me} allowDrag={true}/>;
         </Container>;
     } else if (!this.props.game.piecePlaced) {
       interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
@@ -40,7 +40,7 @@ class GameInteraction extends Component {
     }
 
     return (
-      <Container>
+      <Container style={this.props.style}>
         { interaction }
       </Container>
     );
@@ -112,11 +112,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   twoColumns: {
     flexBasis: '50%',
     flex: 1,
+    maxHeight: '100%',
+    maxWidth: '100%',
   }
 });
 

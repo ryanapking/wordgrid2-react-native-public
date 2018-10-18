@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Row, Col, Grid } from 'react-native-easy-grid';
@@ -32,19 +34,11 @@ class Game extends Component {
 
   render() {
     return (
-      <Grid>
-        <Col>
-          <Row size={15}>
-            <GameInfoDisplay gameID={this.props.gameID}/>
-          </Row>
-          <Row size={60}>
-            <GameBoard />
-          </Row>
-          <Row size={25}>
-            <GameInteraction gameID={this.props.gameID}/>
-          </Row>
-        </Col>
-      </Grid>
+      <Container>
+        <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
+        <GameBoard style={styles.board}/>
+        <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
+      </Container>
     );
   }
 
@@ -56,6 +50,25 @@ class Game extends Component {
   }
 
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  info: {
+    flex: 4,
+    // backgroundColor: 'blue',
+  },
+  board: {
+    flex: 14,
+    // backgroundColor: 'red',
+  },
+  interaction: {
+    flex: 5,
+    // backgroundColor: 'green',
+  }
+});
 
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;

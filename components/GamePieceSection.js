@@ -21,8 +21,9 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'row',
-    // justifyContent: 'center',
-    // alignItems: 'center'
+    // backgroundColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   gamePiece: {
     backgroundColor: 'gray',
