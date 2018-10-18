@@ -25,7 +25,7 @@ class GameWordDisplay extends Component {
 
     return (
       <Container style={this.props.style}>
-        <Text style={{padding: 20, textAlign: 'center'}}>test test test{displayWord}</Text>
+        <Text style={{padding: 20, textAlign: 'center'}}>{displayWord}</Text>
         {button}
       </Container>
     );
