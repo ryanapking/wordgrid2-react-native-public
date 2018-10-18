@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-native';
 import { connect } from 'react-redux';
-import { Col, Row } from "react-native-easy-grid";
-import { Text } from "react-native";
+import { Text, StyleSheet, View } from "react-native";
 
 import GamePhaseDisplay from "./GamePhaseDisplay";
 import GamePieceSection from "./GamePieceSection";
@@ -10,19 +9,29 @@ import GamePieceSection from "./GamePieceSection";
 class GameInfoDisplay extends Component {
   render() {
     return(
-      <Row style={this.props.style}>
-        <Col>
+      <View style={[this.props.style, styles.main]}>
+        <View style={styles.row}>
           <GamePhaseDisplay/>
-        </Col>
-        <Col>
+        </View>
+        <View style={styles.row}>
           <Text>Opponent:</Text>
           <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
           <Text>Points: {this.props.game.theirScore}</Text>
-        </Col>
-      </Row>
+        </View>
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  main: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  row: {
+    flex: 1
+  }
+});
 
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;

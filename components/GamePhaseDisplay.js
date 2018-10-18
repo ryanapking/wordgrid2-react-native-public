@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Grid, Col, Row } from 'react-native-easy-grid';
-import { Button, Icon } from 'native-base';
+import { Text, StyleSheet } from 'react-native';
+import { Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
@@ -19,28 +18,24 @@ class GamePhaseDisplay extends Component {
     }
 
     return (
-      <View style={{height: 35}}>
-        <Grid>
-          <Col>
-            <Row style={[styles.col, playStyles]}>
-              <Text>
-                Play Word
-              </Text>
-            </Row>
-            <Row style={[styles.col, placeStyles]}>
-              <Text>
-                Place Piece
-              </Text>
-            </Row>
-          </Col>
-        </Grid>
-      </View>
+      <Container>
+        <Container style={[styles.row, playStyles]}>
+          <Text>
+            Play Word
+          </Text>
+        </Container>
+        <Container style={[styles.row, placeStyles]}>
+          <Text>
+            Place Piece
+          </Text>
+        </Container>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  col: {
+  row: {
     justifyContent: 'center',
     alignItems: 'center'
   },

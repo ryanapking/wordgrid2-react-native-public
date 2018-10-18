@@ -3,7 +3,6 @@ import { StyleSheet, Text } from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-import { Row, Col, Grid } from 'react-native-easy-grid';
 
 import Boggle from '../utilities/boggle-solver';
 import GameInfoDisplay from '../components/GameInfoDisplay';

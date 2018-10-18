@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {StyleSheet, View, PanResponder, Animated, Text} from 'react-native';
-import { Grid, Row, Col } from 'react-native-easy-grid';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
+import { Container } from 'native-base';
 
 import { placePiece } from '../ducks/gameData';
 import GameLetter from './GameLetter';
@@ -72,17 +72,17 @@ class GamePiece extends Component {
           style={[styles.square, dragTransforms]}
           rev={animatedView => this.animatedView = animatedView}
         >
-          <Grid pointerEvents={'none'}>
+          <Container style={styles.grid} pointerEvents={'none'}>
             {this.props.piece.map( (pieceRow, index) =>
-              <Row key={index}>
+              <View style={styles.row} key={index}>
                 {pieceRow.map( (letter, index) =>
-                  <Col key={index}>
+                  <View style={styles.column} key={index}>
                     { letter ? <GameLetter style={letterDragStyles} letter={letter} letterHeight={letterHeight}/> : null }
-                  </Col>
+                  </View>
                 )}
-              </Row>
+              </View>
             )}
-          </Grid>
+          </Container>
         </Animated.View>
       </View>
     );
@@ -239,6 +239,18 @@ const styles = StyleSheet.create({
   },
   canDrop: {
     backgroundColor: '#55a22e'
+  },
+  grid: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+  },
+  column: {
+    flex: 1,
   }
 });
 
