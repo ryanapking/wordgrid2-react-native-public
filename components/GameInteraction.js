@@ -29,12 +29,12 @@ class GameInteraction extends Component {
       interaction = <Spinner color='blue' />;
     } else if (!wordPlayed) {
       interaction =
-        <Container style={[styles.flex, {backgroundColor: 'none'}]}>
-          <GameWordDisplay style={[styles.twoColumns, {backgroundColor: 'none'}]}/>
-          <GamePieceSection style={[styles.twoColumns, {backgroundColor: 'none'}]} pieces={this.props.game.me} allowDrag={true}/>;
+        <Container style={[styles.flex]}>
+          <GameWordDisplay style={[styles.twoColumns]}/>
+          <GamePieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />;
         </Container>;
     } else if (!this.props.game.piecePlaced) {
-      interaction = <GamePieceSection pieces={this.props.game.me} allowDrag={true}/>;
+      interaction = <GamePieceSection pieces={this.props.game.me} allowDrag />;
     } else {
       interaction = <Button full onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
     }

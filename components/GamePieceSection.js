@@ -10,13 +10,13 @@ class GamePieceSection extends Component {
     return (
       <Container style={[this.props.style, styles.container]}>
         <Container style={styles.gamePieceContainer}>
-          <GamePiece piece={this.props.pieces[0]} pieceIndex={0} style={styles.gamePiece}/>
+          <GamePiece piece={this.props.pieces[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={this.props.allowDrag}/>
         </Container>
         <Container style={styles.gamePieceContainer}>
-          <GamePiece piece={this.props.pieces[1]} pieceIndex={1} style={styles.gamePiece}/>
+          <GamePiece piece={this.props.pieces[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={this.props.allowDrag}/>
         </Container>
         <Container style={styles.gamePieceContainer}>
-          <GamePiece piece={this.props.pieces[2]} pieceIndex={2} style={styles.gamePiece}/>
+          <GamePiece piece={this.props.pieces[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={this.props.allowDrag}/>
         </Container>
       </Container>
     );

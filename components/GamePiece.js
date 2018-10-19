@@ -34,6 +34,8 @@ class GamePiece extends Component {
     // middle points of the current GamePiece squares that contain letters
     this.relativeMiddlePoints = [];
 
+    this._onStartShouldSetPanResponderCapture = this._onStartShouldSetPanResponderCapture.bind(this);
+    this._onMoveShouldSetPanResponderCapture = this._onMoveShouldSetPanResponderCapture.bind(this);
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
     this._onPanResponderRelease = this._onPanResponderRelease.bind(this);
@@ -46,8 +48,8 @@ class GamePiece extends Component {
 
     // Initialize PanResponder with move handling
     this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponderCapture: GamePiece._panResponderCaptureTrue,
-      onMoveShouldSetPanResponderCapture: GamePiece._panResponderCaptureTrue,
+      onStartShouldSetPanResponderCapture: this._onStartShouldSetPanResponderCapture,
+      onMoveShouldSetPanResponderCapture: this._onMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._onPanResponderGrant,
       onPanResponderMove: this._onPanResponderMove,
       onPanResponderRelease: this._onPanResponderRelease,
@@ -173,9 +175,12 @@ class GamePiece extends Component {
     return (canDropStatus && squareBelow.letterBelow === "");
   }
 
-  static _panResponderCaptureTrue() {
-    // this could easily be written as anonymous function, but webstorm kept doing annoying highlighting things
-    return true;
+  _onStartShouldSetPanResponderCapture() {
+    return this.props.allowDrag;
+  }
+
+  _onMoveShouldSetPanResponderCapture() {
+    return this.props.allowDrag;
   }
 
   _onPanResponderGrant() {
