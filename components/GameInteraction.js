@@ -30,8 +30,8 @@ class GameInteraction extends Component {
     } else if (!wordPlayed) {
       interaction =
         <Container style={[styles.flex]}>
-          <GameWordDisplay style={[styles.twoColumns]}/>
           <GamePieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />;
+          <GameWordDisplay style={[styles.twoColumns]}/>
         </Container>;
     } else if (!this.props.game.piecePlaced) {
       interaction = <GamePieceSection pieces={this.props.game.me} allowDrag />;

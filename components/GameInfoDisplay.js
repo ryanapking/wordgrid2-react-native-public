@@ -10,13 +10,12 @@ class GameInfoDisplay extends Component {
   render() {
     return(
       <View style={[this.props.style, styles.main]}>
-        <View style={styles.row}>
-          <GamePhaseDisplay/>
-        </View>
-        <View style={styles.row}>
-          <Text>Opponent:</Text>
+        <View style={[styles.row, {padding: 5}]}>
+          <Text>Opponent Pieces:</Text>
           <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
-          <Text>Points: {this.props.game.theirScore}</Text>
+        </View>
+        <View style={[styles.row, {padding: 5}]}>
+          <GamePhaseDisplay/>
         </View>
       </View>
     );
