@@ -222,8 +222,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffa487",
   },
   centered: {
-    borderColor: 'white',
-    borderWidth: 1,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

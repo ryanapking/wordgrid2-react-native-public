@@ -15,8 +15,12 @@ export default class GameLetter extends Component {
       fontSize: this.props.letterHeight ? this.props.letterHeight * .75 : 28,
     };
 
+    const borderSize = {
+      borderWidth: this.props.letterHeight ? this.props.letterHeight * .015 : 1,
+    };
+
     return (
-      <Container style={[styles.letter, this.props.style]}>
+      <Container style={[borderSize, styles.letter, this.props.style]}>
         <Text style={textStyles}>{ UCLetter }</Text>
       </Container>
     );
@@ -28,8 +32,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     padding: '5%',
-    // borderWidth: 1,
-    // borderRadius: 5,
     borderColor: 'white',
     backgroundColor: "#ffd27b",
   },

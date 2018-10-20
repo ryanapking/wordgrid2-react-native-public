@@ -5,6 +5,7 @@ import { Text, StyleSheet, View } from "react-native";
 
 import GamePhaseDisplay from "./GamePhaseDisplay";
 import GamePieceSection from "./GamePieceSection";
+import GameScoreBoard from './GameScoreBoard';
 
 class GameInfoDisplay extends Component {
   render() {
@@ -15,6 +16,7 @@ class GameInfoDisplay extends Component {
           <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
         </View>
         <View style={[styles.row, {padding: 5}]}>
+          <GameScoreBoard />
           <GamePhaseDisplay/>
         </View>
       </View>

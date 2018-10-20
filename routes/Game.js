@@ -22,13 +22,13 @@ class Game extends Component {
 
     const lastItemIndex = this.props.game.history.length - 1;
     const boardState = this.props.game.history[lastItemIndex].b;
-    let boggle = new Boggle(boardState);
-    boggle.solve( (words) => {
-      boggle.print();
-
-      console.log(words.length + ' words');
-      console.log(words.join(', '));
-    });
+    // let boggle = new Boggle(boardState);
+    // boggle.solve( (words) => {
+    //   boggle.print();
+    //
+    //   console.log(words.length + ' words');
+    //   console.log(words.join(', '));
+    // });
   }
 
   render() {
