@@ -1,3 +1,6 @@
+import settings from '../config';
+
+// return a dumb object of scores as if they are baseball innings
 export function getScoreBoard(game) {
 
   const emptyScoreObject = { p1: null, p2: null };
@@ -32,6 +35,14 @@ export function getScoreBoard(game) {
 
   }, [emptyScoreObject]);
 
-  return scores;
+  // if we are short, fill out the difference with empty inning objects
+  // this allows the scoreboard to go into extra innings and also display the remaining moves
+  const remainingTurnCount = settings.naturalTurns - scores.length;
+  if (remainingTurnCount > 0) {
+    let diffMakerUpper = new Array(remainingTurnCount).fill(emptyScoreObject);
+    return [...scores, ...diffMakerUpper];
+  } else {
+    return scores;
+  }
 
 }
