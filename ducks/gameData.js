@@ -208,6 +208,7 @@ function playWordReducer(state, action) {
         ...game,
         word: action.word,
         wordValue: action.wordValue,
+        myScore: action.newScore,
         consumedSquares: [],
       }
     }
@@ -293,11 +294,12 @@ export function setBoardRows(gameID, rows) {
   }
 }
 
-export function playWord(gameID, word, wordValue) {
+export function playWord(gameID, word, wordValue, newScore) {
   return {
     type: PLAY_WORD,
     gameID,
     word,
-    wordValue
+    wordValue,
+    newScore
   }
 }

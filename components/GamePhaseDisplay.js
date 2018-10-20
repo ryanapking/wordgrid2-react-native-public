@@ -35,8 +35,8 @@ class GamePhaseDisplay extends Component {
     return (
       <Container>
         <Container>
-          <Text style={styles.textRight}>Your Points: { this.props.game.theirScore }</Text>
-          <Text style={styles.textRight}>Opponent Points: { this.props.game.myScore }</Text>
+          <Text style={styles.textRight}>Your Points: { this.props.game.myScore }</Text>
+          <Text style={styles.textRight}>Opponent Points: { this.props.game.theirScore }</Text>
           <Text style={styles.textRight}>Turn: 1</Text>
         </Container>
         <Container style={[styles.centered]}>
