@@ -13,6 +13,8 @@ class GameBoard extends Component {
   constructor() {
     super();
 
+    this._onStartShouldSetPanResponderCapture = this._onStartShouldSetPanResponderCapture.bind(this);
+    this._onMoveShouldSetPanResponderCapture = this._onMoveShouldSetPanResponderCapture.bind(this);
     this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
     this._onPanResponderMove = this._onPanResponderMove.bind(this);
     this._onPanResponderRelease = this._onPanResponderRelease.bind(this);
@@ -20,8 +22,8 @@ class GameBoard extends Component {
 
   componentWillMount() {
     this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponderCapture: GameBoard._panResponderCaptureTrue,
-      onMoveShouldSetPanResponderCapture: GameBoard._panResponderCaptureTrue,
+      onStartShouldSetPanResponderCapture: this._onStartShouldSetPanResponderCapture,
+      onMoveShouldSetPanResponderCapture: this._onMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._onPanResponderGrant,
       onPanResponderMove: this._onPanResponderMove,
       onPanResponderRelease: this._onPanResponderRelease
@@ -176,7 +178,11 @@ class GameBoard extends Component {
     }
   }
 
-  static _panResponderCaptureTrue() {
+  _onStartShouldSetPanResponderCapture() {
+    return true;
+  }
+
+  _onMoveShouldSetPanResponderCapture() {
     return true;
   }
 

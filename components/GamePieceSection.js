@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    maxHeight: '100%',
+    maxWidth: '100%',
   },
   gamePiece: {
     backgroundColor: 'gray',
