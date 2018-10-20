@@ -5,7 +5,7 @@ export function getScoreBoard(game) {
 
   const emptyScoreObject = { p1: null, p2: null };
 
-  const scores = game.history.reduce( (scores, move) => {
+  const scores = game.h.reduce( (scores, move) => {
 
     let previousMove = scores[scores.length - 1];
 

@@ -1,3 +1,5 @@
+import { getScoreBoard } from './getters';
+
 export function remoteToLocal(source, userID) {
   const current = source.h[source.h.length - 1];
   const me = (source.p1 === userID) ? current.p1 : current.p2;
@@ -16,6 +18,7 @@ export function remoteToLocal(source, userID) {
     myScore: calculateScore(source.h, userID),
     theirScore: calculateScore(source.h, opponentID),
     winner: source.w,
+    scoreBoard: getScoreBoard(source),
 
     // strictly used for displaying opponent name in /games screen
     opponentID,
