@@ -2,4 +2,4 @@ export { generateBoard, generatePiece, generateLocalPiece, generateGame } from '
 export { remoteToLocal, localToRemote } from './functions/dataConversions';
 export { calculateWordValue } from './functions/calculations';
 export { checkPieceFit, scoreTabulator, getWinner } from './functions/checks';
-export { getPlayerMoveScores } from './functions/getters';
+export { getScoreBoard } from './functions/getters';

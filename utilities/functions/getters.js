@@ -1,13 +1,37 @@
-export function getPlayerMoveScores(game) {
-  let startingScores = { p1: [], p2: []};
+export function getScoreBoard(game) {
 
-  return game.history.reduce( (score, move) => {
-    if (move.p && move.p === game.p1) {
-      return { p1: [...score.p1, move.p], p2: [...score.p2]};
-    } else if (move.p && move.p === game.p2) {
-      return { p1: [...score.p1], p2: [...score.p2, move.p]};
+  const emptyScoreObject = { p1: null, p2: null };
+
+  const scores = game.history.reduce( (scores, move) => {
+
+    let previousMove = scores[scores.length - 1];
+
+    const lastScoreIndex = scores.length - 1;
+    let player = null;
+
+    if (!move.p) {
+      return scores;
+    } else if (move.p === game.p1) {
+      player = "p1";
+    } else if (move.p === game.p2) {
+      player = "p2";
     } else {
-      return score;
+      console.log('something is busted');
+      return scores;
     }
-  }, startingScores);
+
+    if (previousMove[player]) {
+      return [
+        ...scores,
+        {...emptyScoreObject, [player]: move.wv }
+      ];
+    } else {
+      scores[lastScoreIndex] = {...previousMove, [player]: move.wv};
+      return scores;
+    }
+
+  }, [emptyScoreObject]);
+
+  return scores;
+
 }
