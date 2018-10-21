@@ -68,6 +68,8 @@ class GameInteraction extends Component {
 
     const winner = getWinner(newGameObject);
 
+    // console.log('new game object', newGameObject);
+
     firebase.firestore().runTransaction( (transaction) => {
 
       return transaction.get(gameDocRef).then( (gameDoc) => {

@@ -13,6 +13,7 @@ export function remoteToLocal(source, userID) {
     me: me.map( (piece) => pieceStringToArray(piece)),
     them: them.map( (piece) => pieceStringToArray(piece)),
     word: "",
+    wordPath: null,
     wordValue: 0,
     piecePlaced: false,
     validatingWord: false,
@@ -37,7 +38,9 @@ export function remoteToLocal(source, userID) {
 export function localToRemote(localData, userID) {
   const p1Array = (localData.p1 === userID) ? localData.me : localData.them;
   const p2Array = (localData.p2 === userID) ? localData.me : localData.them;
+  consumedSquaresToWordPath(localData.consumedSquares);
   return {
+    wp: localData.wordPath, // word path
     w: localData.word,
     wv: localData.wordValue,
     p: userID, // will store the id of the use who created this history item
@@ -84,4 +87,10 @@ export function calculateScore(history, playerID) {
       return totalScore;
     }
   }, 0);
+}
+
+export function consumedSquaresToWordPath(consumedSquares) {
+  return consumedSquares.map( (square) => {
+    return `${square.rowIndex},${square.columnIndex}`;
+  }).join("|");
 }

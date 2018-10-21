@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
 import { playWord, setBoardRows, addOpponentPiece } from '../ducks/gameData';
-import { calculateWordValue, generateLocalPiece } from "../utilities";
+import { calculateWordValue, generateLocalPiece, consumedSquaresToWordPath } from "../utilities";
 import english from '../utilities/english';
 
 class GameWordDisplay extends Component {
@@ -45,7 +45,8 @@ class GameWordDisplay extends Component {
     console.log('word validated...', this.props.game);
     const wordValue = calculateWordValue(word);
     const newScore = this.props.game.myScore + wordValue;
-    this.props.playWord(this.props.gameID, this.props.uid, word, wordValue, newScore);
+    const wordPath = consumedSquaresToWordPath(this.props.game.consumedSquares);
+    this.props.playWord(this.props.gameID, this.props.uid, word, wordPath, wordValue, newScore);
 
     const newRows = this.props.game.rows.map( (row, rowIndex ) => {
       return row.map( (letter, columnIndex) => {
