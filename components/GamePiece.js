@@ -205,7 +205,8 @@ class GamePiece extends Component {
     ).start();
 
     const squaresBelow = this._getSquaresBelowPiece(event);
-    const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
+    const overSquares = squaresBelow.length > 0;
+    const canDrop = squaresBelow.reduce(this._checkDropReducer, overSquares);
 
     // console.log('squaresBelow: ', squaresBelow);
     // console.log('candrop: ', canDrop);
@@ -228,9 +229,10 @@ class GamePiece extends Component {
     }])(event, gestureState);
 
     const squaresBelow = this._getSquaresBelowPiece(event);
+    const overSquares = squaresBelow.length > 0;
 
-    // we should only update state if required. it is too expensive to render one very move event.
-    const canDrop = squaresBelow.reduce(this._checkDropReducer, true);
+    // we should only update state if required. it is too expensive to render on very move event.
+    const canDrop = squaresBelow.reduce(this._checkDropReducer, overSquares);
 
     if (canDrop !== this.state.canDrop) {
       this.setState({canDrop});
