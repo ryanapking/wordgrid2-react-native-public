@@ -8,11 +8,9 @@ import { calculateScore } from "../utilities/functions/dataConversions";
 
 class GameScoreBoard extends Component {
   render() {
-    // should move this call into the data conversion. no reason to repeat it every render.
-    // const scoreBoard = getScoreBoard(this.props.game);
 
-    const top = (this.props.p1 === this.props.uid) ? "You: " : "Them: ";
-    const bottom = (this.props.p2 === this.props.uid) ? "You: " : "Them: ";
+    const topLabel = (this.props.p1 === this.props.uid) ? "You: " : "Them: ";
+    const bottomLabel = (this.props.p2 === this.props.uid) ? "You: " : "Them: ";
 
     const p1Score = calculateScore(this.props.history, this.props.p1);
     const p2Score = calculateScore(this.props.history, this.props.p2);
@@ -23,8 +21,8 @@ class GameScoreBoard extends Component {
     return (
       <Container style={styles.row}>
         <View style={styles.column}>
-          <Text style={styles.equal}>{ top }</Text>
-          <Text style={styles.equal}>{ bottom }</Text>
+          <Text style={styles.equal}>{ topLabel }</Text>
+          <Text style={styles.equal}>{ bottomLabel }</Text>
         </View>
         {this.props.scoreBoard.map( (turn, index) =>
           <View key={index} style={styles.turn}>
