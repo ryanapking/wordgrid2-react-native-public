@@ -6,6 +6,7 @@ export function remoteToLocal(source, userID) {
   const them = (source.p1 === userID) ? current.p2 : current.p1;
   const opponentID = (source.p1 === userID) ? source.p2 : source.p1;
   const opponentName = "unknown opponent";
+  const won = (source.w) ? (source[source.w] === userID) : null;
   return {
     consumedSquares: [],
     rows: boardStringToArray(current.b),
@@ -17,8 +18,9 @@ export function remoteToLocal(source, userID) {
     validatingWord: false,
     myScore: calculateScore(source.h, userID),
     theirScore: calculateScore(source.h, opponentID),
-    winner: source.w,
     scoreBoard: getScoreBoard(source),
+    winner: source.w,
+    won: won,
 
     // strictly used for displaying opponent name in /games screen
     opponentID,

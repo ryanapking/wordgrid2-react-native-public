@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { List, ListItem } from 'native-base';
@@ -27,30 +27,57 @@ class Games extends Component {
     return (
       <View style={{width: '100%'}}>
         <List>
-          <ListItem itemDivider >
-            <Text>Ready to Play:</Text>
-          </ListItem>
-          { readyToPlay.map( (gameID, index) =>
-            <ListItem onPress={() => this.props.history.push(`/game/${gameID}`)} key={index}>
-              <Text>{ this.props.gameData.byID[gameID].opponentName }</Text>
-            </ListItem>
-          )}
-          <ListItem itemDivider>
-            <Text>Opponent's Move:</Text>
-          </ListItem>
-          { waitingOnOpponent.map( (gameID, index) =>
-            <ListItem key={index}>
-              <Text>{ this.props.gameData.byID[gameID].opponentName }</Text>
-            </ListItem>
-          )}
+          {readyToPlay.length > 0 &&
+            <View>
+              <ListItem itemDivider >
+                <Text>Ready to Play:</Text>
+              </ListItem>
+              { readyToPlay.map( (gameID, index) => this.getGameListItem(gameID, index, true))}
+            </View>
+          }
+          {waitingOnOpponent.length > 0 &&
+            <View>
+              <ListItem itemDivider>
+                <Text>Opponent's Move:</Text>
+              </ListItem>
+              { waitingOnOpponent.map( (gameID, index) => this.getGameListItem(gameID, index))}
+            </View>
+          }
+          {over.length > 0 &&
+            <View>
+              <ListItem itemDivider>
+                <Text>Ended:</Text>
+              </ListItem>
+              { over.map( (gameID, index) => this.getGameListItem(gameID, index))}
+            </View>
+          }
         </List>
-
         <NewGameButton />
       </View>
     );
   }
 
+  getGameListItem(gameID, index, linkGame = false) {
+    const game = this.props.gameData.byID[gameID];
+    const link = linkGame ? () => this.props.history.push(`/game/${gameID}`) : null;
+    return (
+      <ListItem style={styles.listItem} key={index} onPress={link}>
+        <Text>{ game.opponentName }</Text>
+        { game.winner &&
+          <Text style={{textAlign: 'right'}}>{ this.props.gameData.byID[gameID].won ? "won" : "lost" }</Text>
+        }
+      </ListItem>
+    );
+  }
+
 }
+
+const styles = StyleSheet.create({
+  listItem: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  }
+});
 
 const mapStateToProps = (state) => {
   return {
