@@ -44,7 +44,7 @@ class GameWordDisplay extends Component {
     console.log('word validated...', this.props.game);
     const wordValue = calculateWordValue(word);
     const newScore = this.props.game.myScore + wordValue;
-    this.props.playWord(this.props.gameID, word, wordValue, newScore);
+    this.props.playWord(this.props.gameID, this.props.uid, word, wordValue, newScore);
 
     const newRows = this.props.game.rows.map( (row, rowIndex ) => {
       return row.map( (letter, columnIndex) => {
@@ -74,6 +74,7 @@ class GameWordDisplay extends Component {
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;
   return {
+    uid: state.user.uid,
     gameID: gameID,
     game: state.gameData.byID[gameID],
   }

@@ -1,4 +1,4 @@
-import { remoteToLocal } from '../utilities';
+import { remoteToLocal, localToRemote, getScoreBoard } from '../utilities';
 
 // available actions
 // game actions
@@ -200,16 +200,26 @@ function setBoardRowsReducer(state, action) {
 function playWordReducer(state, action) {
   const byID = state.byID;
   const game = state.byID[action.gameID];
+
+  const newGameState = {
+    ...game,
+    word: action.word,
+    wordValue: action.wordValue,
+    myScore: action.newScore,
+    consumedSquares: [],
+  };
+
+  const tempNextHistory = [...game.history, localToRemote(newGameState, action.userID)];
+  const tempClone = {...newGameState, h: tempNextHistory};
+  const scoreBoard = getScoreBoard(tempClone);
+
   return {
     ...state,
     byID: {
       ...byID,
       [action.gameID]: {
-        ...game,
-        word: action.word,
-        wordValue: action.wordValue,
-        myScore: action.newScore,
-        consumedSquares: [],
+        ...newGameState,
+        scoreBoard
       }
     }
   };
@@ -294,10 +304,11 @@ export function setBoardRows(gameID, rows) {
   }
 }
 
-export function playWord(gameID, word, wordValue, newScore) {
+export function playWord(gameID, userID, word, wordValue, newScore) {
   return {
     type: PLAY_WORD,
     gameID,
+    userID,
     word,
     wordValue,
     newScore

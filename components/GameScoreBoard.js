@@ -12,11 +12,11 @@ class GameScoreBoard extends Component {
     const topLabel = (this.props.p1 === this.props.uid) ? "You: " : "Them: ";
     const bottomLabel = (this.props.p2 === this.props.uid) ? "You: " : "Them: ";
 
-    const p1Score = calculateScore(this.props.history, this.props.p1);
-    const p2Score = calculateScore(this.props.history, this.props.p2);
-
-    const topScore = (this.props.p1 === this.props.uid) ? p1Score : p2Score;
-    const bottomScore = (this.props.p2 === this.props.uid) ? p1Score : p2Score;
+    const totalScores = this.props.scoreBoard.reduce( (totals, turn) => {
+      const p1 = totals.p1 + turn.p1;
+      const p2 = totals.p2 + turn.p2;
+      return {p1, p2};
+    }, { p1: 0, p2: 0});
 
     return (
       <Container style={styles.row}>
@@ -31,8 +31,8 @@ class GameScoreBoard extends Component {
           </View>
         )}
         <View style={styles.turn}>
-          <Text style={styles.score}>{ topScore }</Text>
-          <Text style={styles.score}>{ bottomScore }</Text>
+          <Text style={styles.score}>{ totalScores.p1 }</Text>
+          <Text style={styles.score}>{ totalScores.p2 }</Text>
         </View>
       </Container>
     );
