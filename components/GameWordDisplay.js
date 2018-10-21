@@ -12,20 +12,21 @@ class GameWordDisplay extends Component {
   render() {
     const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
     const longEnough = (displayWord.length >= 4);
+    const startMessage = "Drag to spell a word";
 
     let button = null;
 
     if (longEnough) {
       button = (
-        <Button full light onPress={() => this.validateThenPlayWord()}>
-          <Text>Submit Your Word for {calculateWordValue(displayWord)} points</Text>
+        <Button block info onPress={() => this.validateThenPlayWord()}>
+          <Text>Play word for {calculateWordValue(displayWord)} points</Text>
         </Button>
       );
     }
 
     return (
       <Container style={this.props.style}>
-        <Text style={{padding: 20, textAlign: 'center'}}>{displayWord}</Text>
+        <Text style={{padding: 20, textAlign: 'center'}}>{displayWord ? displayWord : startMessage}</Text>
         {button}
       </Container>
     );
