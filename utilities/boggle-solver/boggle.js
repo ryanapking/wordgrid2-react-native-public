@@ -110,11 +110,11 @@ export default class Boggle {
     // fill in the boardStr with the letters
     this.board.forEach(row => {
       row.forEach(char => {
-        if (char === 'Q') {
-          boardStr = boardStr.replace('% ', 'Qu');
-        } else {
+        // if (char === 'Q') {
+        //   boardStr = boardStr.replace('% ', 'Qu');
+        // } else {
           boardStr = boardStr.replace('%', char);
-        }
+        // }
       });
     });
     return boardStr;
@@ -136,7 +136,8 @@ export default class Boggle {
 
     function visit(y, x, word) {
       let letter = that.board[y][x];
-      word += (letter === 'Q' ? 'QU' : letter); // account for the "Qu" die
+      // word += (letter === 'Q' ? 'QU' : letter); // account for the "Qu" die
+      word += letter;
       if (english.contains(word)) { // if its a valid english word, add it to the array
         that.words.push(word);
       }
