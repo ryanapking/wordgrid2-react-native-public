@@ -218,7 +218,13 @@ class GamePiece extends Component {
         updatedRows[square.boardRowIndex][square.boardColumnIndex] = square.letter;
       });
 
-      this.props.placePiece(updatedRows, this.props.pieceIndex, this.props.gameID);
+      // build a reference point that will later be used for animation
+      const singleSquare = squaresBelow[0];
+      const rowRef = singleSquare.boardRowIndex - singleSquare.pieceRowIndex;
+      const columnRef = singleSquare.boardColumnIndex - singleSquare.pieceColumnIndex;
+      const placementRef = [this.props.pieceIndex, rowRef, columnRef].join("|");
+
+      this.props.placePiece(updatedRows, this.props.pieceIndex, this.props.gameID, placementRef);
     }
   }
 

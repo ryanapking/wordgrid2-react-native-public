@@ -66,7 +66,8 @@ function placePieceReducer(state, action) {
         ...game,
         rows,
         me,
-        piecePlaced: true
+        piecePlaced: true,
+        placementRef: action.placementRef
       },
     }
   };
@@ -227,12 +228,13 @@ function playWordReducer(state, action) {
 }
 
 // action creators
-export function placePiece(rows = [], pieceIndex, gameID) {
+export function placePiece(rows = [], pieceIndex, gameID, placementRef) {
   return {
     type: PLACE_PIECE,
     rows: rows,
     pieceIndex,
-    gameID
+    gameID,
+    placementRef
   }
 }
 

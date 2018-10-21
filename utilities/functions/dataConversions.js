@@ -16,6 +16,7 @@ export function remoteToLocal(source, userID) {
     wordPath: null,
     wordValue: 0,
     piecePlaced: false,
+    placementRef: null,
     validatingWord: false,
     myScore: calculateScore(source.h, userID),
     theirScore: calculateScore(source.h, opponentID),
@@ -41,12 +42,13 @@ export function localToRemote(localData, userID) {
   consumedSquaresToWordPath(localData.consumedSquares);
   return {
     wp: localData.wordPath, // word path
-    w: localData.word,
-    wv: localData.wordValue,
+    w: localData.word, // word
+    wv: localData.wordValue, // word value
     p: userID, // will store the id of the use who created this history item
-    b: arrayToString(localData.rows),
-    p1: p1Array.map( (piece) => arrayToString(piece) ),
-    p2: p2Array.map( (piece) => arrayToString(piece) ),
+    pr: localData.placementRef, // piece placement ref point - piece index, row index, column index
+    b: arrayToString(localData.rows), // board state
+    p1: p1Array.map( (piece) => arrayToString(piece) ), // p1 pieces
+    p2: p2Array.map( (piece) => arrayToString(piece) ), // p2 pieces
   }
 }
 
