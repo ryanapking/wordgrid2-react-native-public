@@ -24,6 +24,7 @@ export function remoteToLocal(source, userID) {
     consumedSquares: [],
 
     // local data for display purposes
+    animationOver: false,
     piecePlaced: false,
     validatingWord: false,
     myScore: calculateScore(source.h, userID),

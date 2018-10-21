@@ -10,6 +10,7 @@ export const SET_OPPONENT_NAME = 'wordgrid2/gameData/SET_OPPONENT_NAME';
 export const ADD_OPPONENT_PIECE = 'wordgrid2/gameData/ADD_OPPONENT_PIECE';
 export const SET_BOARD_ROWS = 'wordgrid2/gameData/SET_BOARD_ROWS';
 export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
+export const MARK_ANIMATION_PLAYED = 'wordgrid2/gameData/MARK_ANIMATION_PLAYED';
 
 // syncing actions
 export const SET_LOCAL_GAME_IDS = 'wordgrid2/gameData/SET_LOCAL_GAME_IDS';
@@ -47,6 +48,8 @@ export default function reducer(state = initialState, action) {
       return setBoardRowsReducer(state, action);
     case PLAY_WORD:
       return playWordReducer(state, action);
+    case MARK_ANIMATION_PLAYED:
+      return markAnimationPlayedReducer(state, action);
     default:
       return state;
   }
@@ -227,6 +230,22 @@ function playWordReducer(state, action) {
   };
 }
 
+function markAnimationPlayedReducer(state, action) {
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        animationOver: true
+      }
+    }
+  }
+}
+
 // action creators
 export function placePiece(rows = [], pieceIndex, gameID, placementRef) {
   return {
@@ -316,5 +335,12 @@ export function playWord(gameID, userID, word, wordPath, wordValue, newScore) {
     wordPath,
     wordValue,
     newScore
+  }
+}
+
+export function markAnimationPlayed(gameID) {
+  return {
+    type: MARK_ANIMATION_PLAYED,
+    gameID
   }
 }
