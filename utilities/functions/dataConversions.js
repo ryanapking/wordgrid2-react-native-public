@@ -8,23 +8,28 @@ export function remoteToLocal(source, userID) {
   const opponentName = "unknown opponent";
   const won = (source.w) ? (source[source.w] === userID) : null;
   return {
-    consumedSquares: [],
+    // data that is converted and saved to firebase as a move
     rows: boardStringToArray(current.b),
     me: me.map( (piece) => pieceStringToArray(piece)),
     them: them.map( (piece) => pieceStringToArray(piece)),
     word: "",
-    wordPath: null,
     wordValue: 0,
-    piecePlaced: false,
+    wordPath: null,
     placementRef: null,
+
+    // converted and saved as part of the base game
+    winner: source.w,
+
+    // local data used during conversions
+    consumedSquares: [],
+
+    // local data for display purposes
+    piecePlaced: false,
     validatingWord: false,
     myScore: calculateScore(source.h, userID),
     theirScore: calculateScore(source.h, opponentID),
     scoreBoard: getScoreBoard(source),
-    winner: source.w,
-    won: won,
-
-    // strictly used for displaying opponent name in /games screen
+    won,
     opponentID,
     opponentName,
 
@@ -41,14 +46,14 @@ export function localToRemote(localData, userID) {
   const p2Array = (localData.p2 === userID) ? localData.me : localData.them;
   consumedSquaresToWordPath(localData.consumedSquares);
   return {
-    wp: localData.wordPath, // word path
-    w: localData.word, // word
-    wv: localData.wordValue, // word value
-    p: userID, // will store the id of the use who created this history item
-    pr: localData.placementRef, // piece placement ref point - piece index, row index, column index
     b: arrayToString(localData.rows), // board state
     p1: p1Array.map( (piece) => arrayToString(piece) ), // p1 pieces
-    p2: p2Array.map( (piece) => arrayToString(piece) ), // p2 pieces
+    p2: p2Array.map( (piece) => arrayToString(piece) ), // p2 pieces,
+    w: localData.word, // word
+    wv: localData.wordValue, // word value
+    wp: localData.wordPath, // word path
+    pr: localData.placementRef, // piece placement ref point - piece index, row index, column index
+    p: userID, // will store the id of the use who created this history item
   }
 }
 
