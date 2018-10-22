@@ -8,6 +8,7 @@ import Boggle from '../utilities/boggle-solver';
 import GameInfoDisplay from '../components/GameInfoDisplay';
 import GameBoard from '../components/GameBoard';
 import GameInteraction from '../components/GameInteraction';
+import GameAnimation from '../components/GameAnimation'
 
 import { checkPieceFit } from "../utilities";
 
@@ -32,13 +33,22 @@ class Game extends Component {
   }
 
   render() {
-    return (
-      <Container>
-        <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
-        <GameBoard style={styles.board}/>
-        <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
-      </Container>
-    );
+    if (!this.props.game.animationOver) {
+      return (
+        <Container style={{backgroundColor: 'blue'}}>
+          <GameAnimation />
+        </Container>
+      );
+    } else {
+      return (
+        <Container>
+          <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
+          <GameBoard style={styles.board}/>
+          <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
+        </Container>
+      );
+    }
+
   }
 
   componentDidUpdate() {
