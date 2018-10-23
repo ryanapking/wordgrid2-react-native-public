@@ -35,7 +35,7 @@ class Game extends Component {
   render() {
     if (!this.props.game.animationOver) {
       return (
-        <Container style={{backgroundColor: 'blue'}}>
+        <Container style={{}}>
           <GameAnimation />
         </Container>
       );

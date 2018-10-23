@@ -1,4 +1,5 @@
 import settings from '../config';
+import { boardStringToArray, pieceStringToArray } from "./dataConversions";
 
 // return a dumb object of scores as if they are baseball innings
 export function getScoreBoard(game) {
@@ -44,5 +45,47 @@ export function getScoreBoard(game) {
   } else {
     return scores;
   }
+
+}
+
+export function getAnimationData(game) {
+  if (game.history.length < 1) return false;
+
+  const start = game.history[game.history.length -2];
+  const end = game.history[game.history.length - 1];
+  const player = (end.p === game.p1) ? "p1" : "p2";
+
+  const boardStates = {
+    start: boardStringToArray(start.b),
+    end: boardStringToArray(end.b),
+  };
+
+  const pieceStates = {
+    start: start[player].map( (piece) => pieceStringToArray(piece)),
+    end: end[player].map( (piece) => pieceStringToArray(piece)),
+  };
+
+  const pr = end.pr.split("|");
+  const placementRef = {
+    pieceIndex: pr[0],
+    rowIndex: pr[1],
+    columnIndex: pr[2]
+  };
+
+  const wp = end.wp.split("|");
+  const wordPath = wp.map( (coordinateSet) => {
+    const squareCoordinates = coordinateSet.split(",");
+    return {
+      rowIndex: squareCoordinates[0],
+      columnIndex: squareCoordinates[1]
+    };
+  });
+
+  return {
+    boardStates,
+    pieceStates,
+    placementRef,
+    wordPath
+  };
 
 }
