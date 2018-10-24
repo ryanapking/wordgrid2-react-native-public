@@ -14,7 +14,6 @@ class GameAnimation extends Component {
 
     this.state = {
       animation: null,
-      pieceStyles: null,
       pieceLocation: new Animated.ValueXY(),
     };
 
@@ -25,46 +24,44 @@ class GameAnimation extends Component {
       animation: getAnimationData(this.props.game),
     });
 
-    Animated.timing(this.state.pieceLocation, {
-      toValue: { x: -100, y: -100 },
-      duration: 1000
-    }).start();
+    // Animated.timing(this.state.pieceLocation, {
+    //   toValue: { x: -100, y: -100 },
+    //   duration: 1000
+    // }).start();
   }
 
   render() {
 
-    console.log('rendering state...', this.state);
-
-    if (!this.state.animation) return null;
-
+    const { animation } = this.state;
+    if (!animation) return null;
     const transform = {transform: [{translateX: this.state.pieceLocation.x}, {translateY: this.state.pieceLocation.y}]};
+
+    console.log('rendering state...', this.state);
 
     return (
       <Container style={styles.container}>
 
         <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1}]}>
-          <Container style={[styles.gamePieceContainer, {zIndex: 999}]}>
-            <Animated.View ref={(piece) => this._piece1 = piece} onLayout={() => this._onPiece1Layout()}
-                  style={[{backgroundColor: 'green', width: '100%', height: '100%', zIndex: 999}, transform]}
-            >
-              <GamePiece piece={this.state.animation.pieceStates.start[0]} pieceIndex={0} style={[styles.gamePiece, this.state.pieceStyles]} allowDrag={false}/>
+          <Container style={[styles.gamePieceContainer]}>
+            <Animated.View style={[transform]}>
+              <GamePiece piece={animation.pieceStates.start[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
           </Container>
           <Container style={styles.gamePieceContainer}>
-            <Animated.View ref={(piece) => this._piece2 = piece} onLayout={() => this._onPiece2Layout()} style={transform}>
-              <GamePiece piece={this.state.animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
+            <Animated.View style={[transform]}>
+              <GamePiece piece={animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
           </Container>
           <Container style={styles.gamePieceContainer}>
-            <View ref={(piece) => this._piece3 = piece} onLayout={() => this._onPiece3Layout()}>
-              <GamePiece piece={this.state.animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
-            </View>
+            <Animated.View style={[transform]}>
+              <GamePiece piece={animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
+            </Animated.View>
           </Container>
         </Container>
 
         <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._onBoardLayout()}>
           <View style={styles.grid}>
-            {this.state.animation.boardStates.start.map((row, rowIndex) =>
+            {animation.boardStates.start.map((row, rowIndex) =>
               <View key={rowIndex} style={styles.row}>
                 {row.map( (letter, columnIndex) => {
                   return (
@@ -90,41 +87,9 @@ class GameAnimation extends Component {
     console.log('laying out board', this._board);
     this._board.measureInWindow((x, y, width, height) => {
       console.log(x, y, width, height);
-      this.setState({
-        pieceStyles: {
-          // position: 'absolute',
-          // left: 0,
-          // top: 0,
-          // width: '100%',
-          // zIndex: 9999999999,
-          // backgroundColor: 'blue'
-        }
-      })
-    });
-
-    console.log('state:', this.state);
-  }
-
-  _onPiece1Layout() {
-    console.log('piece 1 layout');
-    // this._piece1.measureInWindow((x, y, width, height) => {
-    //   console.log(x, y, width, height);
-    // });
-  }
-
-  _onPiece2Layout() {
-    console.log('piece 2 layout');
-    // this._piece2.measureInWindow((x, y, width, height) => {
-    //   console.log(x, y, width, height);
-    // });
-  }
-
-  _onPiece3Layout() {
-    console.log('piece 3 layout');
-    this._piece3.measureInWindow((x, y, width, height) => {
-      console.log(x, y, width, height);
     });
   }
+
 }
 
 const styles = StyleSheet.create({
@@ -152,28 +117,10 @@ const styles = StyleSheet.create({
   column: {
     flex: 1
   },
-  letter: {
-    fontSize: 20
-  },
-  filledSquare: {
-    backgroundColor: "#ffd27b",
-  },
-  emptySquare: {
-    backgroundColor: "#9c9c9c"
-  },
-  usedSquare: {
-    backgroundColor: "#ffa487",
-  },
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  gameBoardView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%'
   },
   gamePiecesContainer: {
     display: 'flex',
@@ -188,12 +135,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     maxHeight: '100%',
     maxWidth: '100%',
+    aspectRatio: 1,
+    backgroundColor: 'gray',
   },
   gamePiece: {
-    backgroundColor: 'gray',
     maxWidth: '100%',
     maxHeight: '100%',
-    aspectRatio: 1,
   },
 });
 
