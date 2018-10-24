@@ -13,53 +13,64 @@ class GameAnimation extends Component {
     super();
 
     this.state = {
+      // data concerning what is moving where
       animation: null,
+
+      // animation values
       pieceLocation: new Animated.ValueXY(),
+      scale: new Animated.Value(1),
+
+      // for calculating animation values
+      boardLocation: {
+        x: 0,
+        y: 0,
+        width: null,
+        height: null,
+      },
+      boardWidth: null,
+      pieceStartingLocation: null,
     };
+
+    this.pieceRefs = {};
 
   }
 
   componentDidMount() {
+    console.log('did mount');
     this.setState({
       animation: getAnimationData(this.props.game),
     });
-
-    // Animated.timing(this.state.pieceLocation, {
-    //   toValue: { x: -100, y: -100 },
-    //   duration: 1000
-    // }).start();
   }
 
   render() {
 
-    const { animation } = this.state;
+    const { animation, pieceLocation, scale } = this.state;
     if (!animation) return null;
-    const transform = {transform: [{translateX: this.state.pieceLocation.x}, {translateY: this.state.pieceLocation.y}]};
+    const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
 
-    console.log('rendering state...', this.state);
 
     return (
       <Container style={styles.container}>
 
-        <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1}]}>
-          <Container style={[styles.gamePieceContainer]}>
-            <Animated.View style={[transform]}>
+        <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1, zIndex: 999}]}>
+          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[0] = piece} onLayout={() => this._measurePiece(0)}>
+            <Animated.View style={[transform, {zIndex: 999, backgroundColor: 'green'}]}>
               <GamePiece piece={animation.pieceStates.start[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
-          </Container>
-          <Container style={styles.gamePieceContainer}>
-            <Animated.View style={[transform]}>
+          </View>
+          <View style={styles.gamePieceContainer}>
+            <Animated.View style={[]}>
               <GamePiece piece={animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
-          </Container>
-          <Container style={styles.gamePieceContainer}>
-            <Animated.View style={[transform]}>
+          </View>
+          <View style={styles.gamePieceContainer}>
+            <Animated.View style={[]}>
               <GamePiece piece={animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
-          </Container>
+          </View>
         </Container>
 
-        <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._onBoardLayout()}>
+        <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <View style={styles.grid}>
             {animation.boardStates.start.map((row, rowIndex) =>
               <View key={rowIndex} style={styles.row}>
@@ -83,11 +94,48 @@ class GameAnimation extends Component {
     );
   }
 
-  _onBoardLayout() {
+  _measureBoard() {
     console.log('laying out board', this._board);
-    this._board.measureInWindow((x, y, width, height) => {
+    this._board.measure((x, y, width, height) => {
+      console.log('board location:', x, y, width, height);
+
+
+
+      Animated.timing(this.state.pieceLocation, {
+        toValue: { x: x - 2, y: y - 4 },
+        duration: 1000
+      }).start();
+
+      Animated.timing(this.state.scale, {toValue: 1.33, duration: 1000}).start();
+
+
+      this.setState({
+        boardLocation: {
+          x,
+          y,
+          width,
+          height
+        },
+        boardWidth: width
+      })
+    });
+  }
+
+  _measurePiece(pieceIndex) {
+    this.pieceRefs[pieceIndex].measure( (x, y, width, height) => {
+      this.setState({
+        pieceStartingLocation: {
+          x,
+          y,
+          width,
+          height
+        }
+      });
+      console.log('piece coordinates');
       console.log(x, y, width, height);
     });
+
+    console.log('state', this.state);
   }
 
 }
