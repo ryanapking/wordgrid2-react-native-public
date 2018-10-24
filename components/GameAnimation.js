@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import {Text, StyleSheet, View} from 'react-native';
+import { Text, StyleSheet, Animated, View } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
 
-import { boardStringToArray, pieceStringToArray, getAnimationData } from "../utilities";
+import { getAnimationData } from "../utilities";
 import GameLetter from "./GameLetter";
 import GamePiece from "./GamePiece";
 
@@ -13,36 +13,56 @@ class GameAnimation extends Component {
     super();
 
     this.state = {
-      animation: null
-    }
+      animation: null,
+      pieceStyles: null,
+      pieceLocation: new Animated.ValueXY(),
+    };
+
   }
 
   componentDidMount() {
     this.setState({
       animation: getAnimationData(this.props.game),
     });
+
+    Animated.timing(this.state.pieceLocation, {
+      toValue: { x: -100, y: -100 },
+      duration: 1000
+    }).start();
   }
 
   render() {
 
+    console.log('rendering state...', this.state);
+
     if (!this.state.animation) return null;
+
+    const transform = {transform: [{translateX: this.state.pieceLocation.x}, {translateY: this.state.pieceLocation.y}]};
 
     return (
       <Container style={styles.container}>
 
         <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1}]}>
-          <Container style={styles.gamePieceContainer}>
-            <GamePiece piece={this.state.animation.pieceStates.start[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={false}/>
+          <Container style={[styles.gamePieceContainer, {zIndex: 999}]}>
+            <Animated.View ref={(piece) => this._piece1 = piece} onLayout={() => this._onPiece1Layout()}
+                  style={[{backgroundColor: 'green', width: '100%', height: '100%', zIndex: 999}, transform]}
+            >
+              <GamePiece piece={this.state.animation.pieceStates.start[0]} pieceIndex={0} style={[styles.gamePiece, this.state.pieceStyles]} allowDrag={false}/>
+            </Animated.View>
           </Container>
           <Container style={styles.gamePieceContainer}>
-            <GamePiece piece={this.state.animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
+            <Animated.View ref={(piece) => this._piece2 = piece} onLayout={() => this._onPiece2Layout()} style={transform}>
+              <GamePiece piece={this.state.animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
+            </Animated.View>
           </Container>
           <Container style={styles.gamePieceContainer}>
-            <GamePiece piece={this.state.animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
+            <View ref={(piece) => this._piece3 = piece} onLayout={() => this._onPiece3Layout()}>
+              <GamePiece piece={this.state.animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
+            </View>
           </Container>
         </Container>
 
-        <View style={styles.base}>
+        <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._onBoardLayout()}>
           <View style={styles.grid}>
             {this.state.animation.boardStates.start.map((row, rowIndex) =>
               <View key={rowIndex} style={styles.row}>
@@ -64,6 +84,46 @@ class GameAnimation extends Component {
 
       </Container>
     );
+  }
+
+  _onBoardLayout() {
+    console.log('laying out board', this._board);
+    this._board.measureInWindow((x, y, width, height) => {
+      console.log(x, y, width, height);
+      this.setState({
+        pieceStyles: {
+          // position: 'absolute',
+          // left: 0,
+          // top: 0,
+          // width: '100%',
+          // zIndex: 9999999999,
+          // backgroundColor: 'blue'
+        }
+      })
+    });
+
+    console.log('state:', this.state);
+  }
+
+  _onPiece1Layout() {
+    console.log('piece 1 layout');
+    // this._piece1.measureInWindow((x, y, width, height) => {
+    //   console.log(x, y, width, height);
+    // });
+  }
+
+  _onPiece2Layout() {
+    console.log('piece 2 layout');
+    // this._piece2.measureInWindow((x, y, width, height) => {
+    //   console.log(x, y, width, height);
+    // });
+  }
+
+  _onPiece3Layout() {
+    console.log('piece 3 layout');
+    this._piece3.measureInWindow((x, y, width, height) => {
+      console.log(x, y, width, height);
+    });
   }
 }
 
