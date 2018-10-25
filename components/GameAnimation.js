@@ -48,8 +48,8 @@ class GameAnimation extends Component {
 
     const { animation, pieceLocation, scale, pieceWidth } = this.state;
     if (!animation) return null;
-    let pieceWidthStyle = {width: pieceWidth, height: pieceWidth, top: 0, left: 0, position: 'absolute'}
 
+    const pieceWidthStyle = pieceWidth._value > 0 ? {width: pieceWidth, height: pieceWidth} : null;
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
     // const transform = null;
 
@@ -129,17 +129,21 @@ class GameAnimation extends Component {
     this._board.measure((x, y, width, height) => {
       const boardLocation = {x, y};
       console.log('board location:', boardLocation);
-      Animated.timing(this.state.pieceWidth, {
-        toValue: (width / 10) * 4,
-        duration: 0
-      }).start();
       this.setState({ boardLocation, boardWidth: width, letterWidth: (width / 10) });
     });
   }
 
   _measurePiece(pieceIndex) {
     console.log('measuring piece');
-    this.pieceRefs[pieceIndex].measure( (x, y) => {
+    this.pieceRefs[pieceIndex].measure( (x, y, width, height) => {
+
+      if (this.state.pieceWidth._value === 0) {
+        Animated.timing(this.state.pieceWidth, {
+          toValue: width,
+          duration: 0
+        }).start();
+      }
+
       const pieceStartingLocation = {x, y};
       console.log('piece starting location:', pieceStartingLocation);
       this.setState({pieceStartingLocation});
@@ -186,9 +190,9 @@ const styles = StyleSheet.create({
   gamePieceContainer: {
     flex: 1,
     margin: 2,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    // display: 'flex',
+    // flexDirection: 'column',
+    // justifyContent: 'center',
     maxHeight: '100%',
     maxWidth: '100%',
     aspectRatio: 1,
