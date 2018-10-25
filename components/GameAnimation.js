@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, Animated, View } from 'react-native';
+import { StyleSheet, Animated, View } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
@@ -48,26 +48,34 @@ class GameAnimation extends Component {
     const { animation, pieceLocation, scale, pieceWidth } = this.state;
     if (!animation) return null;
 
-    const pieceWidthStyle = {width: pieceWidth, height: pieceWidth};
+    console.log('animation', animation);
+
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
-    // const transform = null;
+    const motionPiece = [{width: pieceWidth, height: pieceWidth, zIndex: 999, transform}, transform];
+
+    let animationStyles = {0: null, 1: null, 2: null};
+    animationStyles[animation.placementRef.pieceIndex] = motionPiece;
+
+    let onLayout = {0: null, 1: null, 2: null};
+    onLayout[animation.placementRef.pieceIndex] = () => this._measurePiece(animation.placementRef.pieceIndex);
+
 
     return (
       <Container style={styles.container}>
 
         <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1, zIndex: 999}]}>
-          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[0] = piece} onLayout={() => this._measurePiece(0)}>
-            <Animated.View style={[transform, {zIndex: 999}, pieceWidthStyle]}>
+          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[0] = piece} onLayout={onLayout[0]}>
+            <Animated.View style={animationStyles[0]}>
               <GamePiece piece={animation.pieceStates.start[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
           </View>
-          <View style={styles.gamePieceContainer}>
-            <Animated.View style={[]}>
+          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[1] = piece} onLayout={onLayout[1]}>
+            <Animated.View style={animationStyles[1]}>
               <GamePiece piece={animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
           </View>
-          <View style={styles.gamePieceContainer}>
-            <Animated.View style={[]}>
+          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[2] = piece} onLayout={onLayout[2]}>
+            <Animated.View style={animationStyles[2]}>
               <GamePiece piece={animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
           </View>
@@ -98,8 +106,9 @@ class GameAnimation extends Component {
   }
 
   _animate() {
+    const { rowIndex, columnIndex } = this.state.animation.placementRef;
     this._growPiece();
-    this._slidePiece();
+    this._slidePiece(rowIndex, columnIndex);
   }
 
   _growPiece() {
@@ -110,11 +119,14 @@ class GameAnimation extends Component {
     }).start();
   }
 
-  _slidePiece() {
+  _slidePiece(row = 0, column = 0) {
     const board = this.state.boardLocation;
+    const letterWidth = this.state.letterWidth;
     const offset = this.state.pieceStartingLocation;
-    const x = board.x - offset.x;
-    const y = board.y - offset.y;
+    const left = board.x - offset.x;
+    const top = board.y - offset.y;
+    const x = left + (letterWidth * column);
+    const y = top + (letterWidth * row);
     Animated.timing(this.state.pieceLocation, {
       toValue: { x, y },
       duration: 1000
