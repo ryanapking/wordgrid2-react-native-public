@@ -48,37 +48,32 @@ class GameAnimation extends Component {
     const { animation, pieceLocation, scale, pieceWidth } = this.state;
     if (!animation) return null;
 
-    console.log('animation', animation);
-
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
-    const motionPiece = [{width: pieceWidth, height: pieceWidth, zIndex: 999, transform}, transform];
+    const motion = [{width: pieceWidth, height: pieceWidth, zIndex: 999}, transform];
 
-    let animationStyles = {0: null, 1: null, 2: null};
-    animationStyles[animation.placementRef.pieceIndex] = motionPiece;
+    const pieces = animation.pieceStates.start.map( (letters, index) => {
+      if (index === parseInt(animation.placementRef.pieceIndex)) {
+        let onLayout = () => this._measurePiece(index);
+        return {letters, animationStyles: motion, onLayout};
+      } else {
+        return {letters, animationStyles: null, onLayout: null}
+      }
+    });
 
-    let onLayout = {0: null, 1: null, 2: null};
-    onLayout[animation.placementRef.pieceIndex] = () => this._measurePiece(animation.placementRef.pieceIndex);
+    console.log('pieces', pieces);
 
 
     return (
       <Container style={styles.container}>
 
-        <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1, zIndex: 999}]}>
-          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[0] = piece} onLayout={onLayout[0]}>
-            <Animated.View style={animationStyles[0]}>
-              <GamePiece piece={animation.pieceStates.start[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={false}/>
-            </Animated.View>
-          </View>
-          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[1] = piece} onLayout={onLayout[1]}>
-            <Animated.View style={animationStyles[1]}>
-              <GamePiece piece={animation.pieceStates.start[1]} pieceIndex={1} style={styles.gamePiece} allowDrag={false}/>
-            </Animated.View>
-          </View>
-          <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[2] = piece} onLayout={onLayout[2]}>
-            <Animated.View style={animationStyles[2]}>
-              <GamePiece piece={animation.pieceStates.start[2]} pieceIndex={2} style={styles.gamePiece} allowDrag={false}/>
-            </Animated.View>
-          </View>
+        <Container style={styles.gamePiecesContainer}>
+          { pieces.map( (piece, index) =>
+            <View key={index} style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
+              <Animated.View style={piece.animationStyles}>
+                <GamePiece piece={piece.letters} pieceIndex={index} style={styles.gamePiece} allowDrag={false}/>
+              </Animated.View>
+            </View>
+          )}
         </Container>
 
         <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
@@ -190,7 +185,9 @@ const styles = StyleSheet.create({
   gamePiecesContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    zIndex: 999,
+    flex: 1,
   },
   gamePieceContainer: {
     flex: 1,
