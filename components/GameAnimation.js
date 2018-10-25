@@ -7,6 +7,7 @@ import { Container } from 'native-base';
 import { getAnimationData } from "../utilities";
 import GameLetter from "./GameLetter";
 import GamePiece from "./GamePiece";
+import GameBoardPathCreator from "./GameBoardPathCreator";
 
 class GameAnimation extends Component {
   constructor() {
@@ -45,14 +46,14 @@ class GameAnimation extends Component {
 
   render() {
 
-    const { animation, pieceLocation, scale, pieceWidth } = this.state;
+    const { animation, pieceLocation, scale, pieceWidth, letterWidth } = this.state;
     if (!animation) return null;
 
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
     const motion = [{width: pieceWidth, height: pieceWidth, zIndex: 999}, transform];
 
     const pieces = animation.pieceStates.start.map( (letters, index) => {
-      if (index === parseInt(animation.placementRef.pieceIndex)) {
+      if (index === animation.placementRef.pieceIndex) {
         let onLayout = () => this._measurePiece(index);
         return {letters, animationStyles: motion, onLayout};
       } else {
@@ -60,7 +61,17 @@ class GameAnimation extends Component {
       }
     });
 
-    console.log('pieces', pieces);
+    const boardLocation = {
+      rowHeight: letterWidth,
+      columnWidth: letterWidth
+    };
+
+    const squares = animation.wordPath.map( (square) => {
+      return {
+        rowIndex: square.rowIndex,
+        columnIndex: square.columnIndex
+      };
+    });
 
 
     return (
@@ -90,6 +101,7 @@ class GameAnimation extends Component {
               </View>
             )}
           </View>
+          <GameBoardPathCreator squares={squares} boardLocation={boardLocation}/>
         </View>
 
         <View style={{flex: 1}}>

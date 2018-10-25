@@ -67,17 +67,17 @@ export function getAnimationData(game) {
 
   const pr = end.pr.split("|");
   const placementRef = {
-    pieceIndex: pr[0],
-    rowIndex: pr[1],
-    columnIndex: pr[2]
+    pieceIndex: parseInt(pr[0]),
+    rowIndex: parseInt(pr[1]),
+    columnIndex: parseInt(pr[2])
   };
 
   const wp = end.wp.split("|");
   const wordPath = wp.map( (coordinateSet) => {
     const squareCoordinates = coordinateSet.split(",");
     return {
-      rowIndex: squareCoordinates[0],
-      columnIndex: squareCoordinates[1]
+      rowIndex: parseInt(squareCoordinates[0]),
+      columnIndex: parseInt(squareCoordinates[1])
     };
   });
 
