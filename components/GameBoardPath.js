@@ -39,8 +39,9 @@ class GameBoardPath extends Component {
   }
 
   _getRelativeCoordinates(rowIndex, columnIndex) {
-    const y = (rowIndex + .5) * this.props.display.boardLocation.rowHeight;
-    const x = (columnIndex + .5) * this.props.display.boardLocation.columnWidth;
+    const { boardLocation } = this.props;
+    const y = (rowIndex + .5) * boardLocation.rowHeight;
+    const x = (columnIndex + .5) * boardLocation.columnWidth;
     return { x, y };
   }
 
@@ -71,9 +72,10 @@ class GameBoardPath extends Component {
   };
 }
 
+// now expects boardLocation as a prop
 const mapStateToProps = (state) => {
   return {
-    display: state.gameDisplay
+    // display: state.gameDisplay
   }
 };
 

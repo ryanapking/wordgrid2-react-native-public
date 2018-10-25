@@ -101,9 +101,9 @@ class GameAnimation extends Component {
   }
 
   _animate() {
-    const { rowIndex, columnIndex } = this.state.animation.placementRef;
-    this._growPiece();
-    this._slidePiece(rowIndex, columnIndex);
+    // const { rowIndex, columnIndex } = this.state.animation.placementRef;
+    // this._growPiece();
+    // this._slidePiece(rowIndex, columnIndex);
   }
 
   _growPiece() {

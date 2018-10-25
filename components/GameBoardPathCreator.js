@@ -7,9 +7,10 @@ import GameBoardPath from './GameBoardPath';
 
 class GameBoardPathCreator extends Component {
   render() {
+    const { squares, boardLocation } = this.props;
 
     // split the consumedSquares into pairs, to allow a path section to be rendered
-    const squarePairs = this.props.consumedSquares
+    const squarePairs = squares
     .map( (square, squareIndex, usedSquares) => {
       return usedSquares.slice(squareIndex - 1, squareIndex + 1);
     })
@@ -20,7 +21,7 @@ class GameBoardPathCreator extends Component {
     return (
       <View style={styles.overlay} pointerEvents={'none'}>
         {squarePairs.map( (pair, pairIndex) =>
-          <GameBoardPath key={pairIndex} square1={pair[0]} square2={pair[1]}/>
+          <GameBoardPath key={pairIndex} square1={pair[0]} square2={pair[1]} boardLocation={boardLocation}/>
         )}
       </View>
     );
@@ -31,7 +32,7 @@ class GameBoardPathCreator extends Component {
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;
   return {
-    consumedSquares: state.gameData.byID[gameID].consumedSquares
+    // consumedSquares: state.gameData.byID[gameID].consumedSquares
   }
 };
 

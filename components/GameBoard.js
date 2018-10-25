@@ -31,7 +31,7 @@ class GameBoard extends Component {
   }
 
   render() {
-    const { game } = this.props;
+    const { game, display } = this.props;
 
     // if a word has already been played, we don't need any of this to be possible
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
@@ -53,7 +53,7 @@ class GameBoard extends Component {
               </View>
             )}
           </View>
-          <GameBoardPathCreator />
+          <GameBoardPathCreator squares={game.consumedSquares} boardLocation={display.boardLocation}/>
         </View>
       </View>
     );
