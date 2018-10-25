@@ -23,7 +23,6 @@ class GameAnimation extends Component {
 
       // for calculating animation values
       boardLocation: null,
-      boardWidth: null,
       pieceStartingLocation: null,
       letterWidth: null,
     };
@@ -49,7 +48,7 @@ class GameAnimation extends Component {
     const { animation, pieceLocation, scale, pieceWidth } = this.state;
     if (!animation) return null;
 
-    const pieceWidthStyle = pieceWidth._value > 0 ? {width: pieceWidth, height: pieceWidth} : null;
+    const pieceWidthStyle = {width: pieceWidth, height: pieceWidth};
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
     // const transform = null;
 
@@ -58,7 +57,7 @@ class GameAnimation extends Component {
 
         <Container style={[this.props.style, styles.gamePiecesContainer, {flex: 1, zIndex: 999}]}>
           <View style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[0] = piece} onLayout={() => this._measurePiece(0)}>
-            <Animated.View style={[transform, {zIndex: 999, backgroundColor: 'green'}, pieceWidthStyle]}>
+            <Animated.View style={[transform, {zIndex: 999}, pieceWidthStyle]}>
               <GamePiece piece={animation.pieceStates.start[0]} pieceIndex={0} style={styles.gamePiece} allowDrag={false}/>
             </Animated.View>
           </View>
@@ -100,14 +99,15 @@ class GameAnimation extends Component {
 
   _animate() {
     this._growPiece();
+    this._slidePiece();
   }
 
   _growPiece() {
     const pieceWidth = this.state.letterWidth * 4;
-    Animated.timing(this.state.pieceWidth, {toValue: pieceWidth, duration: 1000}).start( () => {
-      this._measurePiece(0);
-      this._slidePiece();
-    });
+    Animated.timing(this.state.pieceWidth, {
+      toValue: pieceWidth,
+      duration: 1000
+    }).start();
   }
 
   _slidePiece() {
@@ -115,7 +115,6 @@ class GameAnimation extends Component {
     const offset = this.state.pieceStartingLocation;
     const x = board.x - offset.x;
     const y = board.y - offset.y;
-    // console.log('sliding to', offset);
     Animated.timing(this.state.pieceLocation, {
       toValue: { x, y },
       duration: 1000
@@ -123,30 +122,24 @@ class GameAnimation extends Component {
   }
 
   _measureBoard() {
-
-    console.log('_measureBoard state pieceWidth', this.state.pieceWidth);
-
     this._board.measure((x, y, width, height) => {
       const boardLocation = {x, y};
       console.log('board location:', boardLocation);
-      this.setState({ boardLocation, boardWidth: width, letterWidth: (width / 10) });
+      this.setState({ boardLocation, letterWidth: (width / 10) });
     });
   }
 
   _measurePiece(pieceIndex) {
-    console.log('measuring piece');
     this.pieceRefs[pieceIndex].measure( (x, y, width, height) => {
-
-      if (this.state.pieceWidth._value === 0) {
+      // setting a width to smooth out some animation kinks for the piece
+      if (this.state.pieceWidth._value <= 0) {
         Animated.timing(this.state.pieceWidth, {
           toValue: width,
           duration: 0
         }).start();
       }
-
-      const pieceStartingLocation = {x, y};
-      console.log('piece starting location:', pieceStartingLocation);
-      this.setState({pieceStartingLocation});
+      console.log('piece starting location:', {x, y});
+      this.setState({pieceStartingLocation: {x, y}});
     });
   }
 
@@ -190,9 +183,6 @@ const styles = StyleSheet.create({
   gamePieceContainer: {
     flex: 1,
     margin: 2,
-    // display: 'flex',
-    // flexDirection: 'column',
-    // justifyContent: 'center',
     maxHeight: '100%',
     maxWidth: '100%',
     aspectRatio: 1,
@@ -202,8 +192,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     width: '100%',
     height: '100%',
-    // maxWidth: '100%',
-    // maxHeight: '100%',
   },
 });
 
