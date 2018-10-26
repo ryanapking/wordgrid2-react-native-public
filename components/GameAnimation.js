@@ -24,6 +24,9 @@ class GameAnimation extends Component {
 
       displayWordPath: [],
 
+      // animation phase progress
+      animationPhase: 'waiting to start',
+
       // for calculating animation values
       boardLocation: null,
       pieceStartingLocation: null,
@@ -32,12 +35,8 @@ class GameAnimation extends Component {
 
     this.pieceRefs = {};
 
-    this.timer = setInterval( () => {
-      if (this.state.animation && this.state.boardLocation && this.state.pieceStartingLocation) {
-        clearInterval(this.timer);
-        this._animate();
-      }
-    }, 3000)
+    this._animate();
+
   }
 
   componentDidMount() {
@@ -107,18 +106,44 @@ class GameAnimation extends Component {
   }
 
   _animate() {
-    const { rowIndex, columnIndex } = this.state.animation.placementRef;
-    this._growPiece();
-    this._slidePiece(rowIndex, columnIndex);
-    this._drawWord();
+
+    let interval = setInterval( () => {
+      if (!this.state.animation || !this.state.boardLocation || !this.state.pieceStartingLocation) {
+        return;
+      }
+
+      switch (this.state.animationPhase) {
+        case "waiting to start":
+          this._drawWord();
+          this.setState({animationPhase: "drawing word"});
+          break;
+        case "word drawn":
+          this._growPiece();
+          this.setState({animationPhase: "growing piece"});
+          break;
+        case "piece grown":
+          const { rowIndex, columnIndex } = this.state.animation.placementRef;
+          this._slidePiece(rowIndex, columnIndex);
+          this.setState({animationPhase: "sliding piece"});
+          break;
+        case "piece slid":
+          clearInterval(interval);
+          this.setState({animationPhase: "complete"});
+          break;
+      }
+
+    }, 100);
+
   }
 
   _growPiece() {
     const pieceWidth = this.state.letterWidth * 4;
     Animated.timing(this.state.pieceWidth, {
       toValue: pieceWidth,
-      duration: 1000
-    }).start();
+      duration: 500
+    }).start( () => {
+      this.setState({animationPhase: "piece grown"});
+    });
   }
 
   _slidePiece(row = 0, column = 0) {
@@ -132,19 +157,22 @@ class GameAnimation extends Component {
     Animated.timing(this.state.pieceLocation, {
       toValue: { x, y },
       duration: 1000
-    }).start();
+    }).start( () => {
+      this.setState({animationPhase: "piece slid"});
+    });
   }
 
   _drawWord() {
     let interval = setInterval( () => {
       const allSquares = this.state.animation.wordPath;
       const currentSquares = this.state.displayWordPath;
-      if (currentSquares.length >= allSquares.length) {
-        clearInterval(interval);
-      } else {
+      if (currentSquares.length < allSquares.length) {
         this.setState({
           displayWordPath: allSquares.slice(0, currentSquares.length + 1),
         });
+      } else {
+        clearInterval(interval);
+        this.setState({animationPhase: "word drawn"});
       }
     }, 1000);
   }
