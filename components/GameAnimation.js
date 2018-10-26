@@ -22,6 +22,8 @@ class GameAnimation extends Component {
       scale: new Animated.Value(1),
       pieceWidth: new Animated.Value(0),
 
+      displayWordPath: [],
+
       // for calculating animation values
       boardLocation: null,
       pieceStartingLocation: null,
@@ -46,7 +48,7 @@ class GameAnimation extends Component {
 
   render() {
 
-    const { animation, pieceLocation, scale, pieceWidth, letterWidth } = this.state;
+    const { animation, pieceLocation, scale, pieceWidth, letterWidth, displayWordPath } = this.state;
     if (!animation) return null;
 
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
@@ -65,14 +67,6 @@ class GameAnimation extends Component {
       rowHeight: letterWidth,
       columnWidth: letterWidth
     };
-
-    const squares = animation.wordPath.map( (square) => {
-      return {
-        rowIndex: square.rowIndex,
-        columnIndex: square.columnIndex
-      };
-    });
-
 
     return (
       <Container style={styles.container}>
@@ -101,7 +95,7 @@ class GameAnimation extends Component {
               </View>
             )}
           </View>
-          <GameBoardPathCreator squares={squares} boardLocation={boardLocation}/>
+          <GameBoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
         </View>
 
         <View style={{flex: 1}}>
@@ -113,9 +107,10 @@ class GameAnimation extends Component {
   }
 
   _animate() {
-    // const { rowIndex, columnIndex } = this.state.animation.placementRef;
-    // this._growPiece();
-    // this._slidePiece(rowIndex, columnIndex);
+    const { rowIndex, columnIndex } = this.state.animation.placementRef;
+    this._growPiece();
+    this._slidePiece(rowIndex, columnIndex);
+    this._drawWord();
   }
 
   _growPiece() {
@@ -138,6 +133,20 @@ class GameAnimation extends Component {
       toValue: { x, y },
       duration: 1000
     }).start();
+  }
+
+  _drawWord() {
+    let interval = setInterval( () => {
+      const allSquares = this.state.animation.wordPath;
+      const currentSquares = this.state.displayWordPath;
+      if (currentSquares.length >= allSquares.length) {
+        clearInterval(interval);
+      } else {
+        this.setState({
+          displayWordPath: allSquares.slice(0, currentSquares.length + 1),
+        });
+      }
+    }, 1000);
   }
 
   _measureBoard() {
