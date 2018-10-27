@@ -55,11 +55,6 @@ export function getAnimationData(game) {
   const end = game.history[game.history.length - 1];
   const player = (end.p === game.p1) ? "p1" : "p2";
 
-  const boardStates = {
-    start: boardStringToArray(start.b),
-    end: boardStringToArray(end.b),
-  };
-
   const pieceStates = {
     start: start[player].map( (piece) => pieceStringToArray(piece)),
     end: end[player].map( (piece) => pieceStringToArray(piece)),
@@ -71,6 +66,15 @@ export function getAnimationData(game) {
     rowIndex: parseInt(pr[1]),
     columnIndex: parseInt(pr[2])
   };
+
+  let boardStates = {
+    start: boardStringToArray(start.b),
+    end: boardStringToArray(end.b),
+  };
+
+  boardStates.between = getBoardMinusPiece(boardStates.end, pieceStates.start, placementRef);
+
+  console.log('boardStates:', boardStates);
 
   const wp = end.wp.split("|");
   const wordPath = wp.map( (coordinateSet) => {
@@ -88,4 +92,24 @@ export function getAnimationData(game) {
     wordPath
   };
 
+}
+
+function getBoardMinusPiece(boardArray, pieces, placementRef) {
+  const piece = pieces[placementRef.pieceIndex];
+
+  // create a copy of the board array
+  let newBoardArray = boardArray.map( (row) => row.slice() );
+
+  // remove each letter of the piece from the new board array
+  piece.forEach( (row, rowIndex) => {
+    row.forEach( (letter, columnIndex) => {
+      if (letter) {
+        const boardRowIndex = placementRef.rowIndex + rowIndex;
+        const boardColumnIndex = placementRef.columnIndex + columnIndex;
+        newBoardArray[boardRowIndex][boardColumnIndex] = "";
+      }
+    });
+  });
+
+  return newBoardArray;
 }

@@ -187,7 +187,7 @@ class GameAnimation extends Component {
 
   _swapBoards() {
     this.setState({
-      boardState: this.state.animation.boardStates.end,
+      boardState: this.state.animation.boardStates.between,
       displayWordPath: [],
       animationPhase: "board swapped"
     });
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
   },
   gamePiece: {
-    backgroundColor: 'blue',
+    // backgroundColor: 'blue',
     width: '100%',
     height: '100%',
   },
