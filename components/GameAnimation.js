@@ -23,6 +23,7 @@ class GameAnimation extends Component {
       pieceWidth: new Animated.Value(0),
 
       displayWordPath: [],
+      boardState: [],
 
       // animation phase progress
       animationPhase: 'waiting to start',
@@ -40,14 +41,16 @@ class GameAnimation extends Component {
   }
 
   componentDidMount() {
+    const animation = getAnimationData(this.props.game);
     this.setState({
-      animation: getAnimationData(this.props.game),
+      animation: animation,
+      boardState: animation.boardStates.start,
     });
   }
 
   render() {
 
-    const { animation, pieceLocation, scale, pieceWidth, letterWidth, displayWordPath } = this.state;
+    const { animation, pieceLocation, scale, pieceWidth, letterWidth, displayWordPath, boardState } = this.state;
     if (!animation) return null;
 
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
@@ -82,7 +85,7 @@ class GameAnimation extends Component {
 
         <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <View style={styles.grid}>
-            {animation.boardStates.start.map((row, rowIndex) =>
+            {boardState.map((row, rowIndex) =>
               <View key={rowIndex} style={styles.row}>
                 {row.map( (letter, columnIndex) => {
                   return (
@@ -108,27 +111,32 @@ class GameAnimation extends Component {
   _animate() {
 
     let interval = setInterval( () => {
+      // make sure all the needed data exists before starting the animation
       if (!this.state.animation || !this.state.boardLocation || !this.state.pieceStartingLocation) {
         return;
       }
 
       switch (this.state.animationPhase) {
         case "waiting to start":
-          this._drawWord();
           this.setState({animationPhase: "drawing word"});
+          this._drawWord();
           break;
         case "word drawn":
-          this._growPiece();
+          this.setState({animationPhase: "swapping board"});
+          this._swapBoards();
+          break;
+        case "board swapped":
           this.setState({animationPhase: "growing piece"});
+          this._growPiece();
           break;
         case "piece grown":
+          this.setState({animationPhase: "sliding piece"});
           const { rowIndex, columnIndex } = this.state.animation.placementRef;
           this._slidePiece(rowIndex, columnIndex);
-          this.setState({animationPhase: "sliding piece"});
           break;
         case "piece slid":
-          clearInterval(interval);
           this.setState({animationPhase: "complete"});
+          clearInterval(interval);
           break;
       }
 
@@ -175,6 +183,14 @@ class GameAnimation extends Component {
         this.setState({animationPhase: "word drawn"});
       }
     }, 1000);
+  }
+
+  _swapBoards() {
+    this.setState({
+      boardState: this.state.animation.boardStates.end,
+      displayWordPath: [],
+      animationPhase: "board swapped"
+    });
   }
 
   _measureBoard() {
