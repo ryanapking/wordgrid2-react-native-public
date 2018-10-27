@@ -13,11 +13,14 @@ export default class DrawBoard extends Component {
       <View style={styles.grid}>
         {boardState.map((row, rowIndex) =>
           <View key={rowIndex} style={styles.row}>
-            {row.map( (square, columnIndex) =>
-              <View key={columnIndex} style={[styles.centered, styles.column, this._getFillStyle(square.status)]}>
-                <GameLetter letter={square.letter} style={this._getFillStyle(square.status)} letterHeight={letterHeight}/>
-              </View>
-            )}
+            {row.map( (square, columnIndex) => {
+              const fillStyle = this._getFillStyle(square.status);
+              return (
+                <View key={columnIndex} style={[styles.centered, styles.column, fillStyle]}>
+                  <GameLetter letter={square.letter} style={fillStyle} letterHeight={letterHeight}/>
+                </View>
+              );
+            })}
           </View>
         )}
       </View>

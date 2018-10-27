@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
 
 import { placePiece } from '../ducks/gameData';
-import GameLetter from './GameLetter';
+import DrawPiece from './DrawPiece';
 
 class GamePiece extends Component {
 
@@ -57,11 +57,15 @@ class GamePiece extends Component {
   }
 
   render() {
-    const { pan, scale } = this.state;
+    const { pan, scale, baseWidth, canDrop } = this.state;
 
     const dragTransforms = {transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}]};
-    const letterDragStyles = this.state.canDrop ? styles.canDrop : {};
-    const letterHeight = this.state.baseHeight / 4;
+
+    const pieceState = this.props.piece.map( (row, rowIndex) => {
+      return row.map( (letter, columnIndex) => {
+        return {letter};
+      });
+    });
 
     return (
       <View
@@ -72,18 +76,9 @@ class GamePiece extends Component {
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[styles.square, dragTransforms]}
-          rev={animatedView => this.animatedView = animatedView}
         >
           <Container style={styles.grid} pointerEvents={'none'}>
-            {this.props.piece.map( (pieceRow, index) =>
-              <View style={styles.row} key={index}>
-                {pieceRow.map( (letter, index) =>
-                  <View style={styles.column} key={index}>
-                    { letter ? <GameLetter style={letterDragStyles} letter={letter} letterHeight={letterHeight}/> : null }
-                  </View>
-                )}
-              </View>
-            )}
+            <DrawPiece pieceState={pieceState} pieceSize={baseWidth} canDrop={canDrop}/>
           </Container>
         </Animated.View>
       </View>
@@ -250,21 +245,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  canDrop: {
-    backgroundColor: '#55a22e'
-  },
   grid: {
     display: 'flex',
     flexDirection: 'column'
   },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 1,
-  },
-  column: {
-    flex: 1,
-  }
 });
 
 const mapStateToProps = (state, ownProps) => {
