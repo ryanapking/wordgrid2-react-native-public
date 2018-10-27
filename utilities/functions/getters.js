@@ -87,7 +87,9 @@ export function getAnimationData(game) {
     boardStates,
     pieceStates,
     placementRef,
-    wordPath
+    wordPath,
+    word: end.w,
+    points: end.wv,
   };
 
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Animated, View } from 'react-native';
+import { StyleSheet, Animated, View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
@@ -25,6 +25,7 @@ class GameMoveAnimation extends Component {
 
       displayWordPath: [],
       boardState: [],
+      message: "",
 
       // animation phase progress
       animationPhase: 'waiting to start',
@@ -52,7 +53,7 @@ class GameMoveAnimation extends Component {
 
   render() {
 
-    const { animation, pieceLocation, pieceWidth, letterWidth, displayWordPath, boardState, boardSize } = this.state;
+    const { animation, pieceLocation, pieceWidth, letterWidth, displayWordPath, boardState, boardSize, message } = this.state;
     if (!animation) return null;
 
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}]};
@@ -69,7 +70,7 @@ class GameMoveAnimation extends Component {
 
     const boardLocation = {
       rowHeight: letterWidth,
-      columnWidth: letterWidth
+      columnWidth: letterWidth,
     };
 
     const displayBoardState = boardState.map( (row, rowIndex) => {
@@ -83,6 +84,8 @@ class GameMoveAnimation extends Component {
         }
       });
     });
+
+    const displayWord = animation.word.substring(0, displayWordPath.length);
 
     return (
       <Container style={styles.container}>
@@ -102,8 +105,9 @@ class GameMoveAnimation extends Component {
           <GameBoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
         </View>
 
-        <View style={{flex: 1}}>
-
+        <View style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+          <Text style={{textAlign: 'center'}}>{ displayWord }</Text>
+          <Text style={{textAlign: 'center'}}>{ message }</Text>
         </View>
 
       </Container>
@@ -124,21 +128,26 @@ class GameMoveAnimation extends Component {
           this._drawWord();
           break;
         case "word drawn":
-          this.setState({animationPhase: "swapping board"});
+          this.setState({animationPhase: "swapping board", message: this.state.animation.points + " points"});
           this._swapBoards();
           break;
         case "board swapped":
           this.setState({animationPhase: "growing piece"});
-          this._growPiece();
-          break;
-        case "piece grown":
-          this.setState({animationPhase: "sliding piece"});
           const { rowIndex, columnIndex } = this.state.animation.placementRef;
+          this._growPiece();
           this._slidePiece(rowIndex, columnIndex);
           break;
-        case "piece slid":
+        case "piece moved":
           this.setState({animationPhase: "complete"});
           break;
+        // case "piece grown":
+        //   this.setState({animationPhase: "sliding piece"});
+        //   const { rowIndex, columnIndex } = this.state.animation.placementRef;
+        //   this._slidePiece(rowIndex, columnIndex);
+        //   break;
+        // case "piece slid":
+        //   this.setState({animationPhase: "complete"});
+        //   break;
         case "complete":
           console.log('animation complete');
           clearInterval(interval);
@@ -154,10 +163,8 @@ class GameMoveAnimation extends Component {
     const pieceWidth = this.state.letterWidth * 4;
     Animated.timing(this.state.pieceWidth, {
       toValue: pieceWidth,
-      duration: 500
-    }).start( () => {
-      this.setState({animationPhase: "piece grown"});
-    });
+      duration: 1000
+    }).start();
   }
 
   _slidePiece(row = 0, column = 0) {
@@ -172,7 +179,7 @@ class GameMoveAnimation extends Component {
       toValue: { x, y },
       duration: 1000
     }).start( () => {
-      this.setState({animationPhase: "piece slid"});
+      this.setState({animationPhase: "piece moved"});
     });
   }
 
@@ -286,8 +293,6 @@ const mapStateToProps = (state, ownProps) => {
   return {
     gameID: gameID,
     game: state.gameData.byID[gameID],
-    uid: state.user.uid,
-    display: state.gameDisplay
   };
 };
 
