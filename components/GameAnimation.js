@@ -19,7 +19,6 @@ class GameAnimation extends Component {
 
       // animation values
       pieceLocation: new Animated.ValueXY(),
-      scale: new Animated.Value(1),
       pieceWidth: new Animated.Value(0),
 
       displayWordPath: [],
@@ -50,10 +49,10 @@ class GameAnimation extends Component {
 
   render() {
 
-    const { animation, pieceLocation, scale, pieceWidth, letterWidth, displayWordPath, boardState } = this.state;
+    const { animation, pieceLocation, pieceWidth, letterWidth, displayWordPath, boardState } = this.state;
     if (!animation) return null;
 
-    const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}, {scale}]};
+    const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}]};
     const motion = [{width: pieceWidth, height: pieceWidth, zIndex: 999}, transform];
 
     const pieces = animation.pieceStates.start.map( (letters, index) => {
@@ -136,6 +135,9 @@ class GameAnimation extends Component {
           break;
         case "piece slid":
           this.setState({animationPhase: "complete"});
+          break;
+        case "complete":
+          console.log('animation complete');
           clearInterval(interval);
           break;
       }
