@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-native';
+import { View } from 'react-native';
 import PropTypes from 'prop-types';
 
-class GameBoardPath extends Component {
+export default class DrawPath extends Component {
   constructor() {
     super();
 
@@ -20,21 +18,19 @@ class GameBoardPath extends Component {
 
     const height = 5;
 
-    const styles = StyleSheet.create({
-      pretty: {
-        left: midpoint.x - (length / 2),
-        top: midpoint.y - (height / 2),
-        width: length,
-        transform: [{rotate: angle + 'deg'}],
-        height: height,
-        borderRadius: height / 2,
-        backgroundColor: '#5283ff',
-        position: 'absolute'
-      }
-    });
+    const style = {
+      left: midpoint.x - (length / 2),
+      top: midpoint.y - (height / 2),
+      width: length,
+      transform: [{rotate: angle + 'deg'}],
+      height: height,
+      borderRadius: height / 2,
+      backgroundColor: '#5283ff',
+      position: 'absolute'
+    };
 
     return (
-      <View style={styles.pretty}></View>
+      <View style={style}></View>
     );
   }
 
@@ -67,16 +63,15 @@ class GameBoardPath extends Component {
   static propTypes = {
     square1: PropTypes.shape({
       rowIndex: PropTypes.number,
-      columnIndex: PropTypes.number
+      columnIndex: PropTypes.number,
+    }),
+    square2: PropTypes.shape({
+      rowIndex: PropTypes.number,
+      columnIndex: PropTypes.number,
+    }),
+    boardLocation: PropTypes.shape({
+      rowHeight: PropTypes.number,
+      columnWidth: PropTypes.number,
     })
   };
 }
-
-// now expects boardLocation as a prop
-const mapStateToProps = (state) => {
-  return {
-    // display: state.gameDisplay
-  }
-};
-
-export default withRouter(connect(mapStateToProps)(GameBoardPath));

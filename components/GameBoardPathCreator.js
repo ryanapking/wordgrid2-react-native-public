@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-native';
+import PropTypes from "prop-types";
 
-import GameBoardPath from './GameBoardPath';
+import DrawPath from './DrawPath';
 
-class GameBoardPathCreator extends Component {
+
+export default class GameBoardPathCreator extends Component {
   render() {
     const { squares, boardLocation } = this.props;
 
@@ -21,20 +21,25 @@ class GameBoardPathCreator extends Component {
     return (
       <View style={styles.overlay} pointerEvents={'none'}>
         {squarePairs.map( (pair, pairIndex) =>
-          <GameBoardPath key={pairIndex} square1={pair[0]} square2={pair[1]} boardLocation={boardLocation}/>
+          <DrawPath key={pairIndex} square1={pair[0]} square2={pair[1]} boardLocation={boardLocation}/>
         )}
       </View>
     );
   }
 
+  static propTypes = {
+    squares: PropTypes.arrayOf(
+      PropTypes.shape({
+        rowIndex: PropTypes.number,
+        columnIndex: PropTypes.number,
+      })
+    ),
+    boardLocation: PropTypes.shape({
+      rowHeight: PropTypes.number,
+      columnWidth: PropTypes.number,
+    })
+  };
 }
-
-const mapStateToProps = (state, ownProps) => {
-  const gameID = ownProps.match.params.gameID;
-  return {
-    // consumedSquares: state.gameData.byID[gameID].consumedSquares
-  }
-};
 
 const styles = StyleSheet.create({
   overlay: {
@@ -43,5 +48,3 @@ const styles = StyleSheet.create({
     position: 'absolute'
   }
 });
-
-export default withRouter(connect(mapStateToProps)(GameBoardPathCreator));

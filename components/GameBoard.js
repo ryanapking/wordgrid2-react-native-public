@@ -37,7 +37,7 @@ class GameBoard extends Component {
     // if a word has already been played, we don't need any of this to be possible
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
-    console.log('game rows:', game.rows);
+    // console.log('game rows:', game.rows);
 
     const displayBoardState = game.rows.map( (row, rowIndex) => {
       return row.map( (letter, columnIndex) => {
@@ -51,7 +51,7 @@ class GameBoard extends Component {
       });
     });
 
-    console.log('displayBoardState:', displayBoardState);
+    // console.log('displayBoardState:', displayBoardState);
 
     return(
       <View style={[this.props.style, styles.gameBoardView]}>
