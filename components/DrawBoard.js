@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import PropTypes from 'prop-types';
 
 import { SPACE_EMPTY, SPACE_FILLED, SPACE_CONSUMED } from "../constants";
-import GameLetter from "./GameLetter";
+import DrawLetter from "./DrawLetter";
 
 export default class DrawBoard extends Component {
   render() {
@@ -17,7 +17,7 @@ export default class DrawBoard extends Component {
               const fillStyle = this._getFillStyle(square.status);
               return (
                 <View key={columnIndex} style={[styles.centered, styles.column, fillStyle]}>
-                  <GameLetter letter={square.letter} style={fillStyle} letterHeight={letterHeight}/>
+                  <DrawLetter letter={square.letter} style={fillStyle} letterSize={letterHeight}/>
                 </View>
               );
             })}

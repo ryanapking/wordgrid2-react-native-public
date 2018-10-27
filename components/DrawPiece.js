@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
-import GameLetter from "./GameLetter";
+import DrawLetter from "./DrawLetter";
 import { Container } from "native-base";
 import PropTypes from "prop-types";
 
@@ -15,7 +15,7 @@ export default class DrawPiece extends Component {
           <View style={styles.row} key={rowIndex}>
             {row.map( (square, columnIndex) =>
               <View style={styles.column} key={columnIndex}>
-                { square.letter && <GameLetter style={dragStyles} letter={square.letter} letterHeight={letterHeight}/> }
+                { square.letter && <DrawLetter style={dragStyles} letter={square.letter} letterSize={letterHeight}/> }
               </View>
             )}
           </View>
