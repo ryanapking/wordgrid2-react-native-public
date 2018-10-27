@@ -5,9 +5,10 @@ import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
 
 import { getAnimationData } from "../utilities";
-import GameLetter from "./GameLetter";
+import { SPACE_EMPTY, SPACE_FILLED, SPACE_CONSUMED } from "../constants";
 import GamePiece from "./GamePiece";
 import GameBoardPathCreator from "./GameBoardPathCreator";
+import DrawBoard from './DrawBoard';
 
 class GameAnimation extends Component {
   constructor() {
@@ -31,6 +32,7 @@ class GameAnimation extends Component {
       boardLocation: null,
       pieceStartingLocation: null,
       letterWidth: null,
+      boardSize: 0, // width and height will match
     };
 
     this.pieceRefs = {};
@@ -49,7 +51,7 @@ class GameAnimation extends Component {
 
   render() {
 
-    const { animation, pieceLocation, pieceWidth, letterWidth, displayWordPath, boardState } = this.state;
+    const { animation, pieceLocation, pieceWidth, letterWidth, displayWordPath, boardState, boardSize } = this.state;
     if (!animation) return null;
 
     const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}]};
@@ -69,6 +71,18 @@ class GameAnimation extends Component {
       columnWidth: letterWidth
     };
 
+    const displayBoardState = boardState.map( (row, rowIndex) => {
+      return row.map( (letter, columnIndex) => {
+        if (!letter) {
+          return {letter, status: SPACE_EMPTY};
+        } else if (this._checkSpaceConsumed(displayWordPath, rowIndex, columnIndex)) {
+          return {letter, status: SPACE_CONSUMED};
+        } else {
+          return {letter, status: SPACE_FILLED};
+        }
+      });
+    });
+
     return (
       <Container style={styles.container}>
 
@@ -83,20 +97,7 @@ class GameAnimation extends Component {
         </Container>
 
         <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
-          <View style={styles.grid}>
-            {boardState.map((row, rowIndex) =>
-              <View key={rowIndex} style={styles.row}>
-                {row.map( (letter, columnIndex) => {
-                  const fillStyle = this._getSquareFillStyle(displayWordPath, rowIndex, columnIndex, letter);
-                  return (
-                    <View key={columnIndex} style={[styles.centered, styles.column, fillStyle]}>
-                      <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
-                    </View>
-                  )
-                })}
-              </View>
-            )}
-          </View>
+          <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>
           <GameBoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
         </View>
 
@@ -200,7 +201,7 @@ class GameAnimation extends Component {
     this._board.measure((x, y, width, height) => {
       const boardLocation = {x, y};
       // console.log('board location:', boardLocation);
-      this.setState({ boardLocation, letterWidth: (width / 10) });
+      this.setState({ boardLocation, letterWidth: (width / 10), boardSize: width });
     });
   }
 
@@ -218,17 +219,10 @@ class GameAnimation extends Component {
     });
   }
 
-  _getSquareFillStyle(usedSquares, rowIndex, columnIndex, letter) {
-    const squareUsed = usedSquares.reduce( (foundStatus, square) => {
+  _checkSpaceConsumed(usedSquares, rowIndex, columnIndex) {
+    return usedSquares.reduce( (foundStatus, square) => {
       return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
     }, false);
-    if (squareUsed) {
-      return styles.usedSquare;
-    } else if (letter) {
-      return styles.filledSquare;
-    } else {
-      return styles.emptySquare;
-    }
   }
 
 }
@@ -282,15 +276,6 @@ const styles = StyleSheet.create({
     // backgroundColor: 'blue',
     width: '100%',
     height: '100%',
-  },
-  filledSquare: {
-    backgroundColor: "#ffd27b",
-  },
-  emptySquare: {
-    backgroundColor: "#9c9c9c"
-  },
-  usedSquare: {
-    backgroundColor: "#ffa487",
   },
 });
 
