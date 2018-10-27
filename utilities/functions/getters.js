@@ -74,8 +74,6 @@ export function getAnimationData(game) {
 
   boardStates.between = getBoardMinusPiece(boardStates.end, pieceStates.start, placementRef);
 
-  console.log('boardStates:', boardStates);
-
   const wp = end.wp.split("|");
   const wordPath = wp.map( (coordinateSet) => {
     const squareCoordinates = coordinateSet.split(",");

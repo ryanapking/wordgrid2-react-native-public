@@ -45,7 +45,7 @@ class GameBoard extends Component {
                 {row.map( (letter, columnIndex) => {
                   const fillStyle = this._getSquareFillStyle(rowIndex, columnIndex, letter);
                   return (
-                    <View key={columnIndex} style={[styles.centered, styles.column, this._getSquareFillStyle(rowIndex, columnIndex, letter)]}>
+                    <View key={columnIndex} style={[styles.centered, styles.column, fillStyle]}>
                       <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
                     </View>
                   )

@@ -87,9 +87,10 @@ class GameAnimation extends Component {
             {boardState.map((row, rowIndex) =>
               <View key={rowIndex} style={styles.row}>
                 {row.map( (letter, columnIndex) => {
+                  const fillStyle = this._getSquareFillStyle(displayWordPath, rowIndex, columnIndex, letter);
                   return (
-                    <View key={columnIndex} style={[styles.centered, styles.column]}>
-                      <GameLetter letter={letter} letterHeight={this.props.display.boardLocation.rowHeight}/>
+                    <View key={columnIndex} style={[styles.centered, styles.column, fillStyle]}>
+                      <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
                     </View>
                   )
                 })}
@@ -198,7 +199,7 @@ class GameAnimation extends Component {
   _measureBoard() {
     this._board.measure((x, y, width, height) => {
       const boardLocation = {x, y};
-      console.log('board location:', boardLocation);
+      // console.log('board location:', boardLocation);
       this.setState({ boardLocation, letterWidth: (width / 10) });
     });
   }
@@ -212,9 +213,22 @@ class GameAnimation extends Component {
           duration: 0
         }).start();
       }
-      console.log('piece starting location:', {x, y});
+      // console.log('piece starting location:', {x, y});
       this.setState({pieceStartingLocation: {x, y}});
     });
+  }
+
+  _getSquareFillStyle(usedSquares, rowIndex, columnIndex, letter) {
+    const squareUsed = usedSquares.reduce( (foundStatus, square) => {
+      return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
+    }, false);
+    if (squareUsed) {
+      return styles.usedSquare;
+    } else if (letter) {
+      return styles.filledSquare;
+    } else {
+      return styles.emptySquare;
+    }
   }
 
 }
@@ -268,6 +282,15 @@ const styles = StyleSheet.create({
     // backgroundColor: 'blue',
     width: '100%',
     height: '100%',
+  },
+  filledSquare: {
+    backgroundColor: "#ffd27b",
+  },
+  emptySquare: {
+    backgroundColor: "#9c9c9c"
+  },
+  usedSquare: {
+    backgroundColor: "#ffa487",
   },
 });
 
