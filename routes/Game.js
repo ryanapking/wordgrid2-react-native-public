@@ -21,15 +21,18 @@ class Game extends Component {
     // checkPieceFit(this.props.game.me, this.props.game.rows);
     // gameOverCheck(this.props.game);
 
-    const lastItemIndex = this.props.game.history.length - 1;
-    const boardState = this.props.game.history[lastItemIndex].b;
-    // let boggle = new Boggle(boardState);
-    // boggle.solve( (words) => {
-    //   boggle.print();
+    // log all the moves to see how we did
+    // this.props.game.history.forEach( (state) => {
+    //   console.log('played:', state.w);
+    //   let boggle = new Boggle(state.b);
+    //   boggle.solve( (words) => {
+    //     boggle.print();
     //
-    //   console.log(words.length + ' words');
-    //   console.log(words.join(', '));
+    //     console.log(words.length + ' words');
+    //     console.log(words.join(', '));
+    //   });
     // });
+
   }
 
   render() {
