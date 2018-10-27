@@ -6,7 +6,7 @@ import firebase from 'react-native-firebase';
 import { Button, Container, Spinner } from "native-base";
 
 import GameWordDisplay from "./GameWordDisplay";
-import GamePieceSection from "./GamePieceSection";
+import DrawPieceSection from "./DrawPieceSection";
 
 import { getWinner, localToRemote } from "../utilities";
 
@@ -30,11 +30,11 @@ class GameInteraction extends Component {
     } else if (!wordPlayed) {
       interaction =
         <Container style={[styles.flex]}>
-          <GamePieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />;
+          <DrawPieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />;
           <GameWordDisplay style={[styles.twoColumns]}/>
         </Container>;
     } else if (!this.props.game.piecePlaced) {
-      interaction = <GamePieceSection pieces={this.props.game.me} allowDrag />;
+      interaction = <DrawPieceSection pieces={this.props.game.me} allowDrag />;
     } else {
       interaction = <Button full onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
     }

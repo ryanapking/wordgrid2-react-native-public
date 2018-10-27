@@ -11,7 +11,7 @@ import GamePiece from "./GamePiece";
 import GameBoardPathCreator from "./GameBoardPathCreator";
 import DrawBoard from './DrawBoard';
 
-class GameAnimation extends Component {
+class GameMoveAnimation extends Component {
   constructor() {
     super();
 
@@ -295,4 +295,4 @@ const mapDispatchToProps = {
   markAnimationPlayed
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameAnimation));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameMoveAnimation));

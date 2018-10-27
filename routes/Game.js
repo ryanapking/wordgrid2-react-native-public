@@ -8,7 +8,7 @@ import Boggle from '../utilities/boggle-solver';
 import GameInfoDisplay from '../components/GameInfoDisplay';
 import GameBoard from '../components/GameBoard';
 import GameInteraction from '../components/GameInteraction';
-import GameAnimation from '../components/GameAnimation'
+import GameMoveAnimation from '../components/GameMoveAnimation'
 
 import { checkPieceFit } from "../utilities";
 
@@ -36,7 +36,7 @@ class Game extends Component {
     if (this.props.game.animationOver) {
       return (
         <Container style={{}}>
-          <GameAnimation />
+          <GameMoveAnimation />
         </Container>
       );
     } else {

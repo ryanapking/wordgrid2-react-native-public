@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Text, StyleSheet, View } from "react-native";
 
 import GamePhaseDisplay from "./GamePhaseDisplay";
-import GamePieceSection from "./GamePieceSection";
+import DrawPieceSection from "./DrawPieceSection";
 import GameScoreBoard from './GameScoreBoard';
 
 class GameInfoDisplay extends Component {
@@ -13,7 +13,7 @@ class GameInfoDisplay extends Component {
       <View style={[this.props.style, styles.main]}>
         <View style={[styles.row, {padding: 5}]}>
           <Text>Opponent Pieces:</Text>
-          <GamePieceSection pieces={this.props.game.them} allowDrag={false} />
+          <DrawPieceSection pieces={this.props.game.them} allowDrag={false} />
         </View>
         <View style={[styles.row, {padding: 5}]}>
           <GameScoreBoard />
