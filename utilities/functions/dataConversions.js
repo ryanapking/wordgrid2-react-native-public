@@ -24,7 +24,7 @@ export function remoteToLocal(source, userID) {
     consumedSquares: [],
 
     // local data for display purposes
-    animationOver: false,
+    animationOver: (source.h.length < 2), // no animation until there have been at least two moves
     piecePlaced: false,
     validatingWord: false,
     myScore: calculateScore(source.h, userID),

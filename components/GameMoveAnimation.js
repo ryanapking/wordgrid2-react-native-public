@@ -151,7 +151,7 @@ class GameMoveAnimation extends Component {
         case "complete":
           console.log('animation complete');
           clearInterval(interval);
-          // this.props.markAnimationPlayed(this.props.gameID);
+          this.props.markAnimationPlayed(this.props.gameID);
           break;
       }
 
@@ -195,7 +195,7 @@ class GameMoveAnimation extends Component {
         clearInterval(interval);
         this.setState({animationPhase: "word drawn"});
       }
-    }, 1000);
+    }, 500);
   }
 
   _swapBoards() {
