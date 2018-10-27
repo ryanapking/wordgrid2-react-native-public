@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
 
+import { markAnimationPlayed } from "../ducks/gameData";
 import { getAnimationData } from "../utilities";
 import { SPACE_EMPTY, SPACE_FILLED, SPACE_CONSUMED } from "../constants";
 import GamePiece from "./GamePiece";
@@ -141,6 +142,7 @@ class GameAnimation extends Component {
         case "complete":
           console.log('animation complete');
           clearInterval(interval);
+          // this.props.markAnimationPlayed(this.props.gameID);
           break;
       }
 
@@ -289,4 +291,8 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(GameAnimation));
+const mapDispatchToProps = {
+  markAnimationPlayed
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameAnimation));

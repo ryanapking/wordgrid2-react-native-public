@@ -4,10 +4,11 @@ import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
 
 import GameBoardPathCreator from './GameBoardPathCreator';
-import GameLetter from './GameLetter';
+import DrawBoard from './DrawBoard';
 
 import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
 import { setGameboardLocation } from "../ducks/gameDisplay";
+import {SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED} from "../constants";
 
 class GameBoard extends Component {
   constructor() {
@@ -36,40 +37,32 @@ class GameBoard extends Component {
     // if a word has already been played, we don't need any of this to be possible
     const pointerEvents = this.props.game.word ? 'none' : 'auto';
 
+    console.log('game rows:', game.rows);
+
+    const displayBoardState = game.rows.map( (row, rowIndex) => {
+      return row.map( (letter, columnIndex) => {
+        if (!letter) {
+          return {letter, status: SPACE_EMPTY};
+        } else if (!this._checkSquareAvailable({rowIndex, columnIndex})) {
+          return {letter, status: SPACE_CONSUMED};
+        } else {
+          return {letter, status: SPACE_FILLED};
+        }
+      });
+    });
+
+    console.log('displayBoardState:', displayBoardState);
+
     return(
       <View style={[this.props.style, styles.gameBoardView]}>
         <View style={styles.base} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
-          <View style={styles.grid} {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
-            {game.rows.map((row, rowIndex) =>
-              <View key={rowIndex} style={styles.row}>
-                {row.map( (letter, columnIndex) => {
-                  const fillStyle = this._getSquareFillStyle(rowIndex, columnIndex, letter);
-                  return (
-                    <View key={columnIndex} style={[styles.centered, styles.column, fillStyle]}>
-                      <GameLetter letter={letter} style={fillStyle} letterHeight={this.props.display.boardLocation.rowHeight}/>
-                    </View>
-                  )
-                })}
-              </View>
-            )}
+          <View {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
+            <DrawBoard boardState={displayBoardState} boardSize={display.boardLocation.width}/>
           </View>
           <GameBoardPathCreator squares={game.consumedSquares} boardLocation={display.boardLocation}/>
         </View>
       </View>
     );
-  }
-
-  _getSquareFillStyle(rowIndex, columnIndex, letter) {
-    const squareUsed = this.props.game.consumedSquares.reduce( (foundStatus, square) => {
-      return (foundStatus || (rowIndex === square.rowIndex && columnIndex === square.columnIndex));
-    }, false);
-    if (squareUsed) {
-      return styles.usedSquare;
-    } else if (letter) {
-      return styles.filledSquare;
-    } else {
-      return styles.emptySquare;
-    }
   }
 
   _findSquareByCoordinates(x, y) {
@@ -204,37 +197,6 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     maxHeight: "100%",
     aspectRatio: 1
-  },
-  grid: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%'
-  },
-  row: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row'
-  },
-  column: {
-    flex: 1
-  },
-  letter: {
-    fontSize: 20
-  },
-  filledSquare: {
-    backgroundColor: "#ffd27b",
-  },
-  emptySquare: {
-    backgroundColor: "#9c9c9c"
-  },
-  usedSquare: {
-    backgroundColor: "#ffa487",
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   gameBoardView: {
     justifyContent: 'center',

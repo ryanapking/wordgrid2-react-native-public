@@ -33,7 +33,7 @@ class Game extends Component {
   }
 
   render() {
-    if (!this.props.game.animationOver) {
+    if (this.props.game.animationOver) {
       return (
         <Container style={{}}>
           <GameAnimation />
