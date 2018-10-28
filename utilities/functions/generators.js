@@ -1,4 +1,4 @@
-import settings from '../config';
+import settings, { letterRanges } from '../config';
 
 import { pieceStringToArray } from "./dataConversions";
 
@@ -112,10 +112,17 @@ export function generateLocalPiece(pieceSize = 4) {
   return pieceStringToArray(piece);
 }
 
-export function getRandomLetter(letterString = settings.availableLetters) {
-  let randoMax = letterString.length;
-  let rando = Math.floor((Math.random() * randoMax));
-  return letterString.charAt(rando);
+export function getRandomLetter() {
+  const rando = Math.floor((Math.random() * letterRanges.high));
+  let letter = 'e'; // default to e, just in case
+
+  letterRanges.ranges.forEach( (range) => {
+    if (rando >= range.low && rando < range.stop) {
+      letter = range.letter;
+    }
+  });
+
+  return letter;
 }
 
 export function setCharAt(str, index, chr) {
