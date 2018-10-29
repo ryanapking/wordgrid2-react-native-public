@@ -184,8 +184,9 @@ class GameBoard extends Component {
   }
 
   _onLayout() {
-    this.gameBoard.measureInWindow((x, y, width, height) => {
-      this.props.setGameboardLocation(x, y, width, height);
+    this.gameBoard.measure((x, y, width, height, pageX, pageY) => {
+      // console.log('measure:', {x, y, width, height, pageX, pageY});
+      this.props.setGameboardLocation(pageX, pageY, width, height);
     });
   }
 }
