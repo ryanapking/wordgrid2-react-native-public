@@ -15,7 +15,7 @@ export default class DrawPiece extends Component {
           <View style={styles.row} key={rowIndex}>
             {row.map( (square, columnIndex) =>
               <View style={styles.column} key={columnIndex}>
-                { square.letter && <DrawLetter style={dragStyles} letter={square.letter} letterSize={letterHeight}/> }
+                { square.letter ? <DrawLetter style={dragStyles} letter={square.letter} letterSize={letterHeight}/> : null}
               </View>
             )}
           </View>
