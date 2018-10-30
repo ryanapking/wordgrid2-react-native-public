@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
 
 import { placePiece } from '../ducks/gameData';
+import { setPieceLocation } from "../ducks/gameDisplay";
 import DrawPiece from './DrawPiece';
 
 class GamePiece extends Component {
@@ -19,10 +20,6 @@ class GamePiece extends Component {
       // used for styling the current piece
       dragging: false,
       canDrop: false,
-
-      // height of the GamePiece, before scaling
-      baseWidth: null,
-      baseHeight: null
     };
 
     // height of the GamePiece after scaling
@@ -57,7 +54,8 @@ class GamePiece extends Component {
   }
 
   render() {
-    const { pan, scale, baseWidth, canDrop } = this.state;
+    const { baseSize } = this.props;
+    const { pan, scale, canDrop } = this.state;
 
     const dragTransforms = {transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}]};
 
@@ -68,38 +66,21 @@ class GamePiece extends Component {
     });
 
     return (
-      <View
-        ref={baseView => this.baseView = baseView}
-        onLayout={ () => this._onLayout() }
-        style={this.props.style}
+      <Animated.View
+        {...this.panResponder.panHandlers}
+        style={[styles.square, dragTransforms, this.props.style]}
       >
-        <Animated.View
-          {...this.panResponder.panHandlers}
-          style={[styles.square, dragTransforms]}
-        >
-          <Container style={styles.grid} pointerEvents={'none'}>
-            <DrawPiece pieceState={pieceState} pieceSize={baseWidth} canDrop={canDrop}/>
-          </Container>
-        </Animated.View>
-      </View>
+        <Container style={styles.grid} pointerEvents={'none'}>
+          <DrawPiece pieceState={pieceState} pieceSize={baseSize} canDrop={canDrop}/>
+        </Container>
+      </Animated.View>
     );
-  }
-
-  _onLayout() {
-    // measure the size of the base view, which does not scale with the visible game piece
-    // when the piece scales, this is our reference point to calculate
-    this.baseView.measureInWindow((x, y, width, height) => {
-      this.setState({
-        baseWidth: width,
-        baseHeight: height
-      })
-    });
   }
 
   _setCurrentSize(currentScale) {
     // use the base piece size and current scale to determine the piece's current size
-    const height = this.state.baseHeight * currentScale.value;
-    const width = this.state.baseWidth * currentScale.value;
+    const height = this.props.baseSize * currentScale.value;
+    const width = this.props.baseSize * currentScale.value;
     this.currentSize = {width, height};
     this._setRelativeMiddlePoints();
   }
@@ -179,25 +160,29 @@ class GamePiece extends Component {
   }
 
   _onPanResponderGrant() {
+    const { baseSize } = this.props;
     this.setState({dragging: true, canDrop: false});
     this.state.pan.setValue({x: 0, y: 0});
-    const scaleTo = this.props.boardLocation.rowHeight / (this.state.baseHeight / 4);
-    Animated.timing(
-      this.state.scale,
-      { toValue: scaleTo, duration: 200 }
-    ).start();
+    const scaleTo = this.props.boardLocation.rowHeight / (baseSize / 4);
+    Animated.timing(this.state.scale, {
+      toValue: scaleTo,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
   }
 
   _onPanResponderRelease(event) {
     this.setState({dragging: false, canDrop: false});
     Animated.timing(this.state.pan, {
       toValue: { x: 0, y: 0 },
-      duration: 200
+      duration: 200,
+      useNativeDriver: true,
     }).start();
-    Animated.timing(
-      this.state.scale,
-      { toValue: 1, duration: 200 }
-    ).start();
+    Animated.timing(this.state.scale, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
 
     const squaresBelow = this._getSquaresBelowPiece(event);
     const overSquares = squaresBelow.length > 0;
@@ -256,12 +241,14 @@ const mapStateToProps = (state, ownProps) => {
   return {
     gameID: gameID,
     boardLocation: state.gameDisplay.boardLocation,
+    pieceLocations: state.gameDisplay.pieceLocations,
     board: state.gameData.byID[gameID]
   };
 };
 
 const mapDispatchToProps = {
-  placePiece
+  placePiece,
+  setPieceLocation,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GamePiece));

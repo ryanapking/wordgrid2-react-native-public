@@ -1,21 +1,64 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import { Container } from 'native-base';
+import { connect } from 'react-redux';
 
 import GamePiece from './GamePiece';
+import { setPieceLocation } from "../ducks/gameDisplay";
 
-export default class DrawPieceSection extends Component {
+class DrawPieceSection extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      pieceLocations: {},
+    };
+
+    this.pieceViews = {};
+  }
+
   render() {
     const { pieces, allowDrag } = this.props;
     return (
       <Container style={[this.props.style, styles.container]}>
-        { pieces.map( (piece, pieceIndex) =>
-          <Container style={styles.gamePieceContainer} key={pieceIndex}>
-            <GamePiece piece={piece} pieceIndex={pieceIndex} style={styles.gamePiece} allowDrag={allowDrag}/>
-          </Container>
-        )}
+        { pieces.map( (piece, pieceIndex) => {
+          const baseSize = this.state.pieceLocations[pieceIndex] ? this.state.pieceLocations[pieceIndex].width : 0;
+          console.log('piece ', pieceIndex, ' base size', baseSize);
+          console.log('piece:', piece);
+          return (
+            <Container style={styles.gamePieceContainer} key={pieceIndex}>
+              <View
+                ref={pieceView => this.pieceViews[pieceIndex] = pieceView}
+                onLayout={ () => this._onLayout(pieceIndex) }
+                style={[styles.gamePiece, {backgroundColor: 'red'}]}
+              >
+                { allowDrag ? null : <GamePiece piece={piece} pieceIndex={pieceIndex} style={styles.gamePiece} allowDrag={allowDrag} baseSize={baseSize}/>}
+              </View>
+            </Container>
+          );
+        })}
       </Container>
     );
+  }
+
+  _onLayout(pieceIndex) {
+    const { allowDrag } = this.props;
+    this.pieceViews[pieceIndex].measure( (x, y, width, height, pageX, pageY) => {
+      const pieceLocation = {x, y, width, height, pageX, pageY, piece: this.props.pieces[pieceIndex]};
+
+      // local data is used for piece size calculations
+      this.setState({
+        pieceLocations: {
+          ...this.state.pieceLocations,
+          [pieceIndex]: pieceLocation,
+        }
+      });
+
+      // set the piece location for the overlay
+      if (allowDrag) {
+        this.props.setPieceLocation(pieceIndex, pieceLocation);
+      }
+    });
   }
 }
 
@@ -41,3 +84,15 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
   }
 });
+
+const mapStateToProps = (state) => {
+  return {
+
+  };
+};
+
+const mapDispatchToProps = {
+  setPieceLocation
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DrawPieceSection);

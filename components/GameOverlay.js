@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
+import GamePiece from "./GamePiece";
 
 class GameOverlay extends Component {
   constructor() {
@@ -25,12 +26,9 @@ class GameOverlay extends Component {
         left: loc.pageX - this.state.offsetX,
         width: loc.width,
         height: loc.height,
-        backgroundColor: 'gray',
         position: 'absolute',
       }
     });
-
-    console.log('styles:', styles);
 
     return (
       <View style={styles.overlay}
@@ -38,9 +36,10 @@ class GameOverlay extends Component {
         onLayout={ () => this._onLayout() }
       >
         { pieceIndexes.map( (pieceIndex) =>
-          <View style={locations[pieceIndex]} key={pieceIndex}>
-            <Text>Piece Index: {pieceIndex}</Text>
-          </View>
+          <View key={pieceIndex} style={[locations[pieceIndex], styles.pieceBackground]} />
+        )}
+        { pieceIndexes.map( (pieceIndex) =>
+          <GamePiece key={pieceIndex} piece={pieceLocations[pieceIndex].piece} pieceIndex={pieceIndex} style={locations[pieceIndex]} allowDrag={true} baseSize={pieceLocations[pieceIndex].width}/>
         )}
       </View>
     );
@@ -62,6 +61,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     // backgroundColor: 'green',
+  },
+  pieceBackground: {
+    backgroundColor: 'gray',
   }
 });
 
