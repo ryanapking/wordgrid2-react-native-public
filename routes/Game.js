@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
@@ -8,7 +8,8 @@ import Boggle from '../utilities/boggle-solver';
 import GameInfoDisplay from '../components/GameInfoDisplay';
 import GameBoard from '../components/GameBoard';
 import GameInteraction from '../components/GameInteraction';
-import GameMoveAnimation from '../components/GameMoveAnimation'
+import GameMoveAnimation from '../components/GameMoveAnimation';
+import GameOverlay from '../components/GameOverlay';
 
 import { checkPieceFit } from "../utilities";
 
@@ -45,9 +46,12 @@ class Game extends Component {
     } else {
       return (
         <Container>
-          <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
-          <GameBoard style={styles.board}/>
-          <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
+          <View style={styles.underlay}>
+            <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
+            <GameBoard style={styles.board}/>
+            <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
+          </View>
+          <GameOverlay />
         </Container>
       );
     }
@@ -67,6 +71,11 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column'
+  },
+  underlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
   info: {
     flex: 4,

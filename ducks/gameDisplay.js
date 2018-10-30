@@ -1,5 +1,6 @@
 // available actions
 export const DISPLAY_GAMEBOARD_SET = 'wordgrid2/gameDisplay/DISPLAY_GAMEBOARD_SET';
+export const DISPLAY_SET_PIECE_LOCATION = 'wordgrid2/gameDisplay/DISPLAY_SET_PIECE_LOCATION';
 
 // initial state
 const initialState = {
@@ -15,13 +16,16 @@ const initialState = {
     rowMidPoints: [],
     columnMidPoints: [],
   },
-}
+  pieceLocations: {}
+};
 
 // reducer
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case DISPLAY_GAMEBOARD_SET:
-      return {...state, boardLocation: action.boardLocation}
+      return {...state, boardLocation: action.boardLocation};
+    case DISPLAY_SET_PIECE_LOCATION:
+      return {...state, pieceLocations: {...state.pieceLocations, [action.pieceIndex]: action.pieceLocation}};
     default:
       return state;
   }
@@ -44,4 +48,12 @@ export function setGameboardLocation(x, y, width, height) {
     type: DISPLAY_GAMEBOARD_SET,
     boardLocation: { x, y, width, height, rowMidPoints, columnMidPoints, rowHeight, columnWidth }
   };
+}
+
+export function setPieceLocation(pieceIndex, pieceLocation) {
+  return {
+    type: DISPLAY_SET_PIECE_LOCATION,
+    pieceLocation,
+    pieceIndex,
+  }
 }
