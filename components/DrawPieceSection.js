@@ -4,7 +4,7 @@ import { Container } from 'native-base';
 import { connect } from 'react-redux';
 
 import GamePiece from './GamePiece';
-import { setPieceLocation } from "../ducks/gameDisplay";
+import { setPieceLocation, clearPieceLocations } from "../ducks/gameDisplay";
 
 class DrawPieceSection extends Component {
   constructor() {
@@ -39,6 +39,14 @@ class DrawPieceSection extends Component {
         })}
       </Container>
     );
+  }
+
+  componentWillUnmount() {
+    // if piece locations were set, clear them now
+    const { allowDrag } = this.props;
+    if (allowDrag) {
+      this.props.clearPieceLocations();
+    }
   }
 
   _onLayout(pieceIndex) {
@@ -92,7 +100,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setPieceLocation
+  setPieceLocation,
+  clearPieceLocations
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrawPieceSection);

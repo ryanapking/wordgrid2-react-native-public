@@ -1,6 +1,7 @@
 // available actions
 export const DISPLAY_GAMEBOARD_SET = 'wordgrid2/gameDisplay/DISPLAY_GAMEBOARD_SET';
 export const DISPLAY_SET_PIECE_LOCATION = 'wordgrid2/gameDisplay/DISPLAY_SET_PIECE_LOCATION';
+export const DISPLAY_CLEAR_PIECE_LOCATIONS = 'wordgrid2/gameDisplay/DISPLAY_CLEAR_PIECE_LOCATIONS';
 
 // initial state
 const initialState = {
@@ -26,6 +27,8 @@ export default function reducer(state = initialState, action) {
       return {...state, boardLocation: action.boardLocation};
     case DISPLAY_SET_PIECE_LOCATION:
       return {...state, pieceLocations: {...state.pieceLocations, [action.pieceIndex]: action.pieceLocation}};
+    case DISPLAY_CLEAR_PIECE_LOCATIONS:
+      return {...state, pieceLocations: {}};
     default:
       return state;
   }
@@ -55,5 +58,11 @@ export function setPieceLocation(pieceIndex, pieceLocation) {
     type: DISPLAY_SET_PIECE_LOCATION,
     pieceLocation,
     pieceIndex,
+  }
+}
+
+export function clearPieceLocations() {
+  return {
+    type: DISPLAY_CLEAR_PIECE_LOCATIONS,
   }
 }
