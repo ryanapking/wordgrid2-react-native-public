@@ -30,7 +30,7 @@ class DrawPieceSection extends Component {
               <View
                 ref={pieceView => this.pieceViews[pieceIndex] = pieceView}
                 onLayout={ () => this._onLayout(pieceIndex) }
-                style={[styles.gamePiece, {backgroundColor: 'red'}]}
+                style={styles.gamePiece}
               >
                 { allowDrag ? null : <GamePiece piece={piece} pieceIndex={pieceIndex} style={styles.gamePiece} allowDrag={allowDrag} baseSize={baseSize}/>}
               </View>

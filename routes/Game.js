@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Container } from 'native-base';
+import {Button, Container, Spinner} from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
@@ -12,6 +12,8 @@ import GameMoveAnimation from '../components/GameMoveAnimation';
 import GameOverlay from '../components/GameOverlay';
 
 import { checkPieceFit } from "../utilities";
+import DrawPieceSection from "../components/DrawPieceSection";
+import GameWordDisplay from "../components/GameWordDisplay";
 
 class Game extends Component {
 
@@ -37,6 +39,13 @@ class Game extends Component {
   }
 
   render() {
+    const { game } = this.props;
+
+    let overlayZIndex = 0;
+    if (game.word && !game.piecePlaced) {
+      overlayZIndex = 3;
+    }
+
     if (!this.props.game.animationOver) {
       return (
         <Container style={{}}>
@@ -46,12 +55,12 @@ class Game extends Component {
     } else {
       return (
         <Container>
-          <View style={styles.underlay}>
+          <View style={[styles.underlay, {zIndex: 2}]}>
             <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
             <GameBoard style={styles.board}/>
             <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
           </View>
-          <GameOverlay />
+          <GameOverlay style={{zIndex: overlayZIndex}} pointerEvents={'none'}/>
         </Container>
       );
     }

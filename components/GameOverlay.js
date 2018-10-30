@@ -31,7 +31,7 @@ class GameOverlay extends Component {
     });
 
     return (
-      <View style={styles.overlay}
+      <View style={[styles.overlay, this.props.style]}
         ref={baseView => this.baseView = baseView}
         onLayout={ () => this._onLayout() }
       >
