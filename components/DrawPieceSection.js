@@ -23,8 +23,6 @@ class DrawPieceSection extends Component {
       <Container style={[this.props.style, styles.container]}>
         { pieces.map( (piece, pieceIndex) => {
           const baseSize = this.state.pieceLocations[pieceIndex] ? this.state.pieceLocations[pieceIndex].width : 0;
-          console.log('piece ', pieceIndex, ' base size', baseSize);
-          console.log('piece:', piece);
           return (
             <Container style={styles.gamePieceContainer} key={pieceIndex}>
               <View
