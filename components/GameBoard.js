@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {PanResponder, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {PanResponder, StyleSheet, Text, View} from 'react-native';
 import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
 
@@ -7,7 +7,7 @@ import GameBoardPathCreator from './GameBoardPathCreator';
 import DrawBoard from './DrawBoard';
 
 import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
-import { setGameboardLocation, newConsumeSquare } from "../ducks/gameDisplay";
+import { setGameboardLocation } from "../ducks/gameDisplay";
 import {SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED} from "../constants";
 
 class GameBoard extends Component {
@@ -56,45 +56,32 @@ class GameBoard extends Component {
     return(
       <View style={[this.props.style, styles.gameBoardView]}>
         <View style={styles.base} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
-          <TouchableOpacity onPressIn={(event) => this._boardPress(event)} pointerEvents={pointerEvents}>
+          <View {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
             <DrawBoard boardState={displayBoardState} boardSize={display.boardLocation.width}/>
-          </TouchableOpacity>
+          </View>
           <GameBoardPathCreator squares={game.consumedSquares} boardLocation={display.boardLocation}/>
         </View>
       </View>
     );
   }
 
-  _boardPress(event) {
-    const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
-
-    if(!square.letter) return;
-
-    if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
-      this.props.consumeSquare(square, this.props.gameID);
-    } else if (!this._checkIfLastSquarePlayed(square)) {
-      this.props.clearConsumedSquares(this.props.gameID);
-      this.props.consumeSquare(square, this.props.gameID)
-    }
-  }
-
   _findSquareByCoordinates(x, y) {
+    // to better enable diagonal movements, we define a circle 85% of its max possible size, to cut off the corners
+    // kinda like a connect four board
+    // we could use an octagon, but this math is simpler
+    const maxDistance = this.props.display.boardLocation.columnWidth / 2 * .85;
 
-    const { rowMidPoints, columnMidPoints } = this.props.display.boardLocation;
-    const maxRowDiff = this.props.display.boardLocation.rowHeight / 2;
-    const maxColumnDiff = this.props.display.boardLocation.columnWidth / 2;
+    const nullIndex = -1;
+    const nullSquare = {rowIndex: nullIndex, columnIndex: nullIndex};
 
-    let square = { rowIndex: -1, columnIndex: -1};
-
-    for (let rowIndex = 0; rowIndex < rowMidPoints.length; rowIndex++) {
-      const rowDiff = Math.abs(rowMidPoints[rowIndex] - y);
-      if ( rowDiff < maxRowDiff ) square.rowIndex = rowIndex;
-    }
-
-    for (let columnIndex = 0; columnIndex < columnMidPoints.length; columnIndex++) {
-      const rowDiff = Math.abs(columnMidPoints[columnIndex] - x);
-      if ( rowDiff < maxColumnDiff ) square.columnIndex = columnIndex;
-    }
+    // reduce the two midpoint arrays into a single set of coordinates at the given point
+    const square = this.props.display.boardLocation.rowMidPoints.reduce( (foundSquare, midPointY, rowIndex) => {
+      const columnIndex = this.props.display.boardLocation.columnMidPoints.reduce( (foundColumnIndex, midPointX, columnIndex) => {
+        const dist = Math.hypot(x - midPointX, y - midPointY);
+        return dist < maxDistance ? columnIndex : foundColumnIndex;
+      }, nullIndex);
+      return columnIndex >= 0 ? {rowIndex, columnIndex} : foundSquare;
+    }, nullSquare);
 
     const onBoard = (square.rowIndex >= 0 && square.columnIndex >= 0);
     const letter = onBoard ? this.props.game.rows[square.rowIndex][square.columnIndex] : null;
@@ -168,8 +155,6 @@ class GameBoard extends Component {
   _onPanResponderMove(event) {
     const square = this._findSquareByCoordinates(event.nativeEvent.pageX, event.nativeEvent.pageY);
 
-    console.log('moved');
-
     if(!square.letter) return;
 
     if (square.columnIndex === -1 || square.rowIndex === -1) {
@@ -235,8 +220,7 @@ const mapDispatchToProps = {
   consumeSquare,
   removeSquare,
   clearConsumedSquares,
-  setGameboardLocation,
-  newConsumeSquare
+  setGameboardLocation
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameBoard));
