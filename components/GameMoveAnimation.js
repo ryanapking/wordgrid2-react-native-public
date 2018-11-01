@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Animated, View, Text } from 'react-native';
+import { Platform, StyleSheet, Animated, View, Text, LayoutAnimation, UIManager } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
@@ -15,9 +15,15 @@ class GameMoveAnimation extends Component {
   constructor() {
     super();
 
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+
     this.state = {
       // data concerning what is moving where
       animation: null,
+
+      testValue: {position: 'absolute', top: 0, left: 200},
 
       // animation values
       pieceLocation: new Animated.ValueXY(),
@@ -35,6 +41,9 @@ class GameMoveAnimation extends Component {
       pieceStartingLocation: null,
       letterWidth: null,
       boardSize: 0, // width and height will match
+
+      // we draw some temporary boxes with pieces in them, then measure and replace them
+      invisibleBoxLocations: {},
     };
 
     this.pieceRefs = {};
@@ -62,7 +71,7 @@ class GameMoveAnimation extends Component {
     const pieces = animation.pieceStates.start.map( (letters, index) => {
       if (index === animation.placementRef.pieceIndex) {
         let onLayout = () => this._measurePiece(index);
-        return {letters, animationStyles: motion, onLayout};
+        return {letters, animationStyles: null, onLayout};
       } else {
         return {letters, animationStyles: null, onLayout: null}
       }
@@ -92,10 +101,8 @@ class GameMoveAnimation extends Component {
 
         <Container style={styles.gamePiecesContainer}>
           { pieces.map( (piece, index) =>
-            <View key={index} style={styles.gamePieceContainer} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
-              <Animated.View style={piece.animationStyles}>
-                <GamePiece piece={piece.letters} pieceIndex={index} style={styles.gamePiece} allowDrag={false}/>
-              </Animated.View>
+            <View key={index} style={[styles.gamePieceContainer, {backgroundColor: 'blue'}]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={this._measurePiece(index)}>
+              <GamePiece piece={piece.letters} pieceIndex={index} style={styles.gamePiece} allowDrag={false}/>
             </View>
           )}
         </Container>
@@ -134,24 +141,15 @@ class GameMoveAnimation extends Component {
         case "board swapped":
           this.setState({animationPhase: "growing piece"});
           const { rowIndex, columnIndex } = this.state.animation.placementRef;
-          this._growPiece();
-          this._slidePiece(rowIndex, columnIndex);
+          this._movePiece();
           break;
         case "piece moved":
           this.setState({animationPhase: "complete"});
           break;
-        // case "piece grown":
-        //   this.setState({animationPhase: "sliding piece"});
-        //   const { rowIndex, columnIndex } = this.state.animation.placementRef;
-        //   this._slidePiece(rowIndex, columnIndex);
-        //   break;
-        // case "piece slid":
-        //   this.setState({animationPhase: "complete"});
-        //   break;
         case "complete":
           console.log('animation complete');
           clearInterval(interval);
-          this.props.markAnimationPlayed(this.props.gameID);
+          // this.props.markAnimationPlayed(this.props.gameID);
           break;
       }
 
@@ -159,28 +157,20 @@ class GameMoveAnimation extends Component {
 
   }
 
-  _growPiece() {
-    const pieceWidth = this.state.letterWidth * 4;
-    Animated.timing(this.state.pieceWidth, {
-      toValue: pieceWidth,
-      duration: 1000
-    }).start();
-  }
-
-  _slidePiece(row = 0, column = 0) {
-    const board = this.state.boardLocation;
-    const letterWidth = this.state.letterWidth;
-    const offset = this.state.pieceStartingLocation;
-    const left = board.x - offset.x;
-    const top = board.y - offset.y;
-    const x = left + (letterWidth * column);
-    const y = top + (letterWidth * row);
-    Animated.timing(this.state.pieceLocation, {
-      toValue: { x, y },
-      duration: 1000
-    }).start( () => {
-      this.setState({animationPhase: "piece moved"});
-    });
+  _movePiece() {
+    setTimeout( () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      this.setState({
+        testValue: {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: 200,
+          height: 200,
+        }
+      });
+    }, 2000);
+    this.setState({animationPhase: "piece moved"});
   }
 
   _drawWord() {
@@ -215,16 +205,19 @@ class GameMoveAnimation extends Component {
   }
 
   _measurePiece(pieceIndex) {
-    this.pieceRefs[pieceIndex].measure( (x, y, width, height) => {
-      // setting a width to smooth out some animation kinks for the piece
-      if (this.state.pieceWidth._value <= 0) {
-        Animated.timing(this.state.pieceWidth, {
-          toValue: width,
-          duration: 0
-        }).start();
+    if (!this.pieceRefs[pieceIndex]) return;
+    const { invisibleBoxLocations } = this.state;
+    let prev = invisibleBoxLocations[pieceIndex];
+
+    this.pieceRefs[pieceIndex].measure( (x, y, width, height, pageX, pageY) => {
+      if (!prev || x !== prev.x || y !== prev.y || pageX !== prev.pageX || pageY !== prev.pageY) {
+        this.setState({
+          invisibleBoxLocations: {
+            ...invisibleBoxLocations,
+            [pieceIndex]: {x, y, width, height, pageX, pageY}
+          }
+        });
       }
-      // console.log('piece starting location:', {x, y});
-      this.setState({pieceStartingLocation: {x, y}});
     });
   }
 
