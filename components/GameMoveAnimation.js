@@ -23,12 +23,7 @@ class GameMoveAnimation extends Component {
       // data concerning what is moving where
       animation: null,
 
-      testValue: {position: 'absolute', top: 0, left: 200},
-
       // animation values
-      pieceLocation: new Animated.ValueXY(),
-      pieceWidth: new Animated.Value(0),
-
       displayWordPath: [],
       boardState: [],
       message: "",
@@ -42,8 +37,13 @@ class GameMoveAnimation extends Component {
       letterWidth: null,
       boardSize: 0, // width and height will match
 
-      // we draw some temporary boxes with pieces in them, then measure and replace them
-      invisibleBoxLocations: {},
+      // location for the piece that will move, and then location after move
+      overlay: {
+        location: null,
+        pieceIndex: null,
+        styles: null,
+      },
+      moveTo: {},
     };
 
     this.pieceRefs = {};
@@ -62,11 +62,8 @@ class GameMoveAnimation extends Component {
 
   render() {
 
-    const { animation, pieceLocation, pieceWidth, letterWidth, displayWordPath, boardState, boardSize, message } = this.state;
+    const { animation, letterWidth, displayWordPath, boardState, boardSize, message, overlay } = this.state;
     if (!animation) return null;
-
-    const transform = {transform: [{translateX: pieceLocation.x}, {translateY: pieceLocation.y}]};
-    const motion = [{width: pieceWidth, height: pieceWidth, zIndex: 999}, transform];
 
     const pieces = animation.pieceStates.start.map( (letters, index) => {
       if (index === animation.placementRef.pieceIndex) {
@@ -97,15 +94,17 @@ class GameMoveAnimation extends Component {
     const displayWord = animation.word.substring(0, displayWordPath.length);
 
     return (
-      <Container style={styles.container}>
+      <Container style={[styles.container]}>
 
         <Container style={styles.gamePiecesContainer}>
           { pieces.map( (piece, index) =>
-            <View key={index} style={[styles.gamePieceContainer, {backgroundColor: 'blue'}]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={this._measurePiece(index)}>
-              <GamePiece piece={piece.letters} pieceIndex={index} style={styles.gamePiece} allowDrag={false}/>
+            <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
+              { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false}/> }
             </View>
           )}
         </Container>
+
+        { !overlay.location ? null : <GamePiece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} /> }
 
         <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>
@@ -125,7 +124,7 @@ class GameMoveAnimation extends Component {
 
     let interval = setInterval( () => {
       // make sure all the needed data exists before starting the animation
-      if (!this.state.animation || !this.state.boardLocation || !this.state.pieceStartingLocation) {
+      if (!this.state.animation || !this.state.boardLocation || !this.state.overlay.location) {
         return;
       }
 
@@ -140,7 +139,6 @@ class GameMoveAnimation extends Component {
           break;
         case "board swapped":
           this.setState({animationPhase: "growing piece"});
-          const { rowIndex, columnIndex } = this.state.animation.placementRef;
           this._movePiece();
           break;
         case "piece moved":
@@ -149,7 +147,7 @@ class GameMoveAnimation extends Component {
         case "complete":
           console.log('animation complete');
           clearInterval(interval);
-          // this.props.markAnimationPlayed(this.props.gameID);
+          this.props.markAnimationPlayed(this.props.gameID);
           break;
       }
 
@@ -158,19 +156,20 @@ class GameMoveAnimation extends Component {
   }
 
   _movePiece() {
-    setTimeout( () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-      this.setState({
-        testValue: {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: 200,
-          height: 200,
-        }
-      });
-    }, 2000);
-    this.setState({animationPhase: "piece moved"});
+    const { boardLocation, letterWidth, animation } = this.state;
+    const { rowIndex, columnIndex } = animation.placementRef;
+    const afterAnimation = () => this.setState({animationPhase: "piece moved"});
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear, afterAnimation);
+
+    this.setState({
+      moveTo: {
+        top: (boardLocation.y + (letterWidth * rowIndex)),
+        left: (boardLocation.x + (letterWidth * columnIndex)),
+        width: letterWidth * 4,
+        height: letterWidth * 4,
+      }
+    });
   }
 
   _drawWord() {
@@ -197,27 +196,36 @@ class GameMoveAnimation extends Component {
   }
 
   _measureBoard() {
-    this._board.measure((x, y, width, height) => {
-      const boardLocation = {x, y};
+    this._board.measure((x, y, width, height, pageX, pageY) => {
+      const boardLocation = {x, y, width, height, pageX, pageY};
       // console.log('board location:', boardLocation);
       this.setState({ boardLocation, letterWidth: (width / 10), boardSize: width });
     });
   }
 
   _measurePiece(pieceIndex) {
+    console.log('measuring piece', pieceIndex);
     if (!this.pieceRefs[pieceIndex]) return;
-    const { invisibleBoxLocations } = this.state;
-    let prev = invisibleBoxLocations[pieceIndex];
 
     this.pieceRefs[pieceIndex].measure( (x, y, width, height, pageX, pageY) => {
-      if (!prev || x !== prev.x || y !== prev.y || pageX !== prev.pageX || pageY !== prev.pageY) {
-        this.setState({
-          invisibleBoxLocations: {
-            ...invisibleBoxLocations,
-            [pieceIndex]: {x, y, width, height, pageX, pageY}
-          }
-        });
-      }
+      console.log('location:', {x, y, width, height, pageX, pageY});
+
+      const locationStyles = {
+        position: 'absolute',
+        width,
+        height,
+        top: y,
+        left: x,
+        zIndex: 999,
+      };
+
+      this.setState({
+        overlay: {
+          location: {x, y, width, height, pageX, pageY},
+          pieceIndex: pieceIndex,
+          styles: locationStyles
+        }
+      });
     });
   }
 
