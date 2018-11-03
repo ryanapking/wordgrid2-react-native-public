@@ -154,7 +154,7 @@ class GameMoveAnimation extends Component {
         case "complete":
           // console.log('animation complete');
           clearInterval(interval);
-          // this.props.markAnimationPlayed(this.props.gameID);
+          this.props.markAnimationPlayed(this.props.gameID);
           break;
       }
 
