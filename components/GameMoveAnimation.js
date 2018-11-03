@@ -94,7 +94,7 @@ class GameMoveAnimation extends Component {
     const displayWord = animation.word.substring(0, displayWordPath.length);
 
     return (
-      <Container style={[styles.container]} ref={(container) => this._animationContainer = container}>
+      <Container style={[styles.animationContainer]} ref={(container) => this._animationContainer = container}>
 
         <Container style={styles.gamePiecesContainer}>
           { pieces.map( (piece, index) =>
@@ -106,12 +106,12 @@ class GameMoveAnimation extends Component {
 
         { !overlay.location ? null : <GamePiece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} /> }
 
-        <View style={styles.base} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
+        <View style={styles.boardContainer} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>
           <GameBoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
         </View>
 
-        <View style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+        <View style={styles.moveInfoContainer}>
           <Text style={{textAlign: 'center'}}>{ displayWord }</Text>
           <Text style={{textAlign: 'center'}}>{ message }</Text>
         </View>
@@ -241,33 +241,19 @@ class GameMoveAnimation extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  animationContainer: {
     display: 'flex',
     flexDirection: 'column',
   },
-  base: {
+  boardContainer: {
     maxWidth: "100%",
     maxHeight: "100%",
     aspectRatio: 1,
-    backgroundColor: 'lightgray',
   },
-  grid: {
+  moveInfoContainer: {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-  },
-  row: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row'
-  },
-  column: {
-    flex: 1
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
   },
   gamePiecesContainer: {
