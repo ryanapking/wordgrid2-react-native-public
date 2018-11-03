@@ -98,8 +98,10 @@ class GameMoveAnimation extends Component {
 
         <Container style={styles.gamePiecesContainer}>
           { pieces.map( (piece, index) =>
-            <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
-              { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false}/> }
+            <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} >
+              <View style={[styles.gamePiece, styles.gamePieceBackground]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
+                { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false}/> }
+              </View>
             </View>
           )}
         </Container>
@@ -210,8 +212,10 @@ class GameMoveAnimation extends Component {
     // console.log('measuring piece', pieceIndex);
     if (!this.pieceRefs[pieceIndex]) return;
 
-    this.pieceRefs[pieceIndex].measure( (x, y, width, height, pageX, pageY) => {
-      // console.log('piece location:', {x, y, width, height, pageX, pageY});
+    const animationContainerHandle = ReactNative.findNodeHandle(this._animationContainer);
+
+    this.pieceRefs[pieceIndex].measureLayout(animationContainerHandle, (x, y, width, height) => {
+      console.log('piece location:', {x, y, width, height});
 
       const locationStyles = {
         position: 'absolute',
@@ -224,7 +228,7 @@ class GameMoveAnimation extends Component {
 
       this.setState({
         overlay: {
-          location: {x, y, width, height, pageX, pageY},
+          location: {x, y, width, height},
           pieceIndex: pieceIndex,
           styles: locationStyles
         }
@@ -262,19 +266,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 999,
     flex: 1,
+    paddingVertical: 10,
   },
   gamePieceContainer: {
     flex: 1,
     margin: 2,
-    maxHeight: '100%',
-    maxWidth: '100%',
-    aspectRatio: 1,
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  gamePieceBackground: {
     backgroundColor: 'gray',
   },
   gamePiece: {
-    // backgroundColor: 'blue',
-    width: '100%',
-    height: '100%',
+    maxWidth: '100%',
+    maxHeight: '100%',
+    aspectRatio: 1,
   },
 });
 
