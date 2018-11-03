@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactNative, { Platform, StyleSheet, View, Text, LayoutAnimation, UIManager } from 'react-native';
+import ReactNative, {Platform, StyleSheet, View, Text, LayoutAnimation, UIManager, Animated} from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
@@ -42,6 +42,7 @@ class GameMoveAnimation extends Component {
         location: null,
         pieceIndex: null,
         styles: null,
+        pieceSize: 0,
       },
       moveTo: {},
     };
@@ -100,13 +101,13 @@ class GameMoveAnimation extends Component {
           { pieces.map( (piece, index) =>
             <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} >
               <View style={[styles.gamePiece, styles.gamePieceBackground]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
-                { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false}/> }
+                { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false} baseSize={overlay.pieceSize}/> }
               </View>
             </View>
           )}
         </Container>
 
-        { !overlay.location ? null : <GamePiece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} /> }
+        { !overlay.location ? null : <GamePiece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} baseSize={overlay.pieceSize}/> }
 
         <View style={styles.boardContainer} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>
@@ -153,7 +154,7 @@ class GameMoveAnimation extends Component {
         case "complete":
           // console.log('animation complete');
           clearInterval(interval);
-          this.props.markAnimationPlayed(this.props.gameID);
+          // this.props.markAnimationPlayed(this.props.gameID);
           break;
       }
 
@@ -162,7 +163,7 @@ class GameMoveAnimation extends Component {
   }
 
   _movePiece() {
-    const { boardLocation, letterWidth, animation } = this.state;
+    const { boardLocation, letterWidth, animation, overlay } = this.state;
     const { rowIndex, columnIndex } = animation.placementRef;
 
     const setAnimationPhaseComplete = () => this.setState({animationPhase: "piece moved"});
@@ -173,12 +174,22 @@ class GameMoveAnimation extends Component {
       setTimeout(setAnimationPhaseComplete, 500);
     }
 
+    // use scale instead of width and height to have the lettering grow with the piece
+    const scaleTo = letterWidth / (overlay.location.width / 4);
+    const scaleOffset = ((overlay.location.width * scaleTo) - overlay.location.width) / 2;
+    let scaleAnimated = new Animated.Value(1);
+
+    Animated.timing(scaleAnimated, {
+      toValue: scaleTo,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
     this.setState({
       moveTo: {
-        top: (boardLocation.y + (letterWidth * rowIndex)),
-        left: (boardLocation.x + (letterWidth * columnIndex)),
-        width: letterWidth * 4,
-        height: letterWidth * 4,
+        top: (boardLocation.y + (letterWidth * rowIndex)) + scaleOffset,
+        left: (boardLocation.x + (letterWidth * columnIndex)) + scaleOffset,
+        transform: [{scale: scaleAnimated}],
       }
     });
   }
@@ -239,7 +250,8 @@ class GameMoveAnimation extends Component {
         overlay: {
           location: {x, y, width, height},
           pieceIndex: pieceIndex,
-          styles: locationStyles
+          styles: locationStyles,
+          pieceSize: width,
         }
       });
     });
