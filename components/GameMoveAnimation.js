@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Animated, View, Text, LayoutAnimation, UIManager } from 'react-native';
+import ReactNative, { Platform, StyleSheet, View, Text, LayoutAnimation, UIManager } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 import { Container } from 'native-base';
@@ -94,7 +94,7 @@ class GameMoveAnimation extends Component {
     const displayWord = animation.word.substring(0, displayWordPath.length);
 
     return (
-      <Container style={[styles.container]}>
+      <Container style={[styles.container]} ref={(container) => this._animationContainer = container}>
 
         <Container style={styles.gamePiecesContainer}>
           { pieces.map( (piece, index) =>
@@ -196,19 +196,22 @@ class GameMoveAnimation extends Component {
   }
 
   _measureBoard() {
-    this._board.measure((x, y, width, height, pageX, pageY) => {
-      const boardLocation = {x, y, width, height, pageX, pageY};
-      // console.log('board location:', boardLocation);
-      this.setState({ boardLocation, letterWidth: (width / 10), boardSize: width });
+    // console.log('measuring board');
+    const animationContainerHandle = ReactNative.findNodeHandle(this._animationContainer);
+    this._board.measureLayout(animationContainerHandle, (x, y, width, height) => {
+      const boardLocation = {x, y, width, height};
+      const letterWidth = width / 10;
+      // console.log('layout measurement', {x, y, width, height});
+      this.setState({boardLocation, letterWidth, boardSize: width});
     });
   }
 
   _measurePiece(pieceIndex) {
-    console.log('measuring piece', pieceIndex);
+    // console.log('measuring piece', pieceIndex);
     if (!this.pieceRefs[pieceIndex]) return;
 
     this.pieceRefs[pieceIndex].measure( (x, y, width, height, pageX, pageY) => {
-      console.log('location:', {x, y, width, height, pageX, pageY});
+      // console.log('piece location:', {x, y, width, height, pageX, pageY});
 
       const locationStyles = {
         position: 'absolute',
