@@ -40,6 +40,9 @@ const styles = StyleSheet.create({
     padding: '5%',
     borderColor: 'white',
     backgroundColor: "#ffd27b",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   full: {
     width: '100%',
