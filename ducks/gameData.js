@@ -11,6 +11,7 @@ export const ADD_OPPONENT_PIECE = 'wordgrid2/gameData/ADD_OPPONENT_PIECE';
 export const SET_BOARD_ROWS = 'wordgrid2/gameData/SET_BOARD_ROWS';
 export const PLAY_WORD = 'wordgrid2/gameData/PLAY_WORD';
 export const MARK_ANIMATION_PLAYED = 'wordgrid2/gameData/MARK_ANIMATION_PLAYED';
+export const SET_AVAILABLE_WORDS_DATA = 'wordgrid2/gameData/SET_AVAILABLE_WORDS_DATA';
 
 // syncing actions
 export const SET_LOCAL_GAME_IDS = 'wordgrid2/gameData/SET_LOCAL_GAME_IDS';
@@ -50,6 +51,8 @@ export default function reducer(state = initialState, action) {
       return playWordReducer(state, action);
     case MARK_ANIMATION_PLAYED:
       return markAnimationPlayedReducer(state, action);
+    case SET_AVAILABLE_WORDS_DATA:
+      return setAvailableWordsDataReducer(state, action);
     default:
       return state;
   }
@@ -246,6 +249,26 @@ function markAnimationPlayedReducer(state, action) {
   }
 }
 
+function setAvailableWordsDataReducer(state, action) {
+  const byID = state.byID;
+  const game = state.byID[action.gameID];
+
+  return {
+    ...state,
+    byID: {
+      ...byID,
+      [action.gameID]: {
+        ...game,
+        availableWords: {
+          longest: action.longest,
+          mostValuable: action.mostValuable,
+          availableWordCount: action.availableWordCount,
+        }
+      }
+    }
+  }
+}
+
 // action creators
 export function placePiece(rows = [], pieceIndex, gameID, placementRef) {
   return {
@@ -342,5 +365,15 @@ export function markAnimationPlayed(gameID) {
   return {
     type: MARK_ANIMATION_PLAYED,
     gameID
+  }
+}
+
+export function setAvailableWordsData(gameID, longest, mostValuable, availableWordCount) {
+  return {
+    type: SET_AVAILABLE_WORDS_DATA,
+    gameID,
+    longest,
+    mostValuable,
+    availableWordCount,
   }
 }

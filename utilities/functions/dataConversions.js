@@ -34,6 +34,13 @@ export function remoteToLocal(source, userID) {
     opponentID,
     opponentName,
 
+    // to be set when the game is loaded
+    availableWords: {
+      longest: null,
+      mostValuable: null,
+      availableWordCount: null,
+    },
+
     // used when converting back to remote
     history: source.h,
     p1: source.p1,

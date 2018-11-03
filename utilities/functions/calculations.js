@@ -13,3 +13,24 @@ export function calculateWordValue(word) {
     return 8;
   }
 }
+
+export function calculateLongestWordLength(words) {
+  return words.reduce( (currentLongest, word) => {
+    if (word.length > currentLongest) {
+      return word.length;
+    } else {
+      return currentLongest;
+    }
+  }, 0);
+}
+
+export function calculateHighestWordValue(words) {
+  return words.reduce( (currentHigh, word) => {
+    const wordValue = calculateWordValue(word);
+    if (wordValue > currentHigh) {
+      return wordValue;
+    } else {
+      return currentHigh;
+    }
+  }, 0);
+}

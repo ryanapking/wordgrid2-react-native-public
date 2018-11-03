@@ -10,6 +10,8 @@ import GameBoard from '../components/GameBoard';
 import GameInteraction from '../components/GameInteraction';
 import GameMoveAnimation from '../components/GameMoveAnimation';
 import GameOverlay from '../components/GameOverlay';
+import { setAvailableWordsData } from "../ducks/gameData";
+import { calculateHighestWordValue, calculateLongestWordLength } from "../utilities";
 
 import { checkPieceFit } from "../utilities";
 import DrawPieceSection from "../components/DrawPieceSection";
@@ -31,10 +33,22 @@ class Game extends Component {
     //   boggle.solve( (words) => {
     //     boggle.print();
     //
+    //     calculateHighPointWord(words);
+    //     calculateLongestWord(words);
+    //
     //     console.log(words.length + ' words');
     //     console.log(words.join(', '));
     //   });
     // });
+
+    const currentBoardString = this.props.game.history.slice(-1)[0].b;
+    let boggle = new Boggle(currentBoardString);
+
+    boggle.solve( (words) => {
+      const longest = calculateLongestWordLength(words);
+      const mostValuable = calculateHighestWordValue(words);
+      this.props.setAvailableWordsData(this.props.gameID, longest, mostValuable, words.length);
+    });
 
   }
 
@@ -109,4 +123,8 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(Game));
+const mapDispatchToProps = {
+  setAvailableWordsData
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));
