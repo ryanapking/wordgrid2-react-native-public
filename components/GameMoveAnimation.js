@@ -134,20 +134,24 @@ class GameMoveAnimation extends Component {
         case "waiting to start":
           this.setState({animationPhase: "drawing word"});
           this._drawWord();
+          // console.log('waiting to start animation');
           break;
         case "word drawn":
           this.setState({animationPhase: "swapping board", message: this.state.animation.points + " points"});
           this._swapBoards();
+          // console.log('word drawn');
           break;
         case "board swapped":
           this.setState({animationPhase: "growing piece"});
           this._movePiece();
+          // console.log('board swapped');
           break;
         case "piece moved":
           this.setState({animationPhase: "complete"});
+          // console.log('piece moved');
           break;
         case "complete":
-          console.log('animation complete');
+          // console.log('animation complete');
           clearInterval(interval);
           this.props.markAnimationPlayed(this.props.gameID);
           break;
@@ -160,9 +164,14 @@ class GameMoveAnimation extends Component {
   _movePiece() {
     const { boardLocation, letterWidth, animation } = this.state;
     const { rowIndex, columnIndex } = animation.placementRef;
-    const afterAnimation = () => this.setState({animationPhase: "piece moved"});
 
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear, afterAnimation);
+    const setAnimationPhaseComplete = () => this.setState({animationPhase: "piece moved"});
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear, setAnimationPhaseComplete);
+
+    // executing callback after LayoutAnimation.configureNext is not supported on android, so do it manually
+    if (Platform.OS === 'android') {
+      setTimeout(setAnimationPhaseComplete, 500);
+    }
 
     this.setState({
       moveTo: {
@@ -215,7 +224,7 @@ class GameMoveAnimation extends Component {
     const animationContainerHandle = ReactNative.findNodeHandle(this._animationContainer);
 
     this.pieceRefs[pieceIndex].measureLayout(animationContainerHandle, (x, y, width, height) => {
-      console.log('piece location:', {x, y, width, height});
+      // console.log('piece location:', {x, y, width, height});
 
       const locationStyles = {
         position: 'absolute',
