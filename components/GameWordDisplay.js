@@ -5,11 +5,13 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
 import { playWord, setBoardRows, addOpponentPiece } from '../ducks/gameData';
-import { calculateWordValue, generateLocalPiece, consumedSquaresToWordPath } from "../utilities";
+import { calculateWordValue, calculateMoveRating, generateLocalPiece, consumedSquaresToWordPath } from "../utilities";
 import english from '../utilities/english';
+import DrawMoveRating from './DrawMoveRating';
 
 class GameWordDisplay extends Component {
   render() {
+    const { game } = this.props;
     const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
     const longEnough = (displayWord.length >= 4);
     const startMessage = "Drag to spell a word";
@@ -24,10 +26,14 @@ class GameWordDisplay extends Component {
       );
     }
 
+    const rating = calculateMoveRating(displayWord, game.availableWords.longest, game.availableWords.mostValuable);
+    const stars = <DrawMoveRating rating={rating} />;
+
     return (
       <Container style={this.props.style}>
         <Text style={{padding: 20, textAlign: 'center'}}>{displayWord ? displayWord : startMessage}</Text>
         {button}
+        {stars}
       </Container>
     );
   }

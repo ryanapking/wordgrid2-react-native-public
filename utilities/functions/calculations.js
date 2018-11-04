@@ -34,3 +34,21 @@ export function calculateHighestWordValue(words) {
     }
   }, 0);
 }
+
+export function calculateMoveRating(word, longestWord, mostValuableWord) {
+  // return a value from 0 to 10 which will be displayed in half stars
+  if (word.length < 4) return 0;
+  const wordValue = calculateWordValue(word);
+  if (word.length >= longestWord || wordValue >= mostValuableWord) {
+    return 10;
+  } else {
+    const valueScore = (wordValue / mostValuableWord) * 5;
+    const lengthScore = (word.length / longestWord) * 5;
+
+    const rating = Math.floor(valueScore + lengthScore);
+
+    console.log('rating');
+
+    return rating;
+  }
+}
