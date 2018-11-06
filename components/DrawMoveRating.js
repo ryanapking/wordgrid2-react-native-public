@@ -35,5 +35,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'center',
   }
 });

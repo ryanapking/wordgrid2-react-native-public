@@ -31,9 +31,9 @@ class GameWordDisplay extends Component {
 
     return (
       <Container style={this.props.style}>
+        {stars}
         <Text style={{padding: 20, textAlign: 'center'}}>{displayWord ? displayWord : startMessage}</Text>
         {button}
-        {stars}
       </Container>
     );
   }

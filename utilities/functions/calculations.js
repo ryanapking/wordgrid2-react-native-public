@@ -1,38 +1,40 @@
+import { letterValues } from '../config';
+
 export function calculateWordValue(word) {
-  if (word.length <= 4) {
-    // shouldn't be any words shorter than 4 letters, but might as well return a score in case something odd happens
-    return 1;
-  } else if (word.length === 5) {
-    return 2;
-  } else if (word.length === 6) {
-    return 3;
-  } else if (word.length === 7) {
-    return 5;
-  } else if (word.length >= 8) {
-    // maybe just return word.length to make longer words more valuable?
-    return 8;
-  }
+  return word.split("").reduce( (total, letter) => {
+    return total + letterValues[letter.toLowerCase()];
+  }, 0);
 }
 
 export function calculateLongestWordLength(words) {
-  return words.reduce( (currentLongest, word) => {
-    if (word.length > currentLongest) {
-      return word.length;
+  const longestWord = words.reduce( (currentLongestWord, word) => {
+    if (word.length > currentLongestWord.length) {
+      return word;
     } else {
-      return currentLongest;
+      return currentLongestWord;
     }
-  }, 0);
+  }, "");
+
+  // console.log('longest word:', longestWord);
+  // console.log(longestWord.length + " letter");
+
+  return longestWord.length;
 }
 
 export function calculateHighestWordValue(words) {
-  return words.reduce( (currentHigh, word) => {
+  const mostValuableWord = words.reduce( (currentMostValuableWord, word) => {
     const wordValue = calculateWordValue(word);
-    if (wordValue > currentHigh) {
-      return wordValue;
+    if (wordValue > currentMostValuableWord.value) {
+      return {word, value: wordValue};
     } else {
-      return currentHigh;
+      return currentMostValuableWord;
     }
-  }, 0);
+  }, {word: "", value: 0});
+
+  // console.log('most valuable word:', mostValuableWord.word);
+  // console.log(mostValuableWord.value + " points");
+
+  return mostValuableWord.value;
 }
 
 export function calculateMoveRating(word, longestWord, mostValuableWord) {
@@ -47,7 +49,7 @@ export function calculateMoveRating(word, longestWord, mostValuableWord) {
 
     const rating = Math.floor(valueScore + lengthScore);
 
-    console.log('rating');
+    // console.log('rating', rating);
 
     return rating;
   }
