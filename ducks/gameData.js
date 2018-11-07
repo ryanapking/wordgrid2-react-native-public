@@ -63,7 +63,10 @@ function placePieceReducer(state, action) {
   const byID = state.byID;
   const game = state.byID[action.gameID];
   const rows = action.rows;
-  const me = [...game.me.slice(0, action.pieceIndex), ...game.me.slice(action.pieceIndex + 1), []];
+
+  const remainingPieces = game.me.filter( (piece, pieceIndex) => pieceIndex !== parseInt(action.pieceIndex));
+  const me = [...remainingPieces, []];
+
   return {
     ...state,
     byID: {
