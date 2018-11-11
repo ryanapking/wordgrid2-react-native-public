@@ -95,31 +95,33 @@ class GameMoveAnimation extends Component {
     const displayWord = animation.word.substring(0, displayWordPath.length);
 
     return (
-      <Container style={[styles.animationContainer]} ref={(container) => this._animationContainer = container}>
+      <View style={styles.animationContainer} ref={(container) => this._animationContainer = container}>
 
-        <Container style={styles.gamePiecesContainer}>
-          { pieces.map( (piece, index) =>
-            <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} >
-              <View style={[styles.gamePiece, styles.gamePieceBackground]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
-                { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false} baseSize={overlay.pieceSize}/> }
+        <View style={styles.gamePiecesSection}>
+          <View style={styles.gamePiecesContainer}>
+            { pieces.map( (piece, index) =>
+              <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} >
+                <View style={[styles.gamePiece, styles.gamePieceBackground]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
+                  { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false} baseSize={overlay.pieceSize}/> }
+                </View>
               </View>
-            </View>
-          )}
-        </Container>
+            )}
+          </View>
+        </View>
 
         { !overlay.location ? null : <GamePiece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} baseSize={overlay.pieceSize}/> }
 
-        <View style={styles.boardContainer} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
+        <View style={styles.boardSection} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>
           <GameBoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
         </View>
 
-        <View style={styles.moveInfoContainer}>
+        <View style={styles.moveInfoSection}>
           <Text style={{textAlign: 'center'}}>{ displayWord }</Text>
           <Text style={{textAlign: 'center'}}>{ message }</Text>
         </View>
 
-      </Container>
+      </View>
     );
   }
 
@@ -269,24 +271,29 @@ const styles = StyleSheet.create({
   animationContainer: {
     display: 'flex',
     flexDirection: 'column',
+    width: '100%',
+    height: '100%',
   },
-  boardContainer: {
+  boardSection: {
     maxWidth: "100%",
     maxHeight: "100%",
     aspectRatio: 1,
+    flex: 14,
   },
-  moveInfoContainer: {
-    flex: 1,
+  moveInfoSection: {
+    flex: 5,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+  },
+  gamePiecesSection: {
+    flex: 4,
   },
   gamePiecesContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 999,
-    flex: 1,
     paddingVertical: 10,
   },
   gamePieceContainer: {
