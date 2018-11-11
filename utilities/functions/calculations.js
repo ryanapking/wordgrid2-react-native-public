@@ -8,17 +8,17 @@ export function calculateWordValue(word) {
 
 export function calculateLongestWordLength(words) {
   const longestWords = words.reduce( (currentLongestWords, word) => {
-    if (word.length > currentLongestWords[0].length) {
-      return [word];
-    } else if (word.length === currentLongestWords[0].length) {
-      return [...currentLongestWords, word];
+    if (word.length > currentLongestWords.length) {
+      return {words: [word], length: word.length};
+    } else if (word.length === currentLongestWords.length) {
+      return {...currentLongestWords, words: [...currentLongestWords.words, word]};
     } else {
       return currentLongestWords;
     }
-  }, [""]);
+  }, {words: [], length: 0});
 
-  // console.log('longest words:', longestWords);
-  // console.log(longestWords[0].length + " letters");
+  console.log('longest words:', longestWords.words);
+  console.log(longestWords.length + " letters");
 
   return longestWords.length;
 }
@@ -29,14 +29,14 @@ export function calculateHighestWordValue(words) {
     if (wordValue > currentMostValuableWord.value) {
       return {words: [word], value: wordValue};
     } else if (wordValue === currentMostValuableWord.value) {
-      return { words: [...currentMostValuableWord.words, word], value: currentMostValuableWord.value};
+      return {...currentMostValuableWord, words: [...currentMostValuableWord.words, word]};
     } else {
       return currentMostValuableWord;
     }
   }, {words: [], value: 0});
 
-  // console.log('most valuable words:', mostValuableWords.words);
-  // console.log(mostValuableWords.value + " points");
+  console.log('most valuable words:', mostValuableWords.words);
+  console.log(mostValuableWords.value + " points");
 
   return mostValuableWords.value;
 }
