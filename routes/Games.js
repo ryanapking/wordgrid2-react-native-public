@@ -64,7 +64,7 @@ class Games extends Component {
     if (linkType === "game") {
       link = () => this.props.history.push(`/game/${gameID}`);
     } else if (linkType === "review") {
-      link = () => this.props.history.push(`/gameReview/${gameID}`);
+      link = () => this.props.history.push(`/gameReview/${gameID}/0`);
     }
 
     return (

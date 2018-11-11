@@ -40,7 +40,7 @@ export default class App extends Component {
             <Route exact path="/" component={Home} />
             <Route path="/login" component={Login} />
             <Route path="/game/:gameID" component={Game} />
-            <Route path="/gameReview/:gameID" component={GameReview} />
+            <Route path="/gameReview/:gameID/:moveIndex" component={GameReview} />
             <Route path="/games" component={Games} />
             <Route path="/settings" component={Settings} />
             <LoginRedirect />
