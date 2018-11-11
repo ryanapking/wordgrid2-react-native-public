@@ -10,6 +10,7 @@ import configureStore from './store/configureStore';
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 import Game from "./routes/Game";
+import GameReview from './routes/GameReview';
 import Games from "./routes/Games";
 import Settings from "./routes/Settings";
 
@@ -36,11 +37,12 @@ export default class App extends Component {
             acceptPan={false}
           >
             <TopBar openDrawer={() => this.openDrawer()} />
-            <Route exact path="/" component={Home}/>
+            <Route exact path="/" component={Home} />
             <Route path="/login" component={Login} />
-            <Route path="/game/:gameID" component={Game}/>
-            <Route path="/games" component={Games}/>
-            <Route path="/settings" component={Settings}/>
+            <Route path="/game/:gameID" component={Game} />
+            <Route path="/gameReview/:gameID" component={GameReview} />
+            <Route path="/games" component={Games} />
+            <Route path="/settings" component={Settings} />
             <LoginRedirect />
             <FirebaseListeners />
           </Drawer>

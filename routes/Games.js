@@ -32,7 +32,7 @@ class Games extends Component {
               <ListItem itemDivider >
                 <Text>Ready to Play:</Text>
               </ListItem>
-              { readyToPlay.map( (gameID, index) => this.getGameListItem(gameID, index, true))}
+              { readyToPlay.map( (gameID, index) => this.getGameListItem(gameID, index, "game"))}
             </View>
           }
           {waitingOnOpponent.length > 0 &&
@@ -48,7 +48,7 @@ class Games extends Component {
               <ListItem itemDivider>
                 <Text>Ended:</Text>
               </ListItem>
-              { over.map( (gameID, index) => this.getGameListItem(gameID, index))}
+              { over.map( (gameID, index) => this.getGameListItem(gameID, index, "review"))}
             </View>
           }
         </List>
@@ -57,9 +57,16 @@ class Games extends Component {
     );
   }
 
-  getGameListItem(gameID, index, linkGame = false) {
+  getGameListItem(gameID, index, linkType = "none") {
     const game = this.props.gameData.byID[gameID];
-    const link = linkGame ? () => this.props.history.push(`/game/${gameID}`) : null;
+
+    let link = null;
+    if (linkType === "game") {
+      link = () => this.props.history.push(`/game/${gameID}`);
+    } else if (linkType === "review") {
+      link = () => this.props.history.push(`/gameReview/${gameID}`);
+    }
+
     return (
       <ListItem style={styles.listItem} key={index} onPress={link}>
         <Text>{ game.opponentName }</Text>
