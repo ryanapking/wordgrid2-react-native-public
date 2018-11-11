@@ -113,3 +113,53 @@ function getBoardMinusPiece(boardArray, pieces, placementRef) {
 
   return newBoardArray;
 }
+
+export function getWordPath(word, boardState) {
+  const wordLetters = word.toLowerCase().split("");
+  const firstLetter = wordLetters[0];
+  const remainingLetters = wordLetters.slice(1);
+
+  console.log('getting word path for ', word);
+  console.log('first letter:', firstLetter);
+  console.log('remaining letters:', remainingLetters);
+  console.log('board state:', boardState);
+
+  boardState.forEach( (row, rowIndex) => {
+    row.forEach( (letter, columnIndex) => {
+
+      if (letter === firstLetter) {
+        const square = {rowIndex, columnIndex};
+        console.log('first letter at', square);
+        findAdjacentLetter(square, remainingLetters[0], boardState);
+      }
+
+    });
+  });
+
+}
+
+function findAdjacentLetter(square, letter, boardState) {
+  // console.log('searching adjacent at ', square);
+  // console.log('searching for adjacent letter:', letter);
+  const adjacentIndexes = [
+    {rowIndex: square.rowIndex, columnIndex: square.columnIndex - 1},
+    {rowIndex: square.rowIndex - 1, columnIndex: square.columnIndex - 1},
+    {rowIndex: square.rowIndex - 1, columnIndex: square.columnIndex},
+    {rowIndex: square.rowIndex - 1, columnIndex: square.columnIndex + 1},
+    {rowIndex: square.rowIndex, columnIndex: square.columnIndex + 1},
+    {rowIndex: square.rowIndex + 1, columnIndex: square.columnIndex + 1},
+    {rowIndex: square.rowIndex + 1, columnIndex: square.columnIndex},
+    {rowIndex: square.rowIndex + 1, columnIndex: square.columnIndex - 1},
+  ];
+
+  const matchingAdjacentSquares = adjacentIndexes.filter( ({rowIndex, columnIndex}) => {
+    if (rowIndex < 0 || rowIndex > 9 || columnIndex < 0 || columnIndex > 9) {
+      return false;
+    }
+    const adjacentLetter = boardState[rowIndex][columnIndex];
+    return (adjacentLetter === letter);
+  });
+
+  console.log('matching adjacent squares', matchingAdjacentSquares);
+
+}
