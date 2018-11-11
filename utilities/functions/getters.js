@@ -114,52 +114,73 @@ function getBoardMinusPiece(boardArray, pieces, placementRef) {
   return newBoardArray;
 }
 
+// searches the board for valid starting points (matching first letter)
+// uses recursive findNextLetter to find the remainder of the word
 export function getWordPath(word, boardState) {
   const wordLetters = word.toLowerCase().split("");
   const firstLetter = wordLetters[0];
   const remainingLetters = wordLetters.slice(1);
 
-  console.log('getting word path for ', word);
-  console.log('first letter:', firstLetter);
-  console.log('remaining letters:', remainingLetters);
-  console.log('board state:', boardState);
+  let returnPath = null;
 
   boardState.forEach( (row, rowIndex) => {
     row.forEach( (letter, columnIndex) => {
 
       if (letter === firstLetter) {
         const square = {rowIndex, columnIndex};
-        console.log('first letter at', square);
-        findAdjacentLetter(square, remainingLetters[0], boardState);
+        const path = findNextLetter(square, remainingLetters, boardState);
+
+        if (path) {
+          returnPath = [square, ...path];
+        }
+
       }
 
     });
   });
 
+  return returnPath;
 }
 
-function findAdjacentLetter(square, letter, boardState) {
-  // console.log('searching adjacent at ', square);
-  // console.log('searching for adjacent letter:', letter);
+// recursively finds a word based on a starting point
+function findNextLetter(square, findLetters, boardState, path = []) {
+  // return the full path if we've got it
+  if (findLetters.length < 1) {
+    return path;
+  }
+
+  // if the full path isn't built yet, search for the next square
+  const { rowIndex, columnIndex } = square;
   const adjacentIndexes = [
-    {rowIndex: square.rowIndex, columnIndex: square.columnIndex - 1},
-    {rowIndex: square.rowIndex - 1, columnIndex: square.columnIndex - 1},
-    {rowIndex: square.rowIndex - 1, columnIndex: square.columnIndex},
-    {rowIndex: square.rowIndex - 1, columnIndex: square.columnIndex + 1},
-    {rowIndex: square.rowIndex, columnIndex: square.columnIndex + 1},
-    {rowIndex: square.rowIndex + 1, columnIndex: square.columnIndex + 1},
-    {rowIndex: square.rowIndex + 1, columnIndex: square.columnIndex},
-    {rowIndex: square.rowIndex + 1, columnIndex: square.columnIndex - 1},
+    {rowIndex: rowIndex, columnIndex: columnIndex - 1},
+    {rowIndex: rowIndex - 1, columnIndex: columnIndex - 1},
+    {rowIndex: rowIndex - 1, columnIndex: columnIndex},
+    {rowIndex: rowIndex - 1, columnIndex: columnIndex + 1},
+    {rowIndex: rowIndex, columnIndex: columnIndex + 1},
+    {rowIndex: rowIndex + 1, columnIndex: columnIndex + 1},
+    {rowIndex: rowIndex + 1, columnIndex: columnIndex},
+    {rowIndex: rowIndex + 1, columnIndex: columnIndex - 1},
   ];
 
-  const matchingAdjacentSquares = adjacentIndexes.filter( ({rowIndex, columnIndex}) => {
+  const firstLetter = findLetters[0];
+  const adjacentSquares = adjacentIndexes.filter( ({rowIndex, columnIndex}) => {
     if (rowIndex < 0 || rowIndex > 9 || columnIndex < 0 || columnIndex > 9) {
       return false;
     }
     const adjacentLetter = boardState[rowIndex][columnIndex];
-    return (adjacentLetter === letter);
+    return (adjacentLetter === firstLetter);
   });
 
-  console.log('matching adjacent squares', matchingAdjacentSquares);
+  let newPath = false;
+  const remainingLetters = findLetters.slice(1);
+
+  adjacentSquares.forEach( (foundSquare) => {
+    const currentPath = findNextLetter(foundSquare, remainingLetters, boardState, [...path, foundSquare]);
+    if (currentPath) {
+      newPath = currentPath;
+    }
+  });
+
+  return newPath;
 
 }
