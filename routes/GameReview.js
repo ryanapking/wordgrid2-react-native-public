@@ -18,6 +18,7 @@ class GameReview extends Component {
       mostValuableWords: [],
       longestWords: [],
       availableWords: [],
+      boardLocation: {},
     };
 
   }
@@ -58,9 +59,14 @@ class GameReview extends Component {
 
     return (
       <View style={styles.mainView}>
-        <View style={styles.boardSection}>
+        <View style={styles.boardSection} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <DrawBoard boardState={displayBoardState} />
-          {/*<GameBoardPathCreator squares={game.consumedSquares} boardLocation={display.boardLocation}/>*/}
+          {this.state.longestWords.map( (word, index) =>
+            <GameBoardPathCreator key={index} squares={word.path} boardLocation={this.state.boardLocation}/>
+          )}
+          {this.state.mostValuableWords.map( (word, index) =>
+            <GameBoardPathCreator key={index} squares={word.path} boardLocation={this.state.boardLocation}/>
+          )}
         </View>
       </View>
     );
@@ -88,6 +94,22 @@ class GameReview extends Component {
         availableWords: words,
         longestWords,
         mostValuableWords,
+      });
+    });
+  }
+
+  _onLayout() {
+    this.gameBoard.measure((x, y, width, height, pageX, pageY) => {
+      console.log('measure:', {x, y, width, height, pageX, pageY});
+      this.setState({
+        boardLocation: {
+          x,
+          y,
+          width,
+          height,
+          rowHeight: height / 10,
+          columnWidth: width / 10,
+        }
       });
     });
   }
