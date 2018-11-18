@@ -17,10 +17,10 @@ export function calculateLongestWordLength(words) {
     }
   }, {words: [], length: 0});
 
-  console.log('longest words:', longestWords.words);
-  console.log(longestWords.length + " letters");
+  // console.log('longest words:', longestWords.words);
+  // console.log(longestWords.length + " letters");
 
-  return longestWords.length;
+  return longestWords;
 }
 
 export function calculateHighestWordValue(words) {
@@ -35,10 +35,10 @@ export function calculateHighestWordValue(words) {
     }
   }, {words: [], value: 0});
 
-  console.log('most valuable words:', mostValuableWords.words);
-  console.log(mostValuableWords.value + " points");
+  // console.log('most valuable words:', mostValuableWords.words);
+  // console.log(mostValuableWords.value + " points");
 
-  return mostValuableWords.value;
+  return mostValuableWords;
 }
 
 export function calculateMoveRating(word, longestWord, mostValuableWord) {

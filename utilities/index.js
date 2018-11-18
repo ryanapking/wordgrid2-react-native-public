@@ -2,4 +2,4 @@ export { generateBoard, generatePiece, generateLocalPiece, generateGame, getRand
 export { remoteToLocal, localToRemote, consumedSquaresToWordPath, boardStringToArray, pieceStringToArray } from './functions/dataConversions';
 export { calculateWordValue, calculateHighestWordValue, calculateLongestWordLength, calculateMoveRating } from './functions/calculations';
 export { checkPieceFit, scoreTabulator, getWinner } from './functions/checks';
-export { getScoreBoard, getAnimationData } from './functions/getters';
+export { getScoreBoard, getAnimationData, getWordPath } from './functions/getters';

@@ -45,8 +45,9 @@ class Game extends Component {
     let boggle = new Boggle(currentBoardString);
 
     boggle.solve( (words) => {
-      const longest = calculateLongestWordLength(words);
-      const mostValuable = calculateHighestWordValue(words);
+      const longest = calculateLongestWordLength(words).length;
+      const mostValuable = calculateHighestWordValue(words).value;
+
       this.props.setAvailableWordsData(this.props.gameID, longest, mostValuable, words.length);
     });
 
