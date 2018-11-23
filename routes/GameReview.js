@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
+import { List, ListItem } from 'native-base';
 
 import { boardStringToArray, calculateLongestWordLength, calculateHighestWordValue, getWordPath } from "../utilities";
 import Boggle from '../utilities/boggle-solver';
 
 import DrawBoard from '../components/DrawBoard';
 import GameBoardPathCreator from "../components/GameBoardPathCreator";
-import {SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED} from "../constants";
+import { SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED } from "../constants";
 
 class GameReview extends Component {
   constructor() {
@@ -19,6 +20,7 @@ class GameReview extends Component {
       longestWords: [],
       availableWords: [],
       boardLocation: {},
+      displayPath: [],
     };
 
   }
@@ -44,12 +46,12 @@ class GameReview extends Component {
 
     console.log('game review state:', this.state);
 
-
-
     const displayBoardState = boardState.map( (row, rowIndex) => {
       return row.map( (letter, columnIndex) => {
         if (!letter) {
           return {letter, status: SPACE_EMPTY};
+        } else if (!this._checkSquareAvailable({rowIndex, columnIndex})) {
+          return {letter, status: SPACE_CONSUMED};
         } else {
           return {letter, status: SPACE_FILLED};
         }
@@ -61,15 +63,56 @@ class GameReview extends Component {
       <View style={styles.mainView}>
         <View style={styles.boardSection} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <DrawBoard boardState={displayBoardState} />
-          {this.state.longestWords.map( (word, index) =>
-            <GameBoardPathCreator key={index} squares={word.path} boardLocation={this.state.boardLocation}/>
-          )}
-          {this.state.mostValuableWords.map( (word, index) =>
-            <GameBoardPathCreator key={index} squares={word.path} boardLocation={this.state.boardLocation}/>
-          )}
+          <GameBoardPathCreator squares={this.state.displayPath} boardLocation={this.state.boardLocation}/>
         </View>
+        <ScrollView>
+          <List>
+            <ListItem itemDivider>
+              <Text>Most Valuable Words:</Text>
+            </ListItem>
+            {this.state.mostValuableWords.map( (word, index) =>
+              <TouchableWithoutFeedback key={index} onPressIn={() => this._setDisplayPath(word.path)} onPressOut={() => this._clearDisplayPath()}>
+                <ListItem>
+                  <Text>{word.word}</Text>
+                </ListItem>
+              </TouchableWithoutFeedback>
+            )}
+            <ListItem itemDivider>
+              <Text>Longest Words:</Text>
+            </ListItem>
+            {this.state.longestWords.map( (word, index) =>
+              <TouchableWithoutFeedback key={index} onPressIn={() => this._setDisplayPath(word.path)} onPressOut={() => this._clearDisplayPath()}>
+                <ListItem>
+                  <Text>{word.word}</Text>
+                </ListItem>
+              </TouchableWithoutFeedback>
+            )}
+          </List>
+        </ScrollView>
       </View>
     );
+  }
+
+  _clearDisplayPath() {
+    this.setState({
+      displayPath: []
+    });
+  }
+
+  _setDisplayPath(wordPath) {
+    this.setState({
+      displayPath: wordPath
+    });
+  }
+
+  _checkSquareAvailable(square) {
+    return this.state.displayPath.reduce( (squareAvailable, pathSquare) => {
+      if (square.rowIndex === pathSquare.rowIndex && square.columnIndex === pathSquare.columnIndex) {
+        return false;
+      } else {
+        return squareAvailable;
+      }
+    }, true);
   }
 
   _getReviewResults(boardString, boardState) {
