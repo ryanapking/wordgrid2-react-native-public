@@ -16,35 +16,24 @@ class GameReview extends Component {
     super();
 
     this.state = {
+      moveIndex: 1,
       mostValuableWords: [],
       longestWords: [],
       availableWords: [],
       boardLocation: {},
       displayPath: [],
     };
-
   }
 
   componentDidMount() {
-    const { moveIndex } = this.props.match.params;
-    const { game } = this.props;
-    const boardString = game.history[moveIndex].b;
-    const boardState = boardStringToArray(boardString);
-
-    this._getReviewResults(boardString, boardState);
+    this._getReviewResults(this.state.moveIndex);
   }
 
   render() {
-    const { moveIndex } = this.props.match.params;
+    const { moveIndex } = this.state;
     const { game } = this.props;
-    const boardString = game.history[moveIndex].b;
+    const boardString = game.history[moveIndex-1].b;
     const boardState = boardStringToArray(boardString);
-    // console.log('board state:', boardState);
-    // console.log('game', game);
-    // console.log('move index', moveIndex);
-    // console.log('board state', boardState);
-
-    console.log('game review state:', this.state);
 
     const displayBoardState = boardState.map( (row, rowIndex) => {
       return row.map( (letter, columnIndex) => {
@@ -61,6 +50,10 @@ class GameReview extends Component {
 
     return (
       <View style={styles.mainView}>
+        <View style={styles.changeMovesSection}>
+          <Text style={styles.changeMove} onPress={() => this._changeMoveIndex(moveIndex - 1)}>Prev</Text>
+          <Text style={styles.changeMove} onPress={() => this._changeMoveIndex(moveIndex + 1)}>Next</Text>
+        </View>
         <View style={styles.boardSection} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <DrawBoard boardState={displayBoardState} />
           <GameBoardPathCreator squares={this.state.displayPath} boardLocation={this.state.boardLocation}/>
@@ -93,6 +86,14 @@ class GameReview extends Component {
     );
   }
 
+  _changeMoveIndex(moveIndex) {
+    this.setState({
+      moveIndex,
+    });
+
+    this._getReviewResults(moveIndex);
+  }
+
   _clearDisplayPath() {
     this.setState({
       displayPath: []
@@ -115,7 +116,11 @@ class GameReview extends Component {
     }, true);
   }
 
-  _getReviewResults(boardString, boardState) {
+  _getReviewResults(moveIndex) {
+    const { game } = this.props;
+    const boardString = game.history[moveIndex - 1].b;
+    const boardState = boardStringToArray(boardString);
+
     let boggle = new Boggle(boardString);
     boggle.solve( (words) => {
       const longest = calculateLongestWordLength(words);
@@ -168,11 +173,22 @@ const styles = StyleSheet.create({
     maxHeight: '100%',
     aspectRatio: 1,
   },
+  changeMovesSection: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: 35,
+  },
+  changeMove: {
+    padding: 10
+  },
 });
 
 const mapStateToProps = (state, ownProps) => {
   const gameID = ownProps.match.params.gameID;
   return {
+    gameID: gameID,
     game: state.gameData.byID[gameID],
     uid: state.user.uid
   };
