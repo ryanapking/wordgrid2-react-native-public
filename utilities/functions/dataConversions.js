@@ -52,7 +52,7 @@ export function remoteToLocal(source, userID) {
 export function localToRemote(localData, userID) {
   const p1Array = (localData.p1 === userID) ? localData.me : localData.them;
   const p2Array = (localData.p2 === userID) ? localData.me : localData.them;
-  consumedSquaresToWordPath(localData.consumedSquares);
+  wordPathArrayToString(localData.consumedSquares);
   return {
     b: arrayToString(localData.rows), // board state
     p1: p1Array.map( (piece) => arrayToString(piece) ), // p1 pieces
@@ -104,8 +104,19 @@ export function calculateScore(history, playerID) {
   }, 0);
 }
 
-export function consumedSquaresToWordPath(consumedSquares) {
+export function wordPathArrayToString(consumedSquares) {
   return consumedSquares.map( (square) => {
     return `${square.rowIndex},${square.columnIndex}`;
   }).join("|");
+}
+
+export function wordPathStringToArray(wordPathString) {
+  const wordPaths = wordPathString.split("|");
+  return wordPaths.map( (coordinateSet) => {
+    const squareCoordinates = coordinateSet.split(",");
+    return {
+      rowIndex: parseInt(squareCoordinates[0]),
+      columnIndex: parseInt(squareCoordinates[1])
+    };
+  });
 }

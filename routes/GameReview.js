@@ -10,6 +10,7 @@ import Boggle from '../utilities/boggle-solver';
 import DrawBoard from '../components/DrawBoard';
 import GameBoardPathCreator from "../components/GameBoardPathCreator";
 import { SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED } from "../constants";
+import { wordPathStringToArray, calculateWordValue } from "../utilities";
 
 class GameReview extends Component {
   constructor() {
@@ -18,10 +19,15 @@ class GameReview extends Component {
     this.state = {
       moveIndex: 1,
       mostValuableWords: [],
+      mostValuablePoints: null,
       longestWords: [],
+      longestLetterCount: null,
       availableWords: [],
       boardLocation: {},
       displayPath: [],
+      playerMovePath: [],
+      playerMoveWord: null,
+      allAvailableWords: [],
     };
   }
 
@@ -32,6 +38,7 @@ class GameReview extends Component {
   render() {
     const { moveIndex } = this.state;
     const { game } = this.props;
+    const move = game.history[moveIndex];
     const boardString = game.history[moveIndex-1].b;
     const boardState = boardStringToArray(boardString);
 
@@ -60,26 +67,54 @@ class GameReview extends Component {
         </View>
         <ScrollView>
           <List>
-            <ListItem itemDivider>
+
+            <ListItem itemDivider style={styles.spaceBetween}>
+              <Text>Player Move:</Text>
+              <Text>{ move.wv } points</Text>
+            </ListItem>
+            <TouchableWithoutFeedback onPressIn={() => this._setDisplayPath(this.state.playerMovePath)} onPressOut={() => this._clearDisplayPath()}>
+              <ListItem>
+                <Text>{ move.w.toUpperCase() }</Text>
+              </ListItem>
+            </TouchableWithoutFeedback>
+
+            <ListItem itemDivider style={styles.spaceBetween}>
               <Text>Most Valuable Words:</Text>
+              <Text>{ this.state.mostValuablePoints } points</Text>
             </ListItem>
             {this.state.mostValuableWords.map( (word, index) =>
-              <TouchableWithoutFeedback key={index} onPressIn={() => this._setDisplayPath(word.path)} onPressOut={() => this._clearDisplayPath()}>
+              <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word, boardState)} onPressOut={() => this._clearDisplayPath()}>
                 <ListItem>
-                  <Text>{word.word}</Text>
+                  <Text>{word}</Text>
                 </ListItem>
               </TouchableWithoutFeedback>
             )}
-            <ListItem itemDivider>
+
+            <ListItem itemDivider style={styles.spaceBetween}>
               <Text>Longest Words:</Text>
+              <Text>{ this.state.longestLetterCount } letters</Text>
             </ListItem>
             {this.state.longestWords.map( (word, index) =>
-              <TouchableWithoutFeedback key={index} onPressIn={() => this._setDisplayPath(word.path)} onPressOut={() => this._clearDisplayPath()}>
+              <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word, boardState)} onPressOut={() => this._clearDisplayPath()}>
                 <ListItem>
-                  <Text>{word.word}</Text>
+                  <Text>{word}</Text>
                 </ListItem>
               </TouchableWithoutFeedback>
             )}
+
+            <ListItem itemDivider style={styles.spaceBetween}>
+              <Text>All Available Words:</Text>
+              <Text>{ this.state.availableWords.length } words</Text>
+            </ListItem>
+            {this.state.availableWords.map( (word, index) =>
+              <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word.word, boardState)} onPressOut={() => this._clearDisplayPath()}>
+                <ListItem style={styles.spaceBetween}>
+                  <Text>{ word.word }</Text>
+                  <Text>{ word.value } points</Text>
+                </ListItem>
+              </TouchableWithoutFeedback>
+            )}
+
           </List>
         </ScrollView>
       </View>
@@ -106,6 +141,11 @@ class GameReview extends Component {
     });
   }
 
+  _findAndSetDisplayPath(word, boardState) {
+    const wordPath = getWordPath(word, boardState);
+    this._setDisplayPath(wordPath);
+  }
+
   _checkSquareAvailable(square) {
     return this.state.displayPath.reduce( (squareAvailable, pathSquare) => {
       if (square.rowIndex === pathSquare.rowIndex && square.columnIndex === pathSquare.columnIndex) {
@@ -118,6 +158,8 @@ class GameReview extends Component {
 
   _getReviewResults(moveIndex) {
     const { game } = this.props;
+    const move = game.history[moveIndex];
+    const playerMovePath = wordPathStringToArray(move.wp);
     const boardString = game.history[moveIndex - 1].b;
     const boardState = boardStringToArray(boardString);
 
@@ -128,20 +170,26 @@ class GameReview extends Component {
 
       let longestWords = [];
       longest.words.forEach( (word) => {
-        const wordPath = getWordPath(word, boardState);
-        longestWords.push({word, path: wordPath});
+        longestWords.push(word);
       });
 
       let mostValuableWords = [];
       mostValuable.words.forEach( (word) => {
-        const wordPath = getWordPath(word, boardState);
-        mostValuableWords.push({word, path: wordPath});
+        mostValuableWords.push(word);
+      });
+
+      const allWordsWithValues = words.reverse().map( (word) => {
+        const value = calculateWordValue(word);
+        return {word, value};
       });
 
       this.setState({
-        availableWords: words,
+        availableWords: allWordsWithValues,
         longestWords,
+        longestLetterCount: longest.length,
         mostValuableWords,
+        mostValuablePoints: mostValuable.value,
+        playerMovePath,
       });
     });
   }
@@ -180,8 +228,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 35,
   },
+  spaceBetween: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   changeMove: {
     padding: 10
+  },
+  playerMove: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
