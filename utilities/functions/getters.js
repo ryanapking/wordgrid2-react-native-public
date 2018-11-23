@@ -128,10 +128,10 @@ export function getWordPath(word, boardState) {
 
       if (letter === firstLetter) {
         const square = {rowIndex, columnIndex};
-        const path = findNextLetter(square, remainingLetters, boardState);
+        const path = findNextLetter(square, remainingLetters, boardState, [square]);
 
         if (path) {
-          returnPath = [square, ...path];
+          returnPath = path;
         }
 
       }
@@ -143,7 +143,7 @@ export function getWordPath(word, boardState) {
 }
 
 // recursively finds a word based on a starting point
-function findNextLetter(square, findLetters, boardState, path = []) {
+function findNextLetter(square, findLetters, boardState, path) {
   // return the full path if we've got it
   if (findLetters.length < 1) {
     return path;
@@ -162,21 +162,33 @@ function findNextLetter(square, findLetters, boardState, path = []) {
     {rowIndex: rowIndex + 1, columnIndex: columnIndex - 1},
   ];
 
+  // filter adjacent indexes down to those that contain the next letter
   const firstLetter = findLetters[0];
-  const adjacentSquares = adjacentIndexes.filter( ({rowIndex, columnIndex}) => {
+  const matchingAdjacentSquares = adjacentIndexes.filter( ({rowIndex, columnIndex}) => {
+    // confirm that the square is on the board
     if (rowIndex < 0 || rowIndex > 9 || columnIndex < 0 || columnIndex > 9) {
       return false;
     }
+
+    // check if the letters match
     const adjacentLetter = boardState[rowIndex][columnIndex];
-    return (adjacentLetter === firstLetter);
+    if (adjacentLetter !== firstLetter) return false;
+
+    // check if the square is already part of the path
+    return !path.reduce( (usedStatus, pathSquare) => {
+      return (usedStatus || (rowIndex === pathSquare.rowIndex && columnIndex === pathSquare.columnIndex));
+    }, false);
   });
 
+  // Return variable. Will only be set if a path is found to be fully valid.
   let newPath = false;
-  const remainingLetters = findLetters.slice(1);
 
-  adjacentSquares.forEach( (foundSquare) => {
+  // for all matching squares, explore the next one
+  const remainingLetters = findLetters.slice(1);
+  matchingAdjacentSquares.forEach( (foundSquare) => {
+    // the recursive bit
     const currentPath = findNextLetter(foundSquare, remainingLetters, boardState, [...path, foundSquare]);
-    if (currentPath) {
+    if (currentPath) { // if current path is false, it's invalid somewhere
       newPath = currentPath;
     }
   });
