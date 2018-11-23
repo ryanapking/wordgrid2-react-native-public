@@ -10,13 +10,15 @@ export default class DrawPath extends Component {
   }
   render() {
     const { square1, square2 } = this.props;
+
+    const height = 5;
+    const borderRadius = height / 2;
+
     const p1 = this._getRelativeCoordinates(square1.rowIndex, square1.columnIndex);
     const p2 = this._getRelativeCoordinates(square2.rowIndex, square2.columnIndex);
     const angle = this._calculateAngle(p1, p2);
-    const length = this._calculateLength(p1, p2);
+    const length = this._calculateLength(p1, p2) + borderRadius;
     const midpoint = this._calculateMidPoint(p1, p2);
-
-    const height = 5;
 
     const style = {
       left: midpoint.x - (length / 2),
@@ -24,7 +26,7 @@ export default class DrawPath extends Component {
       width: length,
       transform: [{rotate: angle + 'deg'}],
       height: height,
-      borderRadius: height / 2,
+      borderRadius: borderRadius,
       backgroundColor: '#5283ff',
       position: 'absolute'
     };
