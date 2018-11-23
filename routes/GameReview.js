@@ -54,17 +54,30 @@ class GameReview extends Component {
       });
     });
 
+    const hideNextButton = (moveIndex >= game.history.length - 1);
+    const hidePrevButton = (moveIndex <= 1);
 
     return (
       <View style={styles.mainView}>
+
         <View style={styles.changeMovesSection}>
-          <Text style={styles.changeMove} onPress={() => this._changeMoveIndex(moveIndex - 1)}>Prev</Text>
-          <Text style={styles.changeMove} onPress={() => this._changeMoveIndex(moveIndex + 1)}>Next</Text>
+          <View>
+            { hidePrevButton ? null :
+              <Text style={styles.changeMove} onPress={() => this._changeMoveIndex(moveIndex - 1)}>Prev</Text>
+            }
+          </View>
+          <View>
+            { hideNextButton ? null :
+              <Text style={styles.changeMove} onPress={() => this._changeMoveIndex(moveIndex + 1)}>Next</Text>
+            }
+          </View>
         </View>
+
         <View style={styles.boardSection} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
           <DrawBoard boardState={displayBoardState} />
           <GameBoardPathCreator squares={this.state.displayPath} boardLocation={this.state.boardLocation}/>
         </View>
+
         <ScrollView>
           <List>
 
