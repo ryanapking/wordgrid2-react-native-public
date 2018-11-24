@@ -9,6 +9,7 @@ import Boggle from '../utilities/boggle-solver';
 
 import DrawBoard from '../components/DrawBoard';
 import GameBoardPathCreator from "../components/GameBoardPathCreator";
+import DrawScoreBoard from "../components/DrawScoreBoard";
 import { SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED } from "../constants";
 import { wordPathStringToArray, calculateWordValue } from "../utilities";
 
@@ -50,6 +51,7 @@ class GameReview extends Component {
     const move = game.history[moveIndex];
     const boardString = game.history[moveIndex-1].b;
     const boardState = boardStringToArray(boardString);
+    const moveInning = Math.floor((moveIndex - 1) / 2);
 
     const displayBoardState = boardState.map( (row, rowIndex) => {
       return row.map( (letter, columnIndex) => {
@@ -98,8 +100,13 @@ class GameReview extends Component {
                 <Text>{ move.wv } points</Text>
               </ListItem>
               <TouchableWithoutFeedback onPressIn={() => this._setDisplayPath(this.state.playerMovePath)} onPressOut={() => this._clearDisplayPath()}>
-                <ListItem>
-                  <Text>{ move.w.toUpperCase() }</Text>
+                <ListItem style={styles.spaceBetween}>
+                  <View>
+                    <Text>{ move.w.toUpperCase() }</Text>
+                  </View>
+                  <View>
+                    <DrawScoreBoard p1={game.p1} p2={game.p2} scoreBoard={game.scoreBoard} highlight={{player: move.p, inning: moveInning}}/>
+                  </View>
                 </ListItem>
               </TouchableWithoutFeedback>
 

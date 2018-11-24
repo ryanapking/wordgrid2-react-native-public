@@ -6,35 +6,51 @@ import { Container } from 'native-base';
 
 import { calculateScore } from "../utilities/functions/dataConversions";
 
-class GameScoreBoard extends Component {
+class DrawScoreBoard extends Component {
   render() {
+    const { p1, p2, scoreBoard, uid, highlight } = this.props;
 
-    const topLabel = (this.props.p1 === this.props.uid) ? "You: " : "Them: ";
-    const bottomLabel = (this.props.p2 === this.props.uid) ? "You: " : "Them: ";
+    const topLabel = (p1 === uid) ? "You: " : "Them: ";
+    const bottomLabel = (p2 === uid) ? "You: " : "Them: ";
 
-    const totalScores = this.props.scoreBoard.reduce( (totals, turn) => {
+    const totalScores = scoreBoard.reduce( (totals, turn) => {
       const p1 = totals.p1 + turn.p1;
       const p2 = totals.p2 + turn.p2;
       return {p1, p2};
     }, { p1: 0, p2: 0});
 
+    // add some dummy highlight data
+    let drawScoreBoard = scoreBoard.map( (turn) => {
+      return {
+        ...turn,
+        p1Highlight: null,
+        p2Highlight: null,
+      }
+    });
+
+    // highlight the designated square, if it exists
+    if (highlight) {
+      const player = (p1 === highlight.player) ? "p1Highlight" : "p2Highlight";
+      drawScoreBoard[highlight.inning][player] = styles.highlight;
+    }
+
     return (
-      <Container style={styles.row}>
+      <View style={[styles.row, this.props.style]}>
         <View style={styles.column}>
           <Text style={styles.equal}>{ topLabel }</Text>
           <Text style={styles.equal}>{ bottomLabel }</Text>
         </View>
-        {this.props.scoreBoard.map( (turn, index) =>
+        {drawScoreBoard.map( (turn, index) =>
           <View key={index} style={styles.turn}>
-            <Text style={styles.score}>{turn.p1}</Text>
-            <Text style={styles.score}>{turn.p2}</Text>
+            <Text style={[styles.score, turn.p1Highlight]}>{turn.p1}</Text>
+            <Text style={[styles.score, turn.p2Highlight]}>{turn.p2}</Text>
           </View>
         )}
         <View style={styles.turn}>
           <Text style={styles.score}>{ totalScores.p1 }</Text>
           <Text style={styles.score}>{ totalScores.p2 }</Text>
         </View>
-      </Container>
+      </View>
     );
   }
 }
@@ -64,19 +80,16 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     flex: 1,
     textAlign: 'center',
+  },
+  highlight: {
+    backgroundColor: 'green',
   }
 });
 
-const mapStateToProps = (state, ownProps) => {
-  const gameID = ownProps.match.params.gameID;
-  const game = state.gameData.byID[gameID];
+const mapStateToProps = (state) => {
   return {
-    p1: game.p1,
-    p2: game.p2,
-    scoreBoard: game.scoreBoard,
-    history: game.history,
     uid: state.user.uid
   };
 };
 
-export default withRouter(connect(mapStateToProps)(GameScoreBoard));
+export default withRouter(connect(mapStateToProps)(DrawScoreBoard));

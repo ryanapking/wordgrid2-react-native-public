@@ -33,7 +33,7 @@ class GamePhaseDisplay extends Component {
     }
 
     return (
-      <Container>
+      <Container style={this.props.style}>
         <Container style={[styles.centered]}>
           <View style={[styles.row]}>
             { playIcon }
