@@ -17,17 +17,26 @@ class GameReview extends Component {
     super();
 
     this.state = {
+      // current move info being reviewed
       moveIndex: 1,
-      mostValuableWords: [],
-      mostValuablePoints: null,
-      longestWords: [],
-      longestLetterCount: null,
-      availableWords: [],
-      boardLocation: {},
-      displayPath: [],
+
+      // the pieces of the list view
       playerMovePath: [],
       playerMoveWord: null,
-      allAvailableWords: [],
+
+      mostValuableWords: [],
+      mostValuablePoints: null,
+
+      longestWords: [],
+      longestLetterCount: null,
+
+      availableWords: [],
+
+      // the only thing that's actually drawn on the board
+      displayPath: [],
+
+      // measurements
+      boardLocation: {},
     };
   }
 
@@ -81,7 +90,7 @@ class GameReview extends Component {
         </View>
 
         <View style={styles.availableMovesSection}>
-          <ScrollView>
+          <ScrollView ref={(scrollView) => this._availableMoves = scrollView}>
             <List>
 
               <ListItem itemDivider style={styles.spaceBetween}>
@@ -144,6 +153,8 @@ class GameReview extends Component {
       moveIndex,
     });
 
+    this._availableMoves.scrollTo({y: 0, animated: false});
+    this._availableMoves.flashScrollIndicators();
     this._getReviewResults(moveIndex);
   }
 

@@ -9,9 +9,9 @@ export default class DrawPath extends Component {
     this._getRelativeCoordinates = this._getRelativeCoordinates.bind(this);
   }
   render() {
-    const { square1, square2 } = this.props;
+    const { square1, square2, boardLocation } = this.props;
 
-    const height = 5;
+    const height = boardLocation.rowHeight * .1;
     const borderRadius = height / 2;
 
     const p1 = this._getRelativeCoordinates(square1.rowIndex, square1.columnIndex);
