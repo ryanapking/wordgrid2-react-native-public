@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { Provider } from 'react-redux';
 import { NativeRouter, Route } from'react-router-native';
 import { Drawer } from 'native-base';
@@ -36,13 +36,19 @@ export default class App extends Component {
             onClose={() => this.closeDrawer()}
             acceptPan={false}
           >
-            <TopBar openDrawer={() => this.openDrawer()} />
-            <Route exact path="/" component={Home} />
-            <Route path="/login" component={Login} />
-            <Route path="/game/:gameID" component={Game} />
-            <Route path="/gameReview/:gameID" component={GameReview} />
-            <Route path="/games" component={Games} />
-            <Route path="/settings" component={Settings} />
+            <View style={styles.mainContainer}>
+              <View style={styles.topBarSection} >
+                <TopBar openDrawer={() => this.openDrawer()} />
+              </View>
+              <View style={styles.mainSection}>
+                <Route exact path="/" component={Home} />
+                <Route path="/login" component={Login} />
+                <Route path="/game/:gameID" component={Game} />
+                <Route path="/gameReview/:gameID" component={GameReview} />
+                <Route path="/games" component={Games} />
+                <Route path="/settings" component={Settings} />
+              </View>
+            </View>
             <LoginRedirect />
             <FirebaseListeners />
           </Drawer>
@@ -60,28 +66,16 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 25,
-    padding: 10,
+  mainContainer: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
   },
-  header: {
-    fontSize: 20,
+  topBarSection: {
+    flex: 5,
   },
-  nav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around'
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  subNavItem: {
-    padding: 5,
-  },
-  topic: {
-    textAlign: 'center',
-    fontSize: 15,
+  mainSection: {
+    flex: 95,
   },
 });

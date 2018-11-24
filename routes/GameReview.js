@@ -36,7 +36,7 @@ class GameReview extends Component {
   }
 
   render() {
-    const { moveIndex } = this.state;
+    const { moveIndex, boardLocation } = this.state;
     const { game } = this.props;
     const move = game.history[moveIndex];
     const boardString = game.history[moveIndex-1].b;
@@ -58,7 +58,14 @@ class GameReview extends Component {
     const hidePrevButton = (moveIndex <= 1);
 
     return (
-      <View style={styles.mainView}>
+      <View style={styles.reviewContainer}>
+
+        <View style={styles.boardSection}>
+          <View style={styles.board} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
+            <DrawBoard boardState={displayBoardState} boardSize={boardLocation.width}/>
+            <GameBoardPathCreator squares={this.state.displayPath} boardLocation={boardLocation}/>
+          </View>
+        </View>
 
         <View style={styles.changeMovesSection}>
           <View>
@@ -73,63 +80,61 @@ class GameReview extends Component {
           </View>
         </View>
 
-        <View style={styles.boardSection} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
-          <DrawBoard boardState={displayBoardState} />
-          <GameBoardPathCreator squares={this.state.displayPath} boardLocation={this.state.boardLocation}/>
+        <View style={styles.availableMovesSection}>
+          <ScrollView>
+            <List>
+
+              <ListItem itemDivider style={styles.spaceBetween}>
+                <Text>Player Move:</Text>
+                <Text>{ move.wv } points</Text>
+              </ListItem>
+              <TouchableWithoutFeedback onPressIn={() => this._setDisplayPath(this.state.playerMovePath)} onPressOut={() => this._clearDisplayPath()}>
+                <ListItem>
+                  <Text>{ move.w.toUpperCase() }</Text>
+                </ListItem>
+              </TouchableWithoutFeedback>
+
+              <ListItem itemDivider style={styles.spaceBetween}>
+                <Text>Most Valuable Words:</Text>
+                <Text>{ this.state.mostValuablePoints } points</Text>
+              </ListItem>
+              {this.state.mostValuableWords.map( (word, index) =>
+                <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word, boardState)} onPressOut={() => this._clearDisplayPath()}>
+                  <ListItem>
+                    <Text>{word}</Text>
+                  </ListItem>
+                </TouchableWithoutFeedback>
+              )}
+
+              <ListItem itemDivider style={styles.spaceBetween}>
+                <Text>Longest Words:</Text>
+                <Text>{ this.state.longestLetterCount } letters</Text>
+              </ListItem>
+              {this.state.longestWords.map( (word, index) =>
+                <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word, boardState)} onPressOut={() => this._clearDisplayPath()}>
+                  <ListItem>
+                    <Text>{word}</Text>
+                  </ListItem>
+                </TouchableWithoutFeedback>
+              )}
+
+              <ListItem itemDivider style={styles.spaceBetween}>
+                <Text>All Available Words:</Text>
+                <Text>{ this.state.availableWords.length } words</Text>
+              </ListItem>
+              {this.state.availableWords.map( (word, index) =>
+                <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word.word, boardState)} onPressOut={() => this._clearDisplayPath()}>
+                  <ListItem style={styles.spaceBetween}>
+                    <Text>{ word.word }</Text>
+                    <Text>{ word.value } points</Text>
+                  </ListItem>
+                </TouchableWithoutFeedback>
+              )}
+
+            </List>
+          </ScrollView>
         </View>
 
-        <ScrollView>
-          <List>
-
-            <ListItem itemDivider style={styles.spaceBetween}>
-              <Text>Player Move:</Text>
-              <Text>{ move.wv } points</Text>
-            </ListItem>
-            <TouchableWithoutFeedback onPressIn={() => this._setDisplayPath(this.state.playerMovePath)} onPressOut={() => this._clearDisplayPath()}>
-              <ListItem>
-                <Text>{ move.w.toUpperCase() }</Text>
-              </ListItem>
-            </TouchableWithoutFeedback>
-
-            <ListItem itemDivider style={styles.spaceBetween}>
-              <Text>Most Valuable Words:</Text>
-              <Text>{ this.state.mostValuablePoints } points</Text>
-            </ListItem>
-            {this.state.mostValuableWords.map( (word, index) =>
-              <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word, boardState)} onPressOut={() => this._clearDisplayPath()}>
-                <ListItem>
-                  <Text>{word}</Text>
-                </ListItem>
-              </TouchableWithoutFeedback>
-            )}
-
-            <ListItem itemDivider style={styles.spaceBetween}>
-              <Text>Longest Words:</Text>
-              <Text>{ this.state.longestLetterCount } letters</Text>
-            </ListItem>
-            {this.state.longestWords.map( (word, index) =>
-              <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word, boardState)} onPressOut={() => this._clearDisplayPath()}>
-                <ListItem>
-                  <Text>{word}</Text>
-                </ListItem>
-              </TouchableWithoutFeedback>
-            )}
-
-            <ListItem itemDivider style={styles.spaceBetween}>
-              <Text>All Available Words:</Text>
-              <Text>{ this.state.availableWords.length } words</Text>
-            </ListItem>
-            {this.state.availableWords.map( (word, index) =>
-              <TouchableWithoutFeedback key={index} onPressIn={() => this._findAndSetDisplayPath(word.word, boardState)} onPressOut={() => this._clearDisplayPath()}>
-                <ListItem style={styles.spaceBetween}>
-                  <Text>{ word.word }</Text>
-                  <Text>{ word.value } points</Text>
-                </ListItem>
-              </TouchableWithoutFeedback>
-            )}
-
-          </List>
-        </ScrollView>
       </View>
     );
   }
@@ -174,33 +179,28 @@ class GameReview extends Component {
     const move = game.history[moveIndex];
     const playerMovePath = wordPathStringToArray(move.wp);
     const boardString = game.history[moveIndex - 1].b;
-    const boardState = boardStringToArray(boardString);
 
     let boggle = new Boggle(boardString);
     boggle.solve( (words) => {
       const longest = calculateLongestWordLength(words);
       const mostValuable = calculateHighestWordValue(words);
 
-      let longestWords = [];
-      longest.words.forEach( (word) => {
-        longestWords.push(word);
-      });
-
-      let mostValuableWords = [];
-      mostValuable.words.forEach( (word) => {
-        mostValuableWords.push(word);
-      });
-
-      const allWordsWithValues = words.reverse().map( (word) => {
-        const value = calculateWordValue(word);
-        return {word, value};
-      });
+      const allWordsWithValues = words
+        .slice()
+        .sort()
+        .map( (word) => {
+          const value = calculateWordValue(word);
+          return {word, value};
+        })
+        .sort( (word1, word2) => {
+          return word2.value - word1.value;
+        });
 
       this.setState({
         availableWords: allWordsWithValues,
-        longestWords,
+        longestWords: longest.words,
         longestLetterCount: longest.length,
-        mostValuableWords,
+        mostValuableWords: mostValuable.words,
         mostValuablePoints: mostValuable.value,
         playerMovePath,
       });
@@ -225,21 +225,31 @@ class GameReview extends Component {
 }
 
 const styles = StyleSheet.create({
-  mainView: {
+  reviewContainer: {
     width: '100%',
     height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
   },
   boardSection: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    aspectRatio: 1,
+    display: 'flex',
+    alignItems: 'center',
+    flex: 42,
   },
   changeMovesSection: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    minHeight: 35,
+    flex: 8,
+  },
+  availableMovesSection: {
+    flex: 50,
+  },
+  board: {
+    maxWidth: '100%',
+    maxHeight: '100%',
+    aspectRatio: 1,
   },
   spaceBetween: {
     display: 'flex',
