@@ -122,7 +122,8 @@ class GameInteraction extends Component {
         transaction.update(gameDocRef, {
           h: newGameObject.history,
           t: turn,
-          w: winner
+          w: winner,
+          m: firebase.firestore.FieldValue.serverTimestamp(), // timestamp modification time
         });
 
       });

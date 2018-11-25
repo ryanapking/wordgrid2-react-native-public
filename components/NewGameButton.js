@@ -119,8 +119,9 @@ class NewGameButton extends Component {
                 });
               }
               transaction.update(joinGameDocRef, {
-                t: userID,
-                p2: userID
+                t: userID, // insert own uid as next move
+                p2: userID, // insert own uid as player 2
+                m: firebase.firestore.FieldValue.serverTimestamp(), // timestamp modification time
               });
 
             }).then( () => {
@@ -145,10 +146,13 @@ class NewGameButton extends Component {
   createRemoteGame(resolve, reject) {
 
     const userID = this.props.uid;
-    const newGameData = generateGame(userID);
     const userDocRef = firebase.firestore().collection('users').doc(userID);
     const newGameDocRef = firebase.firestore().collection('games').doc();
     const newGameID = { id: newGameDocRef.id, name: newGameDocRef.id };
+    const newGameData = generateGame(userID);
+    // add timestamps that will be set in firestore
+    newGameData.c = firebase.firestore.FieldValue.serverTimestamp(); // creation timestamp
+    newGameData.m = firebase.firestore.FieldValue.serverTimestamp(); // modification timestamp
 
     return firebase.firestore().runTransaction( (transaction) => {
 
