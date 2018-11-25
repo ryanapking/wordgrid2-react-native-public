@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { withRouter } from 'react-router-native';
 import { connect } from 'react-redux';
 import firebase from 'react-native-firebase';
@@ -9,6 +9,7 @@ import GameWordDisplay from "./GameWordDisplay";
 import DrawPieceSection from "./DrawPieceSection";
 
 import { getWinner, localToRemote } from "../utilities";
+import { setLocalGameDataByID } from "../ducks/gameData";
 
 class GameInteraction extends Component {
   constructor() {
@@ -23,20 +24,16 @@ class GameInteraction extends Component {
 
   render() {
     const wordPlayed = !!this.props.game.word;
-    let interaction = null;
 
+    let interaction = null;
     if (this.state.working) {
-      interaction = <Spinner color='blue' />;
+      interaction = this._getSpinner();
     } else if (!wordPlayed) {
-      interaction =
-        <Container style={[styles.flex]}>
-          <DrawPieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />
-          <GameWordDisplay style={[styles.twoColumns]}/>
-        </Container>;
+      interaction = this._getPlayWord();
     } else if (!this.props.game.piecePlaced) {
-      interaction = <DrawPieceSection pieces={this.props.game.me} allowDrag />;
+      interaction = this._getPlacePiece();
     } else {
-      interaction = <Button full onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
+      interaction = this._getConfirmMove();
     }
 
     return (
@@ -44,6 +41,40 @@ class GameInteraction extends Component {
         { interaction }
       </Container>
     );
+  }
+
+  _getSpinner() {
+    return (
+      <Spinner color='blue' />
+    );
+  }
+
+  _getPlayWord() {
+    return (
+      <Container style={[styles.flex]}>
+        <DrawPieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />
+        <GameWordDisplay style={[styles.twoColumns]}/>
+      </Container>
+    );
+  }
+
+  _getPlacePiece() {
+    return (
+      <DrawPieceSection pieces={this.props.game.me} allowDrag />
+    );
+  }
+
+  _getConfirmMove() {
+    return (
+      <View style={styles.confirmMoveSection}>
+        <Button full info onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
+        <Button full info onPress={() => this.clearLocalMoveData()}><Text>Reset Move</Text></Button>
+      </View>
+    );
+  }
+
+  clearLocalMoveData() {
+    this.props.setLocalGameDataByID(this.props.gameID, this.props.uid, this.props.game.sourceData);
   }
 
   saveRemoteMove() {
@@ -121,6 +152,13 @@ const styles = StyleSheet.create({
     flex: 1,
     maxHeight: '100%',
     maxWidth: '100%',
+  },
+  confirmMoveSection: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
   }
 });
 
@@ -133,4 +171,8 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(GameInteraction));
+const mapDispatchToProps = {
+  setLocalGameDataByID
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameInteraction));

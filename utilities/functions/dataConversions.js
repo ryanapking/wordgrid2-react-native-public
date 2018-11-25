@@ -45,7 +45,10 @@ export function remoteToLocal(source, userID) {
     history: source.h,
     p1: source.p1,
     p2: source.p2,
-    turn: source.t
+    turn: source.t,
+
+    // source data can be used to run this process again
+    sourceData: source,
   };
 }
 

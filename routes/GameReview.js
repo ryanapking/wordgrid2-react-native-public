@@ -228,7 +228,7 @@ class GameReview extends Component {
 
   _onLayout() {
     this.gameBoard.measure((x, y, width, height, pageX, pageY) => {
-      console.log('measure:', {x, y, width, height, pageX, pageY});
+      // console.log('measure:', {x, y, width, height, pageX, pageY});
       this.setState({
         boardLocation: {
           x,
