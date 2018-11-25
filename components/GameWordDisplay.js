@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Button, Container } from 'native-base';
+import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
@@ -30,11 +30,11 @@ class GameWordDisplay extends Component {
     const stars = <DrawMoveRating rating={rating} />;
 
     return (
-      <Container style={this.props.style}>
+      <View style={this.props.style}>
         {stars}
         <Text style={{padding: 20, textAlign: 'center'}}>{displayWord ? displayWord : startMessage}</Text>
         {button}
-      </Container>
+      </View>
     );
   }
 

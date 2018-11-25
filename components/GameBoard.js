@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {PanResponder, StyleSheet, Text, View} from 'react-native';
+import {PanResponder, StyleSheet, View} from 'react-native';
 import connect from "react-redux/es/connect/connect";
 import { withRouter } from 'react-router-native';
 

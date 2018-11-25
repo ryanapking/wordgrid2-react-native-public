@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactNative, {Platform, StyleSheet, View, Text, LayoutAnimation, UIManager, Animated} from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-import { Container } from 'native-base';
 
 import { markAnimationPlayed } from "../ducks/gameData";
 import { getAnimationData } from "../utilities";

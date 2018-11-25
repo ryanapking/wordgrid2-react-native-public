@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-import { Container } from 'native-base';
-
-import { calculateScore } from "../utilities/functions/dataConversions";
 
 class DrawScoreBoard extends Component {
   render() {

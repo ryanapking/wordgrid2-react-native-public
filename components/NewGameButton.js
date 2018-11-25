@@ -100,7 +100,7 @@ class NewGameButton extends Component {
           // inequality queries don't exist in firestore
           // if we happened to grab our own game, then we are out of luck
           if (gameDoc.data().p1 === userID) {
-            reject('we grabbed our own game! creating a new one...')
+            reject('we grabbed our own game! creating a new one...');
             return;
           }
 
@@ -125,7 +125,7 @@ class NewGameButton extends Component {
 
             }).then( () => {
               resolve('join game success');
-            }).catch( (err) => {
+            }).catch( () => {
               reject('failed to join game. creating a new one...');
             });
           });

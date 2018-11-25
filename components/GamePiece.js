@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, PanResponder, Animated, Text} from 'react-native';
+import {StyleSheet, View, PanResponder, Animated } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-import { Container } from 'native-base';
 
 import { placePiece } from '../ducks/gameData';
 import { setPieceLocation } from "../ducks/gameDisplay";
@@ -59,8 +58,8 @@ class GamePiece extends Component {
 
     const dragTransforms = {transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}]};
 
-    const pieceState = this.props.piece.map( (row, rowIndex) => {
-      return row.map( (letter, columnIndex) => {
+    const pieceState = this.props.piece.map( (row) => {
+      return row.map( (letter) => {
         return {letter};
       });
     });
@@ -70,9 +69,9 @@ class GamePiece extends Component {
         {...this.panResponder.panHandlers}
         style={[styles.square, dragTransforms, this.props.style]}
       >
-        <Container style={styles.grid} pointerEvents={'none'}>
+        <View style={styles.grid} pointerEvents={'none'}>
           <DrawPiece pieceState={pieceState} pieceSize={baseSize} canDrop={canDrop}/>
-        </Container>
+        </View>
       </Animated.View>
     );
   }
@@ -231,6 +230,8 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   grid: {
+    width: '100%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column'
   },

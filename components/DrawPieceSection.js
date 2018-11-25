@@ -91,10 +91,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = (state) => {
-  return {
-
-  };
+const mapStateToProps = () => {
+  return {};
 };
 
 const mapDispatchToProps = {

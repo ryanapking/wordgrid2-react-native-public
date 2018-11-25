@@ -32,7 +32,7 @@ export default class DrawPath extends Component {
     };
 
     return (
-      <View style={style}></View>
+      <View style={style} />
     );
   }
 
@@ -54,9 +54,9 @@ export default class DrawPath extends Component {
   }
 
   _calculateAngle(p1, p2) {
-    var dy = p1.y - p2.y;
-    var dx = p1.x - p2.x;
-    var theta = Math.atan2(dy, dx); // range (-PI, PI]
+    let dy = p1.y - p2.y;
+    let dx = p1.x - p2.x;
+    let theta = Math.atan2(dy, dx); // range (-PI, PI]
     theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
     //if (theta < 0) theta = 360 + theta; // range [0, 360)
     return theta;
