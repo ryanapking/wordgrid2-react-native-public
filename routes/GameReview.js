@@ -52,6 +52,7 @@ class GameReview extends Component {
     const boardString = game.history[moveIndex-1].b;
     const boardState = boardStringToArray(boardString);
     const moveInning = Math.floor((moveIndex - 1) / 2);
+    const moveLabel = (move.p === this.props.uid) ? "Your move:" : "Their move:";
 
     const displayBoardState = boardState.map( (row, rowIndex) => {
       return row.map( (letter, columnIndex) => {
@@ -96,7 +97,7 @@ class GameReview extends Component {
             <List>
 
               <ListItem itemDivider style={styles.spaceBetween}>
-                <Text>Player Move:</Text>
+                <Text>{ moveLabel }</Text>
                 <Text>{ move.wv } points</Text>
               </ListItem>
               <TouchableWithoutFeedback onPressIn={() => this._setDisplayPath(this.state.playerMovePath)} onPressOut={() => this._clearDisplayPath()}>

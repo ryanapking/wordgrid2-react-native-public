@@ -3,3 +3,4 @@ export { remoteToLocal, localToRemote, wordPathArrayToString, boardStringToArray
 export { calculateWordValue, calculateHighestWordValue, calculateLongestWordLength, calculateMoveRating } from './functions/calculations';
 export { checkPieceFit, scoreTabulator, getWinner } from './functions/checks';
 export { getScoreBoard, getAnimationData, getWordPath } from './functions/getters';
+export { letterValues } from './config';

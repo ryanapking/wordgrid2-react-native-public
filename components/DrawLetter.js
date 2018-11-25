@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import { Container } from 'native-base';
+import { Text, View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+
+import { letterValues } from '../utilities';
 
 export default class DrawLetter extends Component {
   render() {
@@ -20,10 +21,17 @@ export default class DrawLetter extends Component {
       borderWidth: letterSize ? letterSize * .015 : 1,
     };
 
+    const valueSize = {
+      fontSize: letterSize ? letterSize * .25 : 10,
+      paddingBottom: letterSize ? letterSize * .025 : 1,
+      paddingRight: letterSize ? letterSize * .05 : 2,
+    };
+
     return (
-      <Container style={[borderSize, styles.letter, this.props.style]}>
+      <View style={[borderSize, styles.letter, this.props.style]}>
         <Text style={textStyles}>{ letter.toUpperCase() }</Text>
-      </Container>
+        <Text style={[styles.value, valueSize]}>{ letterValues[letter] }</Text>
+      </View>
     );
   }
 
@@ -47,5 +55,10 @@ const styles = StyleSheet.create({
   full: {
     width: '100%',
     height: '100%'
-  }
+  },
+  value: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  },
 });
