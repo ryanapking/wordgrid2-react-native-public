@@ -94,7 +94,7 @@ class NewGameButton extends Component {
         if (games.docs.length > 0) {
 
           const gameDoc = games.docs[0];
-          const joinGameID = { id: gameDoc.id, name: gameDoc.id };
+          const joinGameID = gameDoc.id;
           const joinGameDocRef = gamesCollectionRef.doc(gameDoc.id);
 
           // inequality queries don't exist in firestore
@@ -148,7 +148,7 @@ class NewGameButton extends Component {
     const userID = this.props.uid;
     const userDocRef = firebase.firestore().collection('users').doc(userID);
     const newGameDocRef = firebase.firestore().collection('games').doc();
-    const newGameID = { id: newGameDocRef.id, name: newGameDocRef.id };
+    const newGameID = newGameDocRef.id;
     const newGameData = generateGame(userID);
     // add timestamps that will be set in firestore
     newGameData.c = firebase.firestore.FieldValue.serverTimestamp(); // creation timestamp

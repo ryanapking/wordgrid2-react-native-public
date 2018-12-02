@@ -70,17 +70,12 @@ class FirebaseListeners extends Component {
 
   manageRemoteGameSyncs(gameIDs, userID) {
 
-    // remove the non-firebase uuid stuff
-    const currentRemoteGameIDs = gameIDs.map( (gameID) => {
-      return gameID.id;
-    });
-
     // grab the already present listeners, to prevent duplicates
     const alreadyListening = this.state.gameListenerIDs;
 
     // figure out which new listeners would be duplicates
     // add the other listeners
-    currentRemoteGameIDs.filter( (gameID) => {
+    gameIDs.filter( (gameID) => {
       return !alreadyListening.includes(gameID);
     }).forEach( (gameID) => {
 
@@ -101,7 +96,7 @@ class FirebaseListeners extends Component {
 
     // our list of local games should now reflect the remote list
     this.setState({
-      gameListenerIDs: currentRemoteGameIDs
+      gameListenerIDs: gameIDs
     });
 
     // remove any defunct listeners
