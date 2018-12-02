@@ -46,62 +46,68 @@ export function generateBoard() {
   return board;
 }
 
-export function generatePiece(pieceSize = 4) {
+function generatePiece(pieceSize = 4) {
   // number of possible spaces
   let possibleSpaces = settings.maxPieceWidth * settings.maxPieceHeight;
 
-  // choose a random starting point within the grid
-  let randomSpaces = [Math.floor(Math.random() * possibleSpaces)];
+  // make sure the requested piece size isn't too big, which would cause an infinite loop
+  if (pieceSize > possibleSpaces) pieceSize = possibleSpaces;
+
+  // array of possible spaces
+  let remainingSpaces = [];
+  while (remainingSpaces.length < possibleSpaces) {
+    const stringIndex = remainingSpaces.length;
+    const space = {
+      stringIndex: stringIndex,
+      rowIndex: Math.floor(stringIndex / settings.maxPieceWidth),
+      columnIndex: stringIndex % settings.maxPieceWidth
+    };
+    remainingSpaces.push(space);
+  }
+
+  // pick a random starting point and add it
+  let startingPoint = Math.floor(Math.random() * remainingSpaces.length);
+  let randomSpaces = [remainingSpaces[startingPoint]];
+  remainingSpaces.splice(startingPoint, 1);
 
   // get some random spaces that will be filled with letters
   while (randomSpaces.length < pieceSize) {
 
-    // start from the last element in the array
-    let lastSpace = randomSpaces[randomSpaces.length - 1];
-    let lastRow = Math.floor(lastSpace / settings.maxPieceWidth);
-    let lastColumn = lastSpace % settings.maxPieceWidth;
-    let newRow, newColumn = null;
+    // create an array of the valid remaining spaces (must be next to an existing letter)
+    const validRemainingSpaces = remainingSpaces
+      .map( (remainingSpace, currentIndex) => {
+        return {...remainingSpace, currentIndex};
+      })
+      .filter( (remainingSpace) => {
+        let spaceValid = false;
 
-    // randomly move up, down, left, or right
-    if (Math.random() >= .5) {
-      if (Math.random() >= .5) {
-        newRow = lastRow + 1;
-      } else {
-        newRow = lastRow - 1;
-      }
-      newColumn = lastColumn;
-    } else {
-      if (Math.random() >= .5) {
-        newColumn = lastColumn + 1;
-      } else {
-        newColumn = lastColumn - 1;
-      }
-      newRow = lastRow;
-    }
+        randomSpaces.forEach( (randomSpace) => {
+          const rowDiff = Math.abs(remainingSpace.rowIndex - randomSpace.rowIndex);
+          const columnDiff = Math.abs(remainingSpace.columnIndex - randomSpace.columnIndex);
+          if ((rowDiff <= 1 && columnDiff === 0) || (columnDiff <= 1 && rowDiff === 0)) {
+            spaceValid = true;
+          }
+        });
 
-    // make sure our new letter space is within the bounds of our piece guidelines
-    let rowValid = newRow >= 0 && newRow < settings.maxPieceWidth;
-    let columnValid = newColumn >= 0 && newColumn < settings.maxPieceHeight;
+        return spaceValid
+      });
 
-    if ( rowValid && columnValid) {
-      // convert back to a number for string manipulation
-      let newSpace = (newRow * settings.maxPieceWidth) + newColumn;
+    // pick one of the valid spaces at random
+    let randomRemainingPointIndex = Math.floor(Math.random() * validRemainingSpaces.length);
+    let randomRemainingPoint = validRemainingSpaces[randomRemainingPointIndex];
+    let pointIndex = randomRemainingPoint.currentIndex;
 
-      // see if the letter space is already filled
-      if (!randomSpaces.includes(newSpace)) {
-        randomSpaces.push(newSpace);
-      }
-    } else {
-      // do something in case the piece generator is stuck in a corner
-      randomSpaces.unshift(randomSpaces.pop());
-    }
+    // add the space to random spaces array and remove from remaining spaces
+    randomSpaces.push(remainingSpaces[pointIndex]);
+    remainingSpaces.splice(pointIndex, 1);
+
   }
 
-  // build an piece with all the previous junk
+  // build a piece with all the previous junk
   let piece = " ".repeat(possibleSpaces);
 
   randomSpaces.forEach( (space) => {
-    piece = setCharAt(piece, space, getRandomLetter());
+    piece = setCharAt(piece, space.stringIndex, getRandomLetter());
   });
 
   return piece;
