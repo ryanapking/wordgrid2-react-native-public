@@ -7,7 +7,7 @@ import GameBoardPathCreator from './GameBoardPathCreator';
 import DrawBoard from './DrawBoard';
 
 import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
-import { setGameboardLocation } from "../ducks/gameDisplay";
+import { setBoardLocation } from "../ducks/gameDisplay";
 import {SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED} from "../constants";
 
 class GameBoard extends Component {
@@ -186,7 +186,7 @@ class GameBoard extends Component {
   _onLayout() {
     this.gameBoard.measure((x, y, width, height, pageX, pageY) => {
       // console.log('measure:', {x, y, width, height, pageX, pageY});
-      this.props.setGameboardLocation(pageX, pageY, width, height);
+      this.props.setBoardLocation(pageX, pageY, width, height);
     });
   }
 }
@@ -220,7 +220,7 @@ const mapDispatchToProps = {
   consumeSquare,
   removeSquare,
   clearConsumedSquares,
-  setGameboardLocation
+  setBoardLocation
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameBoard));

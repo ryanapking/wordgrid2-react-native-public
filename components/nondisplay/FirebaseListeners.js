@@ -9,6 +9,7 @@ import {
   removeLocalGameByID,
   setOpponentName
 } from "../../ducks/gameData";
+import { setChallengeData } from "../../ducks/challengeData";
 
 class FirebaseListeners extends Component {
   constructor() {
@@ -18,7 +19,8 @@ class FirebaseListeners extends Component {
       gameListenerIDs: [],
       gameListeners: {},
       userListenerID: null,
-      userListener: null
+      userListener: null,
+      challengeListener: null,
     };
 
     this.manageRemoteGameListSync = this.manageRemoteGameListSync.bind(this);
@@ -35,10 +37,23 @@ class FirebaseListeners extends Component {
 
   componentDidMount() {
     this.manageRemoteGameListSync();
+    this.startChallengeSync();
   }
 
   componentDidUpdate() {
     this.manageRemoteGameListSync();
+  }
+
+  startChallengeSync() {
+    const challengeDocRef = firebase.firestore().collection('challenge').doc('daily');
+
+    const challengeListener = challengeDocRef.onSnapshot( (challengeDoc) => {
+      if (!challengeDoc.exists) return;
+      console.log('challenge doc:', challengeDoc.data());
+      this.props.setChallengeData(challengeDoc.data());
+    });
+
+    this.setState({challengeListener});
   }
 
   manageRemoteGameListSync() {
@@ -47,6 +62,7 @@ class FirebaseListeners extends Component {
     if ( this.props.userID === this.state.userListenerID ) {
       return;
     } else if ( this.state.userListener ) {
+      // unsets existing user sync
       this.state.userListener();
     }
 
@@ -150,7 +166,8 @@ class FirebaseListeners extends Component {
 const mapStateToProps = (state) => {
   return {
     userID: state.user.uid,
-    gamesByID: state.gameData.byID
+    gamesByID: state.gameData.byID,
+    challengeData: state.challengeData,
   };
 };
 
@@ -158,7 +175,8 @@ const mapDispatchToProps = {
   setOpponentName,
   setLocalGameDataByID,
   setLocalGameIDs,
-  removeLocalGameByID
+  removeLocalGameByID,
+  setChallengeData
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));

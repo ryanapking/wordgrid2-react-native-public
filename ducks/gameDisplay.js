@@ -35,7 +35,7 @@ export default function reducer(state = initialState, action) {
 }
 
 // action creators
-export function setGameboardLocation(x, y, width, height) {
+export function setBoardLocation(x, y, width, height) {
   const rowHeight = height / 10;
   const columnWidth = width / 10;
 
