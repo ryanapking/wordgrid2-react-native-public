@@ -27,6 +27,9 @@ class Games extends Component {
     return (
       <View style={{width: '100%'}}>
         <List>
+          <ListItem style={styles.listItem} onPress={() => this.props.history.push(`/challenge`)}>
+            <Text>Daily Challenge</Text>
+          </ListItem>
           {readyToPlay.length > 0 &&
             <View>
               <ListItem itemDivider >
