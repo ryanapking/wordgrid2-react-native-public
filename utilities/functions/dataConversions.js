@@ -63,6 +63,9 @@ export function challengeRemoteToLocal(remoteChallenge) {
     pieceBank: localPieceBank,
     pieces: remoteChallenge.pieces.map( (piece) => pieceStringToArray(piece)),
     history: [],
+
+    word: "",
+    consumedSquares: [],
   };
 }
 
