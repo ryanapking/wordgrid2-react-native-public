@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import {PanResponder, StyleSheet, View} from 'react-native';
 import connect from "react-redux/es/connect/connect";
 
-import GameBoardPathCreator from './GameBoardPathCreator';
+import BoardPathCreator from './BoardPathCreator';
 import DrawBoard from './DrawBoard';
 
 import { setBoardLocation } from "../ducks/gameDisplay";
 import {SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED} from "../constants";
 
-class GameBoard extends Component {
+class Board extends Component {
   constructor() {
     super();
 
@@ -57,7 +57,7 @@ class GameBoard extends Component {
           <View {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
             <DrawBoard boardState={displayBoardState} boardSize={display.boardLocation.width}/>
           </View>
-          <GameBoardPathCreator squares={consumedSquares} boardLocation={display.boardLocation}/>
+          <BoardPathCreator squares={consumedSquares} boardLocation={display.boardLocation}/>
         </View>
       </View>
     );
@@ -215,4 +215,4 @@ const mapDispatchToProps = {
   setBoardLocation
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(GameBoard);
+export default connect(mapStateToProps, mapDispatchToProps)(Board);

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import DrawPath from './DrawPath';
 
 
-export default class GameBoardPathCreator extends Component {
+export default class BoardPathCreator extends Component {
   render() {
     const { squares, boardLocation } = this.props;
 

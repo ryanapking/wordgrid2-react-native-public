@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-native';
 import { connect } from 'react-redux';
 import { Container } from "native-base";
 
-import GameBoard from '../components/GameBoard';
+import Board from '../components/Board';
 import { startChallenge, consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/challengeData";
 
 class Challenge extends Component {
@@ -19,7 +19,7 @@ class Challenge extends Component {
       return (
         <Container>
           <View style={styles.info}></View>
-          <GameBoard
+          <Board
             style={styles.board}
             word={challenge.word}
             rows={challenge.rows}

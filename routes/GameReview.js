@@ -8,7 +8,7 @@ import { boardStringToArray, calculateLongestWordLength, calculateHighestWordVal
 import Boggle from '../utilities/boggle-solver';
 
 import DrawBoard from '../components/DrawBoard';
-import GameBoardPathCreator from "../components/GameBoardPathCreator";
+import BoardPathCreator from "../components/BoardPathCreator";
 import DrawScoreBoard from "../components/DrawScoreBoard";
 import { SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED } from "../constants";
 import { wordPathStringToArray, calculateWordValue } from "../utilities";
@@ -75,7 +75,7 @@ class GameReview extends Component {
         <View style={styles.boardSection}>
           <View style={styles.board} ref={gameBoard => this.gameBoard = gameBoard} onLayout={() => this._onLayout()}>
             <DrawBoard boardState={displayBoardState} boardSize={boardLocation.width}/>
-            <GameBoardPathCreator squares={this.state.displayPath} boardLocation={boardLocation}/>
+            <BoardPathCreator squares={this.state.displayPath} boardLocation={boardLocation}/>
           </View>
         </View>
 

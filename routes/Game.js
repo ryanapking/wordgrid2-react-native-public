@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-native';
 
 import Boggle from '../utilities/boggle-solver';
 import GameInfoDisplay from '../components/GameInfoDisplay';
-import GameBoard from '../components/GameBoard';
+import Board from '../components/Board';
 import GameInteraction from '../components/GameInteraction';
 import GameMoveAnimation from '../components/GameMoveAnimation';
 import GameOverlay from '../components/GameOverlay';
@@ -72,7 +72,7 @@ class Game extends Component {
         <Container>
           <View style={[styles.underlay, {zIndex: 2}]}>
             <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
-            <GameBoard
+            <Board
               style={styles.board}
               word={game.word}
               rows={game.rows}

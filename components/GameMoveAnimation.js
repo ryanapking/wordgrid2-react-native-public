@@ -7,7 +7,7 @@ import { markAnimationPlayed } from "../ducks/gameData";
 import { getAnimationData } from "../utilities";
 import { SPACE_EMPTY, SPACE_FILLED, SPACE_CONSUMED } from "../constants";
 import GamePiece from "./GamePiece";
-import GameBoardPathCreator from "./GameBoardPathCreator";
+import BoardPathCreator from "./BoardPathCreator";
 import DrawBoard from './DrawBoard';
 
 class GameMoveAnimation extends Component {
@@ -112,7 +112,7 @@ class GameMoveAnimation extends Component {
 
         <View style={styles.boardSection} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>
-          <GameBoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
+          <BoardPathCreator squares={displayWordPath} boardLocation={boardLocation}/>
         </View>
 
         <View style={styles.moveInfoSection}>
