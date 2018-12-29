@@ -52,6 +52,20 @@ export function remoteToLocal(source, userID) {
   };
 }
 
+export function challengeRemoteToLocal(remoteChallenge) {
+  let localPieceBank = {};
+  Object.keys(remoteChallenge.pieceBank).forEach((key) => {
+    localPieceBank[key] = remoteChallenge.pieceBank[key].map((pieceString) => pieceStringToArray(pieceString));
+  });
+
+  return {
+    rows: boardStringToArray(remoteChallenge.board),
+    pieceBank: localPieceBank,
+    pieces: remoteChallenge.pieces.map( (piece) => pieceStringToArray(piece)),
+    history: [],
+  };
+}
+
 export function localToRemote(localData, userID) {
   const p1Array = (localData.p1 === userID) ? localData.me : localData.them;
   const p2Array = (localData.p2 === userID) ? localData.me : localData.them;

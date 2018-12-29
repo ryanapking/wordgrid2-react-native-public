@@ -3,7 +3,13 @@ import { Text, StyleSheet } from 'react-native';
 import { withRouter } from 'react-router-native';
 import { connect } from 'react-redux';
 
+import { startChallenge } from "../ducks/challengeData";
+
 class Challenge extends Component {
+  componentDidMount() {
+    this.props.startChallenge();
+  }
+
   render() {
     return (
       <Text>Challenge.js</Text>
@@ -13,8 +19,12 @@ class Challenge extends Component {
 
 const mapStateToProps = (state) => {
   return {
-
-  }
+    challengeData: state.challengeData
+  };
 };
 
-export default withRouter(connect(mapStateToProps)(Challenge));
+const mapDispatchToProps = {
+  startChallenge,
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Challenge));

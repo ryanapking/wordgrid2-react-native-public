@@ -9,7 +9,7 @@ import {
   removeLocalGameByID,
   setOpponentName
 } from "../../ducks/gameData";
-import { setChallengeData } from "../../ducks/challengeData";
+import { setSourceChallengeData } from "../../ducks/challengeData";
 
 class FirebaseListeners extends Component {
   constructor() {
@@ -50,7 +50,7 @@ class FirebaseListeners extends Component {
     const challengeListener = challengeDocRef.onSnapshot( (challengeDoc) => {
       if (!challengeDoc.exists) return;
       console.log('challenge doc:', challengeDoc.data());
-      this.props.setChallengeData(challengeDoc.data());
+      this.props.setSourceChallengeData(challengeDoc.data());
     });
 
     this.setState({challengeListener});
@@ -176,7 +176,7 @@ const mapDispatchToProps = {
   setLocalGameDataByID,
   setLocalGameIDs,
   removeLocalGameByID,
-  setChallengeData
+  setSourceChallengeData,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FirebaseListeners));
