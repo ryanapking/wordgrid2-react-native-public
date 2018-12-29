@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import {PanResponder, StyleSheet, View} from 'react-native';
 import connect from "react-redux/es/connect/connect";
-import { withRouter } from 'react-router-native';
 
 import GameBoardPathCreator from './GameBoardPathCreator';
 import DrawBoard from './DrawBoard';
 
-import { consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
 import { setBoardLocation } from "../ducks/gameDisplay";
 import {SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED} from "../constants";
 
@@ -32,14 +30,14 @@ class GameBoard extends Component {
   }
 
   render() {
-    const { game, display } = this.props;
+    const { display, rows, consumedSquares } = this.props;
 
     // if a word has already been played, we don't need any of this to be possible
-    const pointerEvents = this.props.game.word ? 'none' : 'auto';
+    const pointerEvents = this.props.word ? 'none' : 'auto';
 
-    // console.log('game rows:', game.rows);
+    // console.log('game rows:', rows);
 
-    const displayBoardState = game.rows.map( (row, rowIndex) => {
+    const displayBoardState = rows.map( (row, rowIndex) => {
       return row.map( (letter, columnIndex) => {
         if (!letter) {
           return {letter, status: SPACE_EMPTY};
@@ -59,7 +57,7 @@ class GameBoard extends Component {
           <View {...this.panResponder.panHandlers} pointerEvents={pointerEvents}>
             <DrawBoard boardState={displayBoardState} boardSize={display.boardLocation.width}/>
           </View>
-          <GameBoardPathCreator squares={game.consumedSquares} boardLocation={display.boardLocation}/>
+          <GameBoardPathCreator squares={consumedSquares} boardLocation={display.boardLocation}/>
         </View>
       </View>
     );
@@ -84,17 +82,17 @@ class GameBoard extends Component {
     }, nullSquare);
 
     const onBoard = (square.rowIndex >= 0 && square.columnIndex >= 0);
-    const letter = onBoard ? this.props.game.rows[square.rowIndex][square.columnIndex] : null;
+    const letter = onBoard ? this.props.rows[square.rowIndex][square.columnIndex] : null;
 
     return {...square, letter};
   }
 
   _checkSquareAdjacent(square) {
     // if this is the first piece consumed, that's all we need to check
-    if (this.props.game.consumedSquares.length === 0) return true;
+    if (this.props.consumedSquares.length === 0) return true;
 
     // checks a square against the previous square to determine if they are adjacent
-    const previousSquare = this.props.game.consumedSquares[this.props.game.consumedSquares.length - 1];
+    const previousSquare = this.props.consumedSquares[this.props.consumedSquares.length - 1];
 
     const columnDiff = Math.abs(previousSquare.columnIndex - square.columnIndex);
     const rowDiff = Math.abs(previousSquare.rowIndex - square.rowIndex);
@@ -108,7 +106,7 @@ class GameBoard extends Component {
   }
 
   _checkSquareAvailable(square) {
-    return this.props.game.consumedSquares.reduce( (available, compareSquare ) => {
+    return this.props.consumedSquares.reduce( (available, compareSquare ) => {
       const rowClash = (square.rowIndex === compareSquare.rowIndex);
       const columnClash = (square.columnIndex === compareSquare.columnIndex);
       return (available && (!rowClash || !columnClash));
@@ -117,24 +115,24 @@ class GameBoard extends Component {
 
   _checkIfLastSquarePlayed(square) {
     // simple function, but it's long and ugly
-    if (this.props.game.consumedSquares.length < 1) {
+    if (this.props.consumedSquares.length < 1) {
       return false;
     } else {
       return (
-        square.rowIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 1].rowIndex
-        && square.columnIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 1].columnIndex
+        square.rowIndex === this.props.consumedSquares[this.props.consumedSquares.length - 1].rowIndex
+        && square.columnIndex === this.props.consumedSquares[this.props.consumedSquares.length - 1].columnIndex
       );
     }
   }
 
   _checkIfNextToLastSquarePlayed(square) {
     // same as above... simple but long and ugly
-    if (this.props.game.consumedSquares.length < 2) {
+    if (this.props.consumedSquares.length < 2) {
       return false;
     } else {
       return (
-        square.rowIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 2].rowIndex
-        && square.columnIndex === this.props.game.consumedSquares[this.props.game.consumedSquares.length - 2].columnIndex
+        square.rowIndex === this.props.consumedSquares[this.props.consumedSquares.length - 2].rowIndex
+        && square.columnIndex === this.props.consumedSquares[this.props.consumedSquares.length - 2].columnIndex
       );
     }
   }
@@ -145,10 +143,10 @@ class GameBoard extends Component {
     if(!square.letter) return;
 
     if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
-      this.props.consumeSquare(square, this.props.gameID);
+      this.props.consumeSquare(square);
     } else if (!this._checkIfLastSquarePlayed(square)) {
-      this.props.clearConsumedSquares(this.props.gameID);
-      this.props.consumeSquare(square, this.props.gameID)
+      this.props.clearConsumedSquares();
+      this.props.consumeSquare(square)
     }
   }
 
@@ -163,15 +161,15 @@ class GameBoard extends Component {
       // this is no big deal in the current setup
     } else if (this._checkIfNextToLastSquarePlayed(square)) {
       // allows for backtracking while spelling a word
-      this.props.removeSquare(this.props.gameID);
+      this.props.removeSquare();
     } else if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
-      this.props.consumeSquare(square, this.props.gameID);
+      this.props.consumeSquare(square);
     }
   }
 
   _onPanResponderRelease() {
-    if (this.props.game.consumedSquares.length === 1) {
-      this.props.clearConsumedSquares(this.props.gameID);
+    if (this.props.consumedSquares.length === 1) {
+      this.props.clearConsumedSquares();
     }
   }
 
@@ -207,20 +205,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state, ownProps) => {
-  const gameID = ownProps.match.params.gameID;
+const mapStateToProps = (state) => {
   return {
-    gameID: gameID,
-    game: state.gameData.byID[gameID],
     display: state.gameDisplay,
   }
 };
 
 const mapDispatchToProps = {
-  consumeSquare,
-  removeSquare,
-  clearConsumedSquares,
   setBoardLocation
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameBoard));
+export default connect(mapStateToProps, mapDispatchToProps)(GameBoard);

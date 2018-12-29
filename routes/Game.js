@@ -10,7 +10,7 @@ import GameBoard from '../components/GameBoard';
 import GameInteraction from '../components/GameInteraction';
 import GameMoveAnimation from '../components/GameMoveAnimation';
 import GameOverlay from '../components/GameOverlay';
-import { setAvailableWordsData } from "../ducks/gameData";
+import { setAvailableWordsData, consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
 import { calculateHighestWordValue, calculateLongestWordLength } from "../utilities";
 
 import { checkPieceFit } from "../utilities";
@@ -54,7 +54,7 @@ class Game extends Component {
   }
 
   render() {
-    const { game } = this.props;
+    const { game, gameID } = this.props;
 
     let overlayZIndex = 0;
     if (game.word && !game.piecePlaced) {
@@ -72,7 +72,15 @@ class Game extends Component {
         <Container>
           <View style={[styles.underlay, {zIndex: 2}]}>
             <GameInfoDisplay style={styles.info} gameID={this.props.gameID}/>
-            <GameBoard style={styles.board}/>
+            <GameBoard
+              style={styles.board}
+              word={game.word}
+              rows={game.rows}
+              consumedSquares={game.consumedSquares}
+              consumeSquare={(square) => this.props.consumeSquare(square, gameID)}
+              removeSquare={() => this.props.removeSquare(gameID)}
+              clearConsumedSquares={() => this.props.clearConsumedSquares(gameID)}
+            />
             <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
           </View>
           <GameOverlay style={{zIndex: overlayZIndex}} pointerEvents={'none'}/>
@@ -125,7 +133,10 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  setAvailableWordsData
+  setAvailableWordsData,
+  consumeSquare,
+  removeSquare,
+  clearConsumedSquares,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));

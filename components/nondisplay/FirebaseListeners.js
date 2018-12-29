@@ -49,7 +49,7 @@ class FirebaseListeners extends Component {
 
     const challengeListener = challengeDocRef.onSnapshot( (challengeDoc) => {
       if (!challengeDoc.exists) return;
-      console.log('challenge doc:', challengeDoc.data());
+      // console.log('challenge doc:', challengeDoc.data());
       this.props.setSourceChallengeData(challengeDoc.data());
     });
 
