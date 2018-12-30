@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Container } from "native-base";
 
 import Board from '../components/Board';
+import ChallengeInteraction from '../components/ChallengeInteraction';
 import { startChallenge, consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/challengeData";
 
 class Challenge extends Component {
@@ -28,7 +29,7 @@ class Challenge extends Component {
             removeSquare={() => this.props.removeSquare()}
             clearConsumedSquares={() => this.props.clearConsumedSquares()}
           />
-          <View style={styles.interaction}></View>
+          <ChallengeInteraction style={styles.interaction}></ChallengeInteraction>
         </Container>
       );
     } else {

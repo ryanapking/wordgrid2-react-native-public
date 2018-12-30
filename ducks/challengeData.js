@@ -1,4 +1,5 @@
-import { challengeRemoteToLocal } from "../utilities";
+import { challengeRemoteToLocal, calculateWordValue, wordPathArrayToString } from "../utilities";
+import english from '../utilities/english';
 
 // available actions
 const CHALLENGE_SET_SOURCE_DATA = 'wordgrid2/gameData/CHALLENGE_SET_SOURCE_DATA';
@@ -6,6 +7,7 @@ const CHALLENGE_SET_LOCAL_DATA = 'wordgrid2/gameData/CHALLENGE_SET_LOCAL_DATA';
 const CHALLENGE_CONSUME_SQUARE = 'wordgrid2/gameData/CHALLENGE_CONSUME_SQUARE';
 const CHALLENGE_REMOVE_SQUARE = 'wordgrid2/gameData/CHALLENGE_REMOVE_SQUARE';
 const CHALLENGE_CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CHALLENGE_CLEAR_CONSUMED_SQUARES';
+const CHALLENGE_PLAY_WORD = 'wordgrid2/gameData/CHALLENGE_PLAY_WORD';
 
 const initialState = {
   source: null,
@@ -25,6 +27,8 @@ export default function reducer(state = initialState, action) {
       return removeSquareReducer(state, action);
     case CHALLENGE_CLEAR_CONSUMED_SQUARES:
       return clearConsumedSquareReducer(state, action);
+    case CHALLENGE_PLAY_WORD:
+      return playWordReducer(state, action);
     default:
       return state;
   }
@@ -59,6 +63,20 @@ function clearConsumedSquareReducer(state, action) {
       consumedSquares: [],
     },
   };
+}
+
+function playWordReducer(state, action) {
+  return {
+    ...state,
+    challenge: {
+      ...state.challenge,
+      word: action.word,
+      wordValue: action.wordValue,
+      wordPath: action.wordPath,
+      consumedSquares: [],
+      rows: action.newRows,
+    }
+  }
 }
 
 // action creators
@@ -101,5 +119,32 @@ export function removeSquare() {
 export function clearConsumedSquares() {
   return {
     type: CHALLENGE_CLEAR_CONSUMED_SQUARES,
+  };
+}
+
+export function playWord() {
+  return (dispatch, getState) => {
+    const { challengeData } = getState();
+    const { challenge } = challengeData;
+    const word = challenge.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    if (word.length >=4 && english.contains(word)) {
+      const wordValue = calculateWordValue(word);
+      const wordPath = wordPathArrayToString(challenge.consumedSquares);
+
+      const newRows = challenge.rows.map( (row, rowIndex ) => {
+        return row.map( (letter, columnIndex) => {
+          const letterPlayed = challenge.consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
+          return letterPlayed ? "" : letter;
+        });
+      });
+
+      dispatch({
+        type: CHALLENGE_PLAY_WORD,
+        word,
+        wordPath,
+        wordValue,
+        newRows,
+      });
+    }
   };
 }

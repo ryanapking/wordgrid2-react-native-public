@@ -65,6 +65,8 @@ export function challengeRemoteToLocal(remoteChallenge) {
     history: [],
 
     word: "",
+    wordValue: 0,
+    wordPath: null,
     consumedSquares: [],
   };
 }
