@@ -6,7 +6,8 @@ import { Container } from "native-base";
 
 import Board from '../components/Board';
 import ChallengeInteraction from '../components/ChallengeInteraction';
-import { startChallenge, consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/challengeData";
+import PieceOverlay from '../components/PieceOverlay';
+import { startChallenge, consumeSquare, removeSquare, clearConsumedSquares, placePiece } from "../ducks/challengeData";
 
 class Challenge extends Component {
   componentDidMount() {
@@ -16,20 +17,34 @@ class Challenge extends Component {
   render() {
     const { challenge } = this.props.challengeData;
 
+    console.log('challenge data:', challenge);
+
     if (challenge) {
+      let overlayZIndex = 0;
+      if (challenge.word) {
+        overlayZIndex = 3;
+      }
       return (
         <Container>
-          <View style={styles.info}></View>
-          <Board
-            style={styles.board}
-            word={challenge.word}
-            rows={challenge.rows}
-            consumedSquares={challenge.consumedSquares}
-            consumeSquare={(square) => this.props.consumeSquare(square)}
-            removeSquare={() => this.props.removeSquare()}
-            clearConsumedSquares={() => this.props.clearConsumedSquares()}
+          <View style={[styles.underlay, {zIndex: 2}]}>
+            <View style={styles.info}></View>
+            <Board
+              style={styles.board}
+              word={challenge.word}
+              rows={challenge.rows}
+              consumedSquares={challenge.consumedSquares}
+              consumeSquare={(square) => this.props.consumeSquare(square)}
+              removeSquare={() => this.props.removeSquare()}
+              clearConsumedSquares={() => this.props.clearConsumedSquares()}
+            />
+            <ChallengeInteraction style={styles.interaction}></ChallengeInteraction>
+          </View>
+          <PieceOverlay
+            style={{zIndex: overlayZIndex}}
+            pointerEvents={'none'}
+            boardRows={challenge.rows}
+            placePiece={(pieceIndex, rowRef, columnRef) => this.props.placePiece(pieceIndex, rowRef, columnRef)}
           />
-          <ChallengeInteraction style={styles.interaction}></ChallengeInteraction>
         </Container>
       );
     } else {
@@ -70,6 +85,7 @@ const mapDispatchToProps = {
   consumeSquare,
   removeSquare,
   clearConsumedSquares,
+  placePiece,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Challenge));

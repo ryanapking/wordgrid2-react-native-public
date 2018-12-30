@@ -290,7 +290,10 @@ export function placePiece(gameID, pieceIndex, rowRef, columnRef) {
     const piece = game.me[pieceIndex];
     const placementRef = [pieceIndex, rowRef, columnRef].join("|");
 
-    let newRows = [...game.rows];
+    // make a full copy of the existing rows to manipulate
+    let newRows = game.rows.map( (row) => [...row] );
+
+    // add the piece letters to the rows copy
     piece.forEach((row, rowIndex) => {
       row.forEach((letter, columnIndex) => {
         const boardRow = rowRef + rowIndex;

@@ -2,12 +2,13 @@ import { challengeRemoteToLocal, calculateWordValue, wordPathArrayToString } fro
 import english from '../utilities/english';
 
 // available actions
-const CHALLENGE_SET_SOURCE_DATA = 'wordgrid2/gameData/CHALLENGE_SET_SOURCE_DATA';
-const CHALLENGE_SET_LOCAL_DATA = 'wordgrid2/gameData/CHALLENGE_SET_LOCAL_DATA';
-const CHALLENGE_CONSUME_SQUARE = 'wordgrid2/gameData/CHALLENGE_CONSUME_SQUARE';
-const CHALLENGE_REMOVE_SQUARE = 'wordgrid2/gameData/CHALLENGE_REMOVE_SQUARE';
-const CHALLENGE_CLEAR_CONSUMED_SQUARES = 'wordgrid2/gameData/CHALLENGE_CLEAR_CONSUMED_SQUARES';
-const CHALLENGE_PLAY_WORD = 'wordgrid2/gameData/CHALLENGE_PLAY_WORD';
+const CHALLENGE_SET_SOURCE_DATA = 'wordgrid2/challengeData/CHALLENGE_SET_SOURCE_DATA';
+const CHALLENGE_SET_LOCAL_DATA = 'wordgrid2/challengeData/CHALLENGE_SET_LOCAL_DATA';
+const CHALLENGE_CONSUME_SQUARE = 'wordgrid2/challengeData/CHALLENGE_CONSUME_SQUARE';
+const CHALLENGE_REMOVE_SQUARE = 'wordgrid2/challengeData/CHALLENGE_REMOVE_SQUARE';
+const CHALLENGE_CLEAR_CONSUMED_SQUARES = 'wordgrid2/challengeData/CHALLENGE_CLEAR_CONSUMED_SQUARES';
+const CHALLENGE_PLAY_WORD = 'wordgrid2/challengeData/CHALLENGE_PLAY_WORD';
+const CHALLENGE_PLACE_PIECE = 'wordgrid2/challengeData/CHALLENGE_PLACE_PIECE';
 
 const initialState = {
   source: null,
@@ -29,6 +30,8 @@ export default function reducer(state = initialState, action) {
       return clearConsumedSquareReducer(state, action);
     case CHALLENGE_PLAY_WORD:
       return playWordReducer(state, action);
+    case CHALLENGE_PLACE_PIECE:
+      return placePieceReducer(state, action);
     default:
       return state;
   }
@@ -75,6 +78,21 @@ function playWordReducer(state, action) {
       wordPath: action.wordPath,
       consumedSquares: [],
       rows: action.newRows,
+    }
+  }
+}
+
+function placePieceReducer(state, action) {
+  console.log('placePieceReducer()');
+
+  console.log('action:', action);
+
+  return {
+    ...state,
+    challenge: {
+      ...state.challenge,
+      rows: action.rows,
+      pieces: action.pieces,
     }
   }
 }
@@ -146,5 +164,45 @@ export function playWord() {
         newRows,
       });
     }
+  };
+}
+
+export function placePiece(pieceIndex, rowRef, columnRef) {
+  console.log('placePiece()');
+  console.log('piece index:', pieceIndex);
+
+  return (dispatch, getState) => {
+    const { challengeData } = getState();
+    const { challenge } = challengeData;
+    const piece = challenge.pieces[pieceIndex];
+    const placementRef = [pieceIndex, rowRef, columnRef].join("|");
+
+    // make a full copy of the current rows to manipulate
+    let newRows = challenge.rows.map( (row) => [...row] );
+
+    // add the letters to the rows copy
+    piece.forEach((row, rowIndex) => {
+      row.forEach((letter, columnIndex) => {
+        const boardRow = rowRef + rowIndex;
+        const boardColumn = columnRef + columnIndex;
+        if (letter) {
+          newRows[boardRow][boardColumn] = letter;
+        }
+      });
+    });
+
+    const remainingPieces = challenge.pieces.filter( (piece, currentPieceIndex) => currentPieceIndex !== parseInt(pieceIndex));
+    const pieces = [...remainingPieces, []];
+
+    console.log('remaining pieces:', remainingPieces);
+    console.log('new pieces:', pieces);
+
+    dispatch({
+      type: CHALLENGE_PLACE_PIECE,
+      rows: newRows,
+      pieceIndex,
+      placementRef,
+      pieces,
+    });
   };
 }
