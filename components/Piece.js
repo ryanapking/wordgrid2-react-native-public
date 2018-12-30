@@ -3,11 +3,10 @@ import {StyleSheet, View, PanResponder, Animated } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
-import { placePiece } from '../ducks/gameData';
 import { setPieceLocation } from "../ducks/gameDisplay";
 import DrawPiece from './DrawPiece';
 
-class GamePiece extends Component {
+class Piece extends Component {
 
   constructor() {
     super();
@@ -21,13 +20,13 @@ class GamePiece extends Component {
       canDrop: false,
     };
 
-    // height of the GamePiece after scaling
+    // height of the Piece after scaling
     this.currentSize = {
       width: 0,
       height: 0
     };
 
-    // middle points of the current GamePiece squares that contain letters
+    // middle points of the current Piece squares that contain letters
     this.relativeMiddlePoints = [];
 
     this._onStartShouldSetPanResponderCapture = this._onStartShouldSetPanResponderCapture.bind(this);
@@ -136,7 +135,7 @@ class GamePiece extends Component {
 
       // confirm that the piece is on the board and grab the letter below
       const onBoard = (row >= 0 && column >= 0);
-      const letterBelow = onBoard ? this.props.board.rows[row][column] : null;
+      const letterBelow = onBoard ? this.props.boardRows[row][column] : null;
 
       return {...point, boardRowIndex: row, boardColumnIndex: column, letterBelow};
     });
@@ -196,7 +195,7 @@ class GamePiece extends Component {
       const rowRef = singleSquare.boardRowIndex - singleSquare.pieceRowIndex;
       const columnRef = singleSquare.boardColumnIndex - singleSquare.pieceColumnIndex;
 
-      this.props.placePiece(this.props.gameID, this.props.pieceIndex, rowRef, columnRef);
+      this.props.placePiece(rowRef, columnRef);
     }
   }
 
@@ -230,19 +229,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state, ownProps) => {
-  const gameID = ownProps.match.params.gameID;
+const mapStateToProps = (state) => {
   return {
-    gameID: gameID,
     boardLocation: state.gameDisplay.boardLocation,
     pieceLocations: state.gameDisplay.pieceLocations,
-    board: state.gameData.byID[gameID]
   };
 };
 
 const mapDispatchToProps = {
-  placePiece,
   setPieceLocation,
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GamePiece));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Piece));

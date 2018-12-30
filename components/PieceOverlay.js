@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
-import GamePiece from "./GamePiece";
+import Piece from "./Piece";
 
-class GameOverlay extends Component {
+class PieceOverlay extends Component {
   constructor() {
     super();
 
@@ -39,7 +39,15 @@ class GameOverlay extends Component {
           <View key={pieceIndex} style={[locations[pieceIndex], styles.pieceBackground]} />
         )}
         { pieceIndexes.map( (pieceIndex) =>
-          <GamePiece key={pieceIndex} piece={pieceLocations[pieceIndex].piece} pieceIndex={pieceIndex} style={locations[pieceIndex]} allowDrag={true} baseSize={pieceLocations[pieceIndex].width}/>
+          <Piece
+            key={pieceIndex}
+            piece={pieceLocations[pieceIndex].piece}
+            style={locations[pieceIndex]}
+            allowDrag={true}
+            baseSize={pieceLocations[pieceIndex].width}
+            boardRows={this.props.boardRows}
+            placePiece={(rowRef, columnRef) => this.props.placePiece(pieceIndex, rowRef, columnRef)}
+          />
         )}
       </View>
     );
@@ -73,4 +81,4 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default connect(mapStateToProps)(GameOverlay);
+export default connect(mapStateToProps)(PieceOverlay);

@@ -9,8 +9,8 @@ import GameInfoDisplay from '../components/GameInfoDisplay';
 import Board from '../components/Board';
 import GameInteraction from '../components/GameInteraction';
 import GameMoveAnimation from '../components/GameMoveAnimation';
-import GameOverlay from '../components/GameOverlay';
-import { setAvailableWordsData, consumeSquare, removeSquare, clearConsumedSquares } from "../ducks/gameData";
+import PieceOverlay from '../components/PieceOverlay';
+import { setAvailableWordsData, consumeSquare, removeSquare, clearConsumedSquares, placePiece } from "../ducks/gameData";
 import { calculateHighestWordValue, calculateLongestWordLength } from "../utilities";
 
 import { checkPieceFit } from "../utilities";
@@ -82,7 +82,12 @@ class Game extends Component {
             />
             <GameInteraction style={styles.interaction} gameID={this.props.gameID}/>
           </View>
-          <GameOverlay style={{zIndex: overlayZIndex}} pointerEvents={'none'}/>
+          <PieceOverlay
+            style={{zIndex: overlayZIndex}}
+            pointerEvents={'none'}
+            boardRows={game.rows}
+            placePiece={(pieceIndex, rowRef, columnRef) => this.props.placePiece(this.props.gameID, pieceIndex, rowRef, columnRef)}
+          />
         </Container>
       );
     }
@@ -136,6 +141,7 @@ const mapDispatchToProps = {
   consumeSquare,
   removeSquare,
   clearConsumedSquares,
+  placePiece,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));

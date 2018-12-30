@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-native';
 import { markAnimationPlayed } from "../ducks/gameData";
 import { getAnimationData } from "../utilities";
 import { SPACE_EMPTY, SPACE_FILLED, SPACE_CONSUMED } from "../constants";
-import GamePiece from "./GamePiece";
+import Piece from "./Piece";
 import BoardPathCreator from "./BoardPathCreator";
 import DrawBoard from './DrawBoard';
 
@@ -101,14 +101,14 @@ class GameMoveAnimation extends Component {
             { pieces.map( (piece, index) =>
               <View key={index} style={[styles.gamePieceContainer, {zIndex: 1}]} >
                 <View style={[styles.gamePiece, styles.gamePieceBackground]} ref={(piece) => this.pieceRefs[index] = piece} onLayout={piece.onLayout}>
-                  { (overlay.pieceIndex === index) ? null : <GamePiece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false} baseSize={overlay.pieceSize}/> }
+                  { (overlay.pieceIndex === index) ? null : <Piece piece={piece.letters} pieceIndex={index} style={[styles.gamePiece]} allowDrag={false} baseSize={overlay.pieceSize}/> }
                 </View>
               </View>
             )}
           </View>
         </View>
 
-        { !overlay.location ? null : <GamePiece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} baseSize={overlay.pieceSize}/> }
+        { !overlay.location ? null : <Piece piece={pieces[overlay.pieceIndex].letters} style={[styles.gamePiece, overlay.styles, this.state.moveTo]} allowDrag={false} baseSize={overlay.pieceSize}/> }
 
         <View style={styles.boardSection} ref={(view) => this._board = view} onLayout={() => this._measureBoard()}>
           <DrawBoard boardState={displayBoardState} boardSize={boardSize}/>

@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
 
-import GamePiece from './GamePiece';
+import Piece from './Piece';
 import { setPieceLocation, clearPieceLocations } from "../ducks/gameDisplay";
 
 class DrawPieceSection extends Component {
@@ -30,7 +30,7 @@ class DrawPieceSection extends Component {
                 onLayout={ () => this._onLayout(pieceIndex) }
                 style={styles.gamePiece}
               >
-                { allowDrag ? null : <GamePiece piece={piece} pieceIndex={pieceIndex} style={styles.gamePiece} allowDrag={allowDrag} baseSize={baseSize}/>}
+                { allowDrag ? null : <Piece piece={piece} pieceIndex={pieceIndex} style={styles.gamePiece} allowDrag={allowDrag} baseSize={baseSize}/>}
               </View>
             </Container>
           );
