@@ -191,19 +191,12 @@ class GamePiece extends Component {
     // console.log('candrop: ', canDrop);
 
     if (canDrop) {
-      let updatedRows = [...this.props.board.rows];
-
-      squaresBelow.forEach( (square) => {
-        updatedRows[square.boardRowIndex][square.boardColumnIndex] = square.letter;
-      });
-
-      // build a reference point that will later be used for animation
+      // build a reference point to send to the action creator
       const singleSquare = squaresBelow[0];
       const rowRef = singleSquare.boardRowIndex - singleSquare.pieceRowIndex;
       const columnRef = singleSquare.boardColumnIndex - singleSquare.pieceColumnIndex;
-      const placementRef = [this.props.pieceIndex, rowRef, columnRef].join("|");
 
-      this.props.placePiece(updatedRows, this.props.pieceIndex, this.props.gameID, placementRef);
+      this.props.placePiece(this.props.gameID, this.props.pieceIndex, rowRef, columnRef);
     }
   }
 

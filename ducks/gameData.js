@@ -283,14 +283,32 @@ function setAvailableWordsDataReducer(state, action) {
 }
 
 // action creators
-export function placePiece(rows = [], pieceIndex, gameID, placementRef) {
-  return {
-    type: PLACE_PIECE,
-    rows: rows,
-    pieceIndex,
-    gameID,
-    placementRef
-  }
+export function placePiece(gameID, pieceIndex, rowRef, columnRef) {
+  return (dispatch, getState) => {
+    const { gameData } = getState();
+    const game = gameData.byID[gameID];
+    const piece = game.me[pieceIndex];
+    const placementRef = [pieceIndex, rowRef, columnRef].join("|");
+
+    let newRows = [...game.rows];
+    piece.forEach((row, rowIndex) => {
+      row.forEach((letter, columnIndex) => {
+        const boardRow = rowRef + rowIndex;
+        const boardColumn = columnRef + columnIndex;
+        if (letter) {
+          newRows[boardRow][boardColumn] = letter;
+        }
+      });
+    });
+
+    dispatch({
+      type: PLACE_PIECE,
+      rows: newRows,
+      pieceIndex,
+      gameID,
+      placementRef,
+    });
+  };
 }
 
 export function consumeSquare(square, gameID) {
@@ -363,10 +381,10 @@ export function setBoardRows(gameID, rows) {
 }
 
 export function playWord(gameID, userID) {
-  console.log('playWord()');
+  // console.log('playWord()');
   return (dispatch, getState) => {
     const { gameData } = getState();
-    console.log('game data:', gameData);
+    // console.log('game data:', gameData);
     const game = gameData.byID[gameID];
     const word = game.consumedSquares.reduce( (word, square) => word + square.letter, "");
 
