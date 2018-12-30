@@ -15,7 +15,6 @@ import { calculateHighestWordValue, calculateLongestWordLength } from "../utilit
 
 import { checkPieceFit } from "../utilities";
 import DrawPieceSection from "../components/DrawPieceSection";
-import GameWordDisplay from "../components/GameWordDisplay";
 
 class Game extends Component {
 

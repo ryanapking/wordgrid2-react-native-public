@@ -24,6 +24,7 @@ class ChallengeInteraction extends Component {
 
   _playWordInteraction() {
     const displayWord = this.props.challenge.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    const longEnough = (displayWord.length >= 4);
     const startMessage = "Drag to spell a word";
     return (
       <Container style={this.props.style}>
@@ -31,9 +32,7 @@ class ChallengeInteraction extends Component {
           <DrawPieceSection style={[styles.twoColumns]} pieces={this.props.challenge.pieces} />
           <View style={styles.twoColumns}>
             <Text style={{padding: 20, textAlign: 'center'}}>{displayWord ? displayWord : startMessage}</Text>
-            <Button block info onPress={() => this.props.playWord()}>
-              <Text>Play word for {calculateWordValue(displayWord)} points</Text>
-            </Button>
+            { longEnough ? this._playWordButton(displayWord) : null }
           </View>
         </Container>
       </Container>
@@ -45,6 +44,14 @@ class ChallengeInteraction extends Component {
       <Container style={this.props.style}>
         <DrawPieceSection pieces={this.props.challenge.pieces} allowDrag />
       </Container>
+    );
+  }
+
+  _playWordButton(word) {
+    return (
+      <Button block info onPress={() => this.props.playWord()}>
+        <Text>Play word for {calculateWordValue(word)} points</Text>
+      </Button>
     );
   }
 
@@ -63,13 +70,6 @@ const styles = StyleSheet.create({
     maxHeight: '100%',
     maxWidth: '100%',
   },
-  confirmMoveSection: {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  }
 });
 
 const mapStateToProps = (state) => {

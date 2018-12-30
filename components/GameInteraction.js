@@ -5,11 +5,10 @@ import { connect } from 'react-redux';
 import firebase from 'react-native-firebase';
 import { Button, Container, Spinner } from "native-base";
 
-import GameWordDisplay from "./GameWordDisplay";
 import DrawPieceSection from "./DrawPieceSection";
 
-import { getWinner, localToRemote } from "../utilities";
-import { setLocalGameDataByID } from "../ducks/gameData";
+import {calculateWordValue, getWinner, localToRemote} from "../utilities";
+import { setLocalGameDataByID, playWord } from "../ducks/gameData";
 
 class GameInteraction extends Component {
   constructor() {
@@ -25,51 +24,68 @@ class GameInteraction extends Component {
   render() {
     const wordPlayed = !!this.props.game.word;
 
-    let interaction = null;
     if (this.state.working) {
-      interaction = this._getSpinner();
+      return this._Spinner();
     } else if (!wordPlayed) {
-      interaction = this._getPlayWord();
+      return this._playWordInteraction();
     } else if (!this.props.game.piecePlaced) {
-      interaction = this._getPlacePiece();
+      return this._placePieceInteraction();
     } else {
-      interaction = this._getConfirmMove();
+      return this._confirmMoveInteraction();
     }
 
+  }
+
+  _Spinner() {
     return (
       <Container style={this.props.style}>
-        { interaction }
+        <Spinner color='blue' />
       </Container>
     );
   }
 
-  _getSpinner() {
+  _playWordInteraction() {
+    const displayWord = this.props.game.consumedSquares.reduce( (word, square) => word + square.letter, "");
+    const longEnough = (displayWord.length >= 4);
+    const startMessage = "Drag to spell a word";
     return (
-      <Spinner color='blue' />
-    );
-  }
-
-  _getPlayWord() {
-    return (
-      <Container style={[styles.flex]}>
-        <DrawPieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />
-        <GameWordDisplay style={[styles.twoColumns]}/>
+      <Container style={this.props.style}>
+        <Container style={[styles.flex]}>
+          <DrawPieceSection style={[styles.twoColumns]} pieces={this.props.game.me} />
+          <View style={styles.twoColumns}>
+            <Text style={{padding: 20, textAlign: 'center'}}>{displayWord ? displayWord : startMessage}</Text>
+            { longEnough ? this._playWordButton(displayWord) : null }
+          </View>
+        </Container>
       </Container>
     );
   }
 
-  _getPlacePiece() {
+
+  _playWordButton(word) {
     return (
-      <DrawPieceSection pieces={this.props.game.me} allowDrag />
+      <Button block info onPress={() => this.props.playWord(this.props.gameID, this.props.uid)}>
+        <Text>Play word for {calculateWordValue(word)} points</Text>
+      </Button>
     );
   }
 
-  _getConfirmMove() {
+  _placePieceInteraction() {
     return (
-      <View style={styles.confirmMoveSection}>
-        <Button full info onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
-        <Button full info onPress={() => this.clearLocalMoveData()}><Text>Reset Move</Text></Button>
-      </View>
+      <Container style={this.props.style}>
+        <DrawPieceSection pieces={this.props.game.me} allowDrag />
+      </Container>
+    );
+  }
+
+  _confirmMoveInteraction() {
+    return (
+      <Container style={this.props.style}>
+        <View style={styles.confirmMoveSection}>
+          <Button full info onPress={() => this.saveRemoteMove()}><Text>Submit Move</Text></Button>
+          <Button full info onPress={() => this.clearLocalMoveData()}><Text>Reset Move</Text></Button>
+        </View>
+      </Container>
     );
   }
 
@@ -173,7 +189,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  setLocalGameDataByID
+  setLocalGameDataByID,
+  playWord,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GameInteraction));

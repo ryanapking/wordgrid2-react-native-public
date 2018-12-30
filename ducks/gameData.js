@@ -1,4 +1,12 @@
-import { remoteToLocal, localToRemote, getScoreBoard } from '../utilities';
+import {
+  remoteToLocal,
+  localToRemote,
+  getScoreBoard,
+  calculateWordValue,
+  wordPathArrayToString,
+  generateLocalPiece
+} from '../utilities';
+import english from '../utilities/english';
 
 // available actions
 // game actions
@@ -218,6 +226,8 @@ function playWordReducer(state, action) {
     wordValue: action.wordValue,
     myScore: action.newScore,
     consumedSquares: [],
+    rows: action.newRows,
+    them: action.newPieces,
   };
 
   const tempNextHistory = [...game.history, localToRemote(newGameState, action.userID)];
@@ -352,16 +362,47 @@ export function setBoardRows(gameID, rows) {
   }
 }
 
-export function playWord(gameID, userID, word, wordPath, wordValue, newScore) {
-  return {
-    type: PLAY_WORD,
-    gameID,
-    userID,
-    word,
-    wordPath,
-    wordValue,
-    newScore
-  }
+export function playWord(gameID, userID) {
+  console.log('playWord()');
+  return (dispatch, getState) => {
+    const { gameData } = getState();
+    console.log('game data:', gameData);
+    const game = gameData.byID[gameID];
+    const word = game.consumedSquares.reduce( (word, square) => word + square.letter, "");
+
+    if (word.length >= 4 && english.contains(word)) {
+      const wordValue = calculateWordValue(word);
+      const wordPath = wordPathArrayToString(game.consumedSquares);
+      const newScore = game.myScore + wordValue;
+
+      const newRows = game.rows.map( (row, rowIndex ) => {
+        return row.map( (letter, columnIndex) => {
+          const letterPlayed = game.consumedSquares.reduce( (found, square) => found || (square.rowIndex === rowIndex && square.columnIndex === columnIndex), false );
+          return letterPlayed ? "" : letter;
+        });
+      });
+
+      const opponentPieces = game.them.filter( (piece) => piece.length);
+      let newPieces = game.them;
+
+      // add a new piece if needed
+      if (opponentPieces.length < 3) {
+        newPieces = [...opponentPieces, generateLocalPiece(word.length)];
+      }
+
+      dispatch({
+        type: PLAY_WORD,
+        gameID,
+        userID,
+        word,
+        wordPath,
+        wordValue,
+        newScore,
+        newRows,
+        newPieces,
+      });
+    }
+  };
 }
 
 export function markAnimationPlayed(gameID) {
