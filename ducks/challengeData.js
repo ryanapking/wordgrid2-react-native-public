@@ -78,6 +78,7 @@ function playWordReducer(state, action) {
       wordPath: action.wordPath,
       consumedSquares: [],
       rows: action.newRows,
+      score: action.score,
     }
   }
 }
@@ -93,6 +94,7 @@ function placePieceReducer(state, action) {
       pieces: action.pieces,
       history: action.history,
       rows: action.rows,
+      gameOver: action.gameOver,
     }
   }
 }
@@ -156,12 +158,15 @@ export function playWord() {
         });
       });
 
+      const score = challenge.score + wordValue;
+
       dispatch({
         type: CHALLENGE_PLAY_WORD,
         word,
         wordPath,
         wordValue,
         newRows,
+        score,
       });
     }
   };
@@ -197,6 +202,8 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
     const newHistoryItem = challengeMoveToHistory({...challenge, rows: newRows}, placementRef);
     const history = [...challenge.history, newHistoryItem];
 
+    const gameOver = history.length >= 6 ? true : false;
+
     dispatch({
       type: CHALLENGE_PLACE_PIECE,
       rows: newRows,
@@ -204,6 +211,7 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
       placementRef,
       pieces,
       history,
+      gameOver,
     });
   };
 }
