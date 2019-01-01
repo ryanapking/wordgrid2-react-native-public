@@ -74,7 +74,7 @@ export function challengeRemoteToLocal(remoteChallenge) {
     wordPath: null,
     consumedSquares: [],
 
-    score: null,
+    score: 0,
     gameOver: false,
   };
 
@@ -84,13 +84,14 @@ export function challengeRemoteToLocal(remoteChallenge) {
   return challenge;
 }
 
-export function challengeMoveToHistory(challengeData, placementRef = null) {
+export function challengeMoveToHistory(challengeData, placementRef = null, placementValue = null) {
   return {
-    b: arrayToString(challengeData.rows),
-    w: challengeData.word,
-    wv: challengeData.wordValue,
-    wp: challengeData.wordPath,
-    pr: placementRef,
+    b: arrayToString(challengeData.rows), // board state
+    w: challengeData.word, // word played
+    wv: challengeData.wordValue, // word value
+    wp: challengeData.wordPath, // path of word played
+    pr: placementRef, // reference info for piece placement
+    pv: placementValue, // placed tile value (1 per letter)
   };
 }
 

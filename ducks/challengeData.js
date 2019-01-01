@@ -96,6 +96,7 @@ function placePieceReducer(state, action) {
       history: action.history,
       rows: action.rows,
       gameOver: action.gameOver,
+      score: action.score,
     }
   }
 }
@@ -178,21 +179,23 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
     const { challengeData } = getState();
     const { challenge } = challengeData;
     const piece = challenge.pieces[pieceIndex];
-    const placementRef = [pieceIndex, rowRef, columnRef].join("|");
 
     // make a full copy of the current rows to manipulate
     let newRows = challenge.rows.map( (row) => [...row] );
 
     // add the letters to the rows copy
+    let placementValue = 0;
     piece.forEach((row, rowIndex) => {
       row.forEach((letter, columnIndex) => {
         const boardRow = rowRef + rowIndex;
         const boardColumn = columnRef + columnIndex;
         if (letter) {
+          placementValue++; // each letter on tile placed worth one point
           newRows[boardRow][boardColumn] = letter;
         }
       });
     });
+    const score = challenge.score + placementValue;
 
     // remove the played piece and add the next piece
     const remainingPieces = challenge.pieces.filter( (piece, currentPieceIndex) => currentPieceIndex !== parseInt(pieceIndex));
@@ -201,7 +204,8 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
     const pieceSet = challenge.pieceBank[challenge.history.length];
 
     // create new item to save to history
-    const newHistoryItem = challengeMoveToHistory({...challenge, rows: newRows}, placementRef);
+    const placementRef = [pieceIndex, rowRef, columnRef].join("|");
+    const newHistoryItem = challengeMoveToHistory({...challenge, rows: newRows}, placementRef, placementValue);
     const history = [...challenge.history, newHistoryItem];
 
     const gameOver = history.length >= 6 ? true : false;
@@ -215,6 +219,7 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
       pieceSet,
       history,
       gameOver,
+      score,
     });
   };
 }
