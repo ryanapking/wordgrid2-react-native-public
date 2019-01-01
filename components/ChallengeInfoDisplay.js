@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
+import ChallengePieceSetDisplay from './ChallengePieceSetDisplay';
+
 class ChallengeInfoDisplay extends Component {
   render() {
     const { history, score, word } = this.props;
@@ -11,9 +13,14 @@ class ChallengeInfoDisplay extends Component {
 
     return (
       <View style={[styles.row, this.props.style]}>
-        <Text style={{width: '100%'}}>{ movesRemaining } moves remaining</Text>
-        <Text style={{width: '100%'}}>{ score } points</Text>
-        <Text style={{width: '100%'}}>{ message }</Text>
+        <View style={styles.equal}>
+          <Text style={{width: '100%'}}>{ movesRemaining } moves remaining</Text>
+          <Text style={{width: '100%'}}>{ score } points</Text>
+          <Text style={{width: '100%'}}>{ message }</Text>
+        </View>
+        <View style={styles.equal}>
+          <ChallengePieceSetDisplay />
+        </View>
       </View>
     );
   }
@@ -22,7 +29,7 @@ class ChallengeInfoDisplay extends Component {
 const styles = StyleSheet.create({
   row: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'row'
   },
   column: {
     display: 'flex',
