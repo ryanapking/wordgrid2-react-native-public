@@ -21,7 +21,7 @@ class ChallengePieceSetDisplay extends Component {
   }
 
   render() {
-    const { consumedSquares, pieceSet, word } = this.props;
+    const { pieceSet } = this.props;
 
     if (!pieceSet) {
       return null;
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     aspectRatio: 13,
-    backgroundColor: 'green',
   },
   gamePiece: {
     backgroundColor: 'gray',

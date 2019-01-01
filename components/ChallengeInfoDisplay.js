@@ -13,10 +13,10 @@ class ChallengeInfoDisplay extends Component {
 
     return (
       <View style={[styles.row, this.props.style]}>
-        <View style={styles.equal}>
-          <Text style={{width: '100%'}}>{ movesRemaining } moves remaining</Text>
-          <Text style={{width: '100%'}}>{ score } points</Text>
-          <Text style={{width: '100%'}}>{ message }</Text>
+        <View style={[styles.equal, styles.column]}>
+          <Text style={[styles.equal, styles.textCenter]}>{ score } points</Text>
+          <Text style={[styles.equal, styles.textCenter]}>{ movesRemaining } moves remaining</Text>
+          <Text style={[styles.equal, styles.textCenter]}>{ message }</Text>
         </View>
         <View style={styles.equal}>
           <ChallengePieceSetDisplay />
@@ -54,7 +54,10 @@ const styles = StyleSheet.create({
   },
   highlight: {
     backgroundColor: 'green',
-  }
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
 });
 
 export default ChallengeInfoDisplay;

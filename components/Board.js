@@ -168,9 +168,9 @@ class Board extends Component {
   }
 
   _onPanResponderRelease() {
-    if (this.props.consumedSquares.length === 1) {
-      this.props.clearConsumedSquares();
-    }
+    // if (this.props.consumedSquares.length === 1) {
+    //   this.props.clearConsumedSquares();
+    // }
   }
 
   _onStartShouldSetPanResponderCapture() {
