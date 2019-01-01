@@ -1,4 +1,4 @@
-import { challengeRemoteToLocal, calculateWordValue, wordPathArrayToString } from "../utilities";
+import { challengeRemoteToLocal, challengeMoveToHistory, calculateWordValue, wordPathArrayToString } from "../utilities";
 import english from '../utilities/english';
 
 // available actions
@@ -83,16 +83,16 @@ function playWordReducer(state, action) {
 }
 
 function placePieceReducer(state, action) {
-  console.log('placePieceReducer()');
-
-  console.log('action:', action);
-
   return {
     ...state,
     challenge: {
       ...state.challenge,
-      rows: action.rows,
+      word: null,
+      wordPath: null,
+      wordValue: null,
       pieces: action.pieces,
+      history: action.history,
+      rows: action.rows,
     }
   }
 }
@@ -168,9 +168,6 @@ export function playWord() {
 }
 
 export function placePiece(pieceIndex, rowRef, columnRef) {
-  console.log('placePiece()');
-  console.log('piece index:', pieceIndex);
-
   return (dispatch, getState) => {
     const { challengeData } = getState();
     const { challenge } = challengeData;
@@ -191,11 +188,14 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
       });
     });
 
+    // remove the played piece and add the next piece
     const remainingPieces = challenge.pieces.filter( (piece, currentPieceIndex) => currentPieceIndex !== parseInt(pieceIndex));
-    const pieces = [...remainingPieces, []];
+    const nextPiece = challenge.pieceBank[challenge.word.length].pop(); // not cool to alter piecebank here, but it will be manipulated in no other way
+    const pieces = [...remainingPieces, nextPiece];
 
-    console.log('remaining pieces:', remainingPieces);
-    console.log('new pieces:', pieces);
+    // create new item to save to history
+    const newHistoryItem = challengeMoveToHistory({...challenge, rows: newRows}, placementRef);
+    const history = [...challenge.history, newHistoryItem];
 
     dispatch({
       type: CHALLENGE_PLACE_PIECE,
@@ -203,6 +203,7 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
       pieceIndex,
       placementRef,
       pieces,
+      history,
     });
   };
 }

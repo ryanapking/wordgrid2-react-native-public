@@ -58,16 +58,34 @@ export function challengeRemoteToLocal(remoteChallenge) {
     localPieceBank[key] = remoteChallenge.pieceBank[key].map((pieceString) => pieceStringToArray(pieceString));
   });
 
-  return {
+  // create challenge item
+  let challenge = {
     rows: boardStringToArray(remoteChallenge.board),
     pieceBank: localPieceBank,
     pieces: remoteChallenge.pieces.map( (piece) => pieceStringToArray(piece)),
     history: [],
 
-    word: "",
-    wordValue: 0,
+    word: null,
+    wordValue: null,
     wordPath: null,
     consumedSquares: [],
+
+    score: null,
+  };
+
+  // add the starting condition as the first history object
+  challenge.history = [challengeMoveToHistory(challenge)];
+
+  return challenge;
+}
+
+export function challengeMoveToHistory(challengeData, placementRef = null) {
+  return {
+    b: arrayToString(challengeData.rows),
+    w: challengeData.word,
+    wv: challengeData.wordValue,
+    wp: challengeData.wordPath,
+    pr: placementRef,
   };
 }
 
