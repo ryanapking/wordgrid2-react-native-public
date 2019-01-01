@@ -6,6 +6,7 @@ import { Container } from "native-base";
 
 import Board from '../components/Board';
 import ChallengeInteraction from '../components/ChallengeInteraction';
+import ChallengeInfoDisplay from '../components/ChallengeInfoDisplay';
 import PieceOverlay from '../components/PieceOverlay';
 import { startChallenge, consumeSquare, removeSquare, clearConsumedSquares, placePiece } from "../ducks/challengeData";
 
@@ -27,7 +28,14 @@ class Challenge extends Component {
       return (
         <Container>
           <View style={[styles.underlay, {zIndex: 2}]}>
-            <View style={styles.info}></View>
+            <View style={styles.info}>
+              <ChallengeInfoDisplay
+                history={challenge.history}
+                score={challenge.score}
+                word={challenge.word}
+                style={{height: '100%', width: '100%'}}
+              />
+            </View>
             <Board
               style={styles.board}
               word={challenge.word}

@@ -5,7 +5,7 @@ import { Text, StyleSheet, View } from "react-native";
 
 import GamePhaseDisplay from "./GamePhaseDisplay";
 import DrawPieceSection from "./DrawPieceSection";
-import DrawScoreBoard from './DrawScoreBoard';
+import DrawScoreBoard from './GameScoreBoard';
 
 class GameInfoDisplay extends Component {
   render() {

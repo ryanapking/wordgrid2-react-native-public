@@ -9,7 +9,7 @@ import Boggle from '../utilities/boggle-solver';
 
 import DrawBoard from '../components/DrawBoard';
 import BoardPathCreator from "../components/BoardPathCreator";
-import DrawScoreBoard from "../components/DrawScoreBoard";
+import DrawScoreBoard from "../components/GameScoreBoard";
 import { SPACE_CONSUMED, SPACE_EMPTY, SPACE_FILLED } from "../constants";
 import { wordPathStringToArray, calculateWordValue } from "../utilities";
 

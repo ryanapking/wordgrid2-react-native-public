@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
 
-class DrawScoreBoard extends Component {
+class GameScoreBoard extends Component {
   render() {
     const { p1, p2, scoreBoard, uid, highlight } = this.props;
 
@@ -89,4 +89,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(DrawScoreBoard));
+export default withRouter(connect(mapStateToProps)(GameScoreBoard));
