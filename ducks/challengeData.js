@@ -92,6 +92,7 @@ function placePieceReducer(state, action) {
       wordPath: null,
       wordValue: null,
       pieces: action.pieces,
+      pieceSet: action.pieceSet,
       history: action.history,
       rows: action.rows,
       gameOver: action.gameOver,
@@ -195,8 +196,9 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
 
     // remove the played piece and add the next piece
     const remainingPieces = challenge.pieces.filter( (piece, currentPieceIndex) => currentPieceIndex !== parseInt(pieceIndex));
-    const nextPiece = challenge.pieceBank[challenge.word.length].pop(); // not cool to alter piecebank here, but it will be manipulated in no other way
+    const nextPiece = challenge.pieceSet[challenge.word.length];
     const pieces = [...remainingPieces, nextPiece];
+    const pieceSet = challenge.pieceBank[challenge.history.length];
 
     // create new item to save to history
     const newHistoryItem = challengeMoveToHistory({...challenge, rows: newRows}, placementRef);
@@ -210,6 +212,7 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
       pieceIndex,
       placementRef,
       pieces,
+      pieceSet,
       history,
       gameOver,
     });

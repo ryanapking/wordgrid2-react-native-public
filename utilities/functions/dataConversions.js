@@ -53,15 +53,19 @@ export function remoteToLocal(source, userID) {
 }
 
 export function challengeRemoteToLocal(remoteChallenge) {
-  let localPieceBank = {};
-  Object.keys(remoteChallenge.pieceBank).forEach((key) => {
-    localPieceBank[key] = remoteChallenge.pieceBank[key].map((pieceString) => pieceStringToArray(pieceString));
+  let localPieceBank = remoteChallenge.pieceBank.map((pieceSet) => {
+    let localPieceSet = {};
+    Object.keys(pieceSet).forEach( (key) => {
+      localPieceSet[key] = pieceStringToArray(pieceSet[key]);
+    });
+    return localPieceSet;
   });
 
   // create challenge item
   let challenge = {
     rows: boardStringToArray(remoteChallenge.board),
     pieceBank: localPieceBank,
+    pieceSet: localPieceBank[0],
     pieces: remoteChallenge.pieces.map( (piece) => pieceStringToArray(piece)),
     history: [],
 
