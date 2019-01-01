@@ -5,6 +5,21 @@ import { connect } from 'react-redux';
 import DrawPieceSection from './DrawPieceSection';
 
 class ChallengePieceSetDisplay extends Component {
+  componentDidUpdate() {
+    const { consumedSquares, word } = this.props;
+
+    let scrollToPiece = null;
+    if (word) {
+      scrollToPiece = word.length <= 16 ? word.length : 16;
+    } else if (consumedSquares.length >= 4) {
+      scrollToPiece = consumedSquares.length <= 16 ? consumedSquares.length : 16;
+    }
+
+    if (scrollToPiece) {
+      this._scrollToPiece(scrollToPiece);
+    }
+  }
+
   render() {
     const { consumedSquares, pieceSet, word } = this.props;
 
@@ -13,17 +28,6 @@ class ChallengePieceSetDisplay extends Component {
     }
 
     const pieceSetArray = Object.keys(pieceSet).map( (key) => pieceSet[key]);
-
-    let scrollToPiece = null;
-    if (word) {
-      scrollToPiece = word.length <= 16 ? word.length : 16;
-    } else if (consumedSquares.length > 4) {
-      scrollToPiece = consumedSquares.length <= 16 ? consumedSquares.length : 16;
-    }
-
-    if (scrollToPiece) {
-      this._scrollToPiece(scrollToPiece);
-    }
 
     return (
       <ScrollView
