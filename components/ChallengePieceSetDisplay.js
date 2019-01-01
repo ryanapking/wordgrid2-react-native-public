@@ -2,25 +2,56 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 
-import Piece from './Piece';
 import DrawPieceSection from './DrawPieceSection';
 
 class ChallengePieceSetDisplay extends Component {
   render() {
-    const { consumedSquares, pieceSet } = this.props;
+    const { consumedSquares, pieceSet, word } = this.props;
+
     if (!pieceSet) {
       return null;
     }
 
     const pieceSetArray = Object.keys(pieceSet).map( (key) => pieceSet[key]);
 
+    let scrollToPiece = null;
+    if (word) {
+      scrollToPiece = word.length <= 16 ? word.length : 16;
+    } else if (consumedSquares.length > 4) {
+      scrollToPiece = consumedSquares.length <= 16 ? consumedSquares.length : 16;
+    }
+
+    if (scrollToPiece) {
+      this._scrollToPiece(scrollToPiece);
+    }
+
     return (
-      <ScrollView style={styles.fullSize} horizontal={true}>
-        <View style={styles.pieceSectionContainer}>
+      <ScrollView
+        style={styles.fullSize} horizontal={true} ref={(scrollView) => this.pieceSet = scrollView}>
+        <View style={styles.pieceSectionContainer} ref={(view) => this.pieceSectionContainer = view}>
           <DrawPieceSection pieces={pieceSetArray} allowDrag={false}/>
         </View>
       </ScrollView>
     );
+  }
+
+  _scrollToPiece(pieceSize) {
+    if (!this.pieceSectionContainer || !this.pieceSet) {
+      console.log('guard triggered');
+      return;
+    }
+
+    this.pieceSectionContainer.measure((x, y, width, height) => {
+      // this nonsense gets us to the right piece index
+      const scrollIndex = pieceSize - 5;
+
+      // calculate piece size and x value to scroll to
+      const pieceWidth = width / 13;
+      const scrollToX = (scrollIndex * pieceWidth) + (pieceWidth / 2);
+
+      this.pieceSet.scrollTo({x: scrollToX});
+    });
+
   }
 }
 
@@ -49,6 +80,7 @@ const mapStateToProps = (state) => {
   return {
     consumedSquares: challenge.consumedSquares,
     pieceSet: challenge.pieceSet,
+    word: challenge.word,
   };
 };
 
