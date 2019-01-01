@@ -10,16 +10,27 @@ import { playWord } from '../ducks/challengeData';
 
 class ChallengeInteraction extends Component {
   render() {
-    const { word } = this.props.challenge;
+    const { challenge } = this.props;
+    const { word } = challenge;
     const wordPlayed = !!word;
 
     // console.log('challenge data:', this.props.challenge);
 
-    if (!wordPlayed) {
+    if (challenge.gameOver) {
+      return this._gameOver();
+    } else if (!wordPlayed) {
       return this._playWordInteraction();
     } else {
       return this._placePieceInteraction();
     }
+  }
+
+  _gameOver() {
+    return (
+      <Container style={[styles.gameOver, this.props.style]}>
+        <Text>Game Over</Text>
+      </Container>
+    );
   }
 
   _playWordInteraction() {
@@ -69,6 +80,12 @@ const styles = StyleSheet.create({
     flex: 1,
     maxHeight: '100%',
     maxWidth: '100%',
+  },
+  gameOver: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

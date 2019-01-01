@@ -144,9 +144,11 @@ class Board extends Component {
 
     if (this._checkSquareAdjacent(square) && this._checkSquareAvailable(square)) {
       this.props.consumeSquare(square);
-    } else if (!this._checkIfLastSquarePlayed(square)) {
+    } else if (this._checkIfNextToLastSquarePlayed(square)) {
+      this.props.removeSquare();
+    } else {
       this.props.clearConsumedSquares();
-      this.props.consumeSquare(square)
+      this.props.consumeSquare(square);
     }
   }
 

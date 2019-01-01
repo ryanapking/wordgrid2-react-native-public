@@ -12,7 +12,10 @@ import { startChallenge, consumeSquare, removeSquare, clearConsumedSquares, plac
 
 class Challenge extends Component {
   componentDidMount() {
-    this.props.startChallenge();
+    const { challenge } = this.props.challengeData;
+    if (!challenge || challenge.gameOver) {
+      this.props.startChallenge();
+    }
   }
 
   render() {
