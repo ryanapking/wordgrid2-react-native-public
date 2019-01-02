@@ -6,24 +6,18 @@ import DrawPieceSection from './DrawPieceSection';
 
 class ChallengePieceSetDisplay extends Component {
   componentDidUpdate() {
-    const { consumedSquares, word } = this.props;
+    const { consumedSquares } = this.props;
 
-    let scrollToPiece = null;
-    if (word) {
-      scrollToPiece = word.length <= 16 ? word.length : 16;
-    } else if (consumedSquares.length >= 4) {
-      scrollToPiece = consumedSquares.length <= 16 ? consumedSquares.length : 16;
-    }
-
-    if (scrollToPiece) {
+    if (consumedSquares.length >= 4) {
+      const scrollToPiece = consumedSquares.length <= 16 ? consumedSquares.length : 16;
       this._scrollToPiece(scrollToPiece);
     }
   }
 
   render() {
-    const { pieceSet } = this.props;
+    const { pieceSet, word } = this.props;
 
-    if (!pieceSet) {
+    if (!pieceSet || word) {
       return null;
     }
 

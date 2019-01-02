@@ -79,6 +79,7 @@ function playWordReducer(state, action) {
       consumedSquares: [],
       rows: action.newRows,
       score: action.score,
+      pieces: action.pieces,
     }
   }
 }
@@ -162,6 +163,11 @@ export function playWord() {
 
       const score = challenge.score + wordValue;
 
+      let pieces = challenge.pieces.filter( (piece) => piece.length > 0);
+      pieces = [...pieces, challenge.pieceSet[word.length]];
+
+      console.log('pieces:', pieces);
+
       dispatch({
         type: CHALLENGE_PLAY_WORD,
         word,
@@ -169,6 +175,7 @@ export function playWord() {
         wordValue,
         newRows,
         score,
+        pieces,
       });
     }
   };
@@ -199,8 +206,7 @@ export function placePiece(pieceIndex, rowRef, columnRef) {
 
     // remove the played piece and add the next piece
     const remainingPieces = challenge.pieces.filter( (piece, currentPieceIndex) => currentPieceIndex !== parseInt(pieceIndex));
-    const nextPiece = challenge.pieceSet[challenge.word.length];
-    const pieces = [...remainingPieces, nextPiece];
+    const pieces = [...remainingPieces, []];
     const pieceSet = challenge.pieceBank[challenge.history.length];
 
     // create new item to save to history
