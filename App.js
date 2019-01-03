@@ -21,7 +21,7 @@ import FirebaseListeners from './components/nondisplay/FirebaseListeners';
 import NavMenu from './components/NavMenu';
 import TopBar from './components/TopBar';
 
-const store = configureStore();
+export const store = configureStore();
 
 StatusBar.setHidden(true);
 console.disableYellowBox = true;
